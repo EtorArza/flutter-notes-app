@@ -86,7 +86,15 @@ class _ViewNotePageState extends State<ViewNotePage> {
               padding: const EdgeInsets.only(
                   left: 24.0, top: 36, bottom: 24, right: 24),
               child: Text(
-                widget.currentNote.content,
+                widget.currentNote.originalContent,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 24.0, top: 36, bottom: 24, right: 24),
+              child: Text(
+                widget.currentNote.meaningContent,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             )
@@ -160,7 +168,7 @@ class _ViewNotePageState extends State<ViewNotePage> {
 
   void handleShare() {
     Share.share(
-        '${widget.currentNote.title.trim()}\n(On: ${widget.currentNote.date.toIso8601String().substring(0, 10)})\n\n${widget.currentNote.content}');
+        '${widget.currentNote.title.trim()}\n(On: ${widget.currentNote.date.toIso8601String().substring(0, 10)})\n\n${widget.currentNote.originalContent}: ${widget.currentNote.meaningContent}');
   }
 
   void handleBack() {

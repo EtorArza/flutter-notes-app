@@ -26,7 +26,7 @@ class NotesDatabaseService {
     return await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       await db.execute(
-          'CREATE TABLE Notes (_id INTEGER PRIMARY KEY, title TEXT, content TEXT, date TEXT, isImportant INTEGER);');
+          'CREATE TABLE Notes (_id INTEGER PRIMARY KEY, title TEXT, originalContent TEXT, meaningContent TEXT, date TEXT, isImportant INTEGER);');
       print('New table created at $path');
     });
   }
@@ -35,7 +35,7 @@ class NotesDatabaseService {
     final db = await database;
     List<NotesModel> notesList = [];
     List<Map> maps = await db.query('Notes',
-        columns: ['_id', 'title', 'content', 'date', 'isImportant']);
+        columns: ['_id', 'title', 'originalContent', 'meaningContent', 'date', 'isImportant']);
     if (maps.length > 0) {
       maps.forEach((map) {
         notesList.add(NotesModel.fromMap(map));
@@ -48,7 +48,8 @@ class NotesDatabaseService {
     final db = await database;
     await db.update('Notes', updatedNote.toMap(),
         where: '_id = ?', whereArgs: [updatedNote.id]);
-    print('Note updated: ${updatedNote.title} ${updatedNote.content}');
+    print(
+        'Note updated: ${updatedNote.title} ${updatedNote.originalContent} ${updatedNote.meaningContent}');
   }
 
   deleteNoteInDB(NotesModel noteToDelete) async {
@@ -62,10 +63,10 @@ class NotesDatabaseService {
     if (newNote.title.trim().isEmpty) newNote.title = 'Untitled Note';
     int id = await db.transaction((transaction) {
       transaction.rawInsert(
-          'INSERT into Notes(title, content, date, isImportant) VALUES ("${newNote.title}", "${newNote.content}", "${newNote.date.toIso8601String()}", ${newNote.isImportant == true ? 1 : 0});');
+          'INSERT into Notes(title, originalContent, meaningContent, date, isImportant) VALUES ("${newNote.title}", "${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.date.toIso8601String()}", ${newNote.isImportant == true ? 1 : 0});');
     });
     newNote.id = id;
-    print('Note added: ${newNote.title} ${newNote.content}');
+    print('Note added: ${newNote.title} ${newNote.originalContent} ${newNote.meaningContent}');
     return newNote;
   }
 }

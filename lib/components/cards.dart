@@ -60,9 +60,17 @@ class NoteCardComponent extends StatelessWidget {
                             : FontWeight.normal),
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 8),
+                      margin: EdgeInsets.only(top: 8),
                     child: Text(
-                      '${noteData.content.trim().split('\n').first.length <= 30 ? noteData.content.trim().split('\n').first : noteData.content.trim().split('\n').first.substring(0, 30) + '...'}',
+                      '${noteData.originalContent.trim().split('\n').first.length <= 30 ? noteData.originalContent.trim().split('\n').first : noteData.originalContent.trim().split('\n').first.substring(0, 30) + '...'}',
+                      style:
+                          TextStyle(fontSize: 14, color: Colors.grey.shade400),
+                    ),
+                  ),
+                  Container(
+                      margin: EdgeInsets.only(top: 8),
+                    child: Text(
+                      '${noteData.meaningContent.trim().split('\n').first.length <= 30 ? noteData.meaningContent.trim().split('\n').first : noteData.meaningContent.trim().split('\n').first.substring(0, 30) + '...'}',
                       style:
                           TextStyle(fontSize: 14, color: Colors.grey.shade400),
                     ),

@@ -12,7 +12,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeData theme = appThemeLight;
+  ThemeData theme = appThemeDark;
   @override
   void initState() {
     super.initState();

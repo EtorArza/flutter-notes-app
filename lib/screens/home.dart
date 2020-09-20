@@ -248,7 +248,10 @@ class _MyHomePageState extends State<MyHomePage> {
         if (note.title
                 .toLowerCase()
                 .contains(searchController.text.toLowerCase()) ||
-            note.content
+            note.originalContent
+                .toLowerCase()
+                .contains(searchController.text.toLowerCase()) ||
+            note.meaningContent
                 .toLowerCase()
                 .contains(searchController.text.toLowerCase()))
           noteComponentsList.add(NoteCardComponent(

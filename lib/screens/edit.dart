@@ -27,25 +27,32 @@ class _EditNotePageState extends State<EditNotePage> {
   bool isDirty = false;
   bool isNoteNew = true;
   FocusNode titleFocus = FocusNode();
-  FocusNode contentFocus = FocusNode();
+  FocusNode originalContentFocus = FocusNode();
+  FocusNode meaningContentFocus = FocusNode();
 
   NotesModel currentNote;
   TextEditingController titleController = TextEditingController();
-  TextEditingController contentController = TextEditingController();
+  TextEditingController originalContentController = TextEditingController();
+  TextEditingController meaningContentController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     if (widget.existingNote == null) {
       currentNote = NotesModel(
-          content: '', title: '', date: DateTime.now(), isImportant: false);
+          originalContent: '',
+          meaningContent: '',
+          title: '',
+          date: DateTime.now(),
+          isImportant: false);
       isNoteNew = true;
     } else {
       currentNote = widget.existingNote;
       isNoteNew = false;
     }
     titleController.text = currentNote.title;
-    contentController.text = currentNote.content;
+    originalContentController.text = currentNote.originalContent;
+    meaningContentController.text = currentNote.meaningContent;
   }
 
   @override
@@ -68,7 +75,7 @@ class _EditNotePageState extends State<EditNotePage> {
                 maxLines: null,
                 onSubmitted: (text) {
                   titleFocus.unfocus();
-                  FocusScope.of(context).requestFocus(contentFocus);
+                  FocusScope.of(context).requestFocus(originalContentFocus);
                 },
                 onChanged: (value) {
                   markTitleAsDirty(value);
@@ -92,16 +99,45 @@ class _EditNotePageState extends State<EditNotePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
-                focusNode: contentFocus,
-                controller: contentController,
+                focusNode: originalContentFocus,
+                controller: originalContentController,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 onChanged: (value) {
                   markContentAsDirty(value);
                 },
+                onSubmitted: (text) {
+                  titleFocus.unfocus();
+                  FocusScope.of(context).requestFocus(meaningContentFocus);
+                },
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                 decoration: InputDecoration.collapsed(
-                  hintText: 'Start typing...',
+                  hintText: 'Concept to learn...',
+                  hintStyle: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                focusNode: meaningContentFocus,
+                controller: meaningContentController,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                onChanged: (value) {
+                  markContentAsDirty(value);
+                },
+                onSubmitted: (text) {
+                  titleFocus.unfocus();
+                  FocusScope.of(context).requestFocus(meaningContentFocus);
+                },
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                decoration: InputDecoration.collapsed(
+                  hintText: 'Meaning...',
                   hintStyle: TextStyle(
                       color: Colors.grey.shade400,
                       fontSize: 18,
@@ -132,7 +168,10 @@ class _EditNotePageState extends State<EditNotePage> {
                             ? Icons.flag
                             : Icons.outlined_flag),
                         onPressed: titleController.text.trim().isNotEmpty &&
-                                contentController.text.trim().isNotEmpty
+                                originalContentController.text
+                                    .trim()
+                                    .isNotEmpty &&
+                                meaningContentController.text.trim().isNotEmpty
                             ? markImportantAsDirty
                             : null,
                       ),
@@ -175,8 +214,10 @@ class _EditNotePageState extends State<EditNotePage> {
   void handleSave() async {
     setState(() {
       currentNote.title = titleController.text;
-      currentNote.content = contentController.text;
-      print('Hey there ${currentNote.content}');
+      currentNote.originalContent = originalContentController.text;
+      currentNote.meaningContent = meaningContentController.text;
+      print(
+          'Hey there ${currentNote.originalContent} , ${currentNote.meaningContent}');
     });
     if (isNoteNew) {
       var latestNote = await NotesDatabaseService.db.addNoteInDB(currentNote);
@@ -192,7 +233,8 @@ class _EditNotePageState extends State<EditNotePage> {
     });
     widget.triggerRefetch();
     titleFocus.unfocus();
-    contentFocus.unfocus();
+    originalContentFocus.unfocus();
+    meaningContentFocus.unfocus();
   }
 
   void markTitleAsDirty(String title) {
