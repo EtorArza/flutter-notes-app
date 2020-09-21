@@ -27,6 +27,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool isFlagOn = false;
+  bool isVisibilityOn = false;
   bool headerShouldHide = false;
   List<NotesModel> notesList = [];
   TextEditingController searchController = TextEditingController();
@@ -141,6 +142,32 @@ class _MyHomePageState extends State<MyHomePage> {
                   borderRadius: BorderRadius.all(Radius.circular(16))),
             ),
           ),
+          Container(width: 8.0,),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                isVisibilityOn = !isVisibilityOn;
+              });
+            },
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 160),
+              height: 50,
+              width: 50,
+              curve: Curves.slowMiddle,
+              child: Icon(
+                isVisibilityOn ? Icons.visibility : OMIcons.visibility,
+                color: isVisibilityOn ? Colors.white : Colors.grey.shade300,
+              ),
+              decoration: BoxDecoration(
+                  color: isVisibilityOn ? Colors.blue : Colors.transparent,
+                  border: Border.all(
+                    width: isVisibilityOn ? 2 : 1,
+                    color:
+                        isVisibilityOn ? Colors.blue.shade700 : Colors.grey.shade300,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(16))),
+            ),
+          ),
           Expanded(
             child: Container(
               alignment: Alignment.center,
@@ -245,6 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
           noteComponentsList.add(NoteCardComponent(
             noteData: note,
             onTapAction: openNoteToRead,
+            isVisible: isVisibilityOn,
           ));
       });
     } else {
@@ -252,6 +280,7 @@ class _MyHomePageState extends State<MyHomePage> {
         noteComponentsList.add(NoteCardComponent(
           noteData: note,
           onTapAction: openNoteToRead,
+          isVisible: isVisibilityOn,
         ));
       });
     }

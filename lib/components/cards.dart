@@ -17,11 +17,13 @@ class NoteCardComponent extends StatelessWidget {
   const NoteCardComponent({
     this.noteData,
     this.onTapAction,
+    this.isVisible,
     Key key,
   }) : super(key: key);
 
   final NotesModel noteData;
   final Function(NotesModel noteData) onTapAction;
+  final bool isVisible;
 
   @override
   Widget build(BuildContext context) {
@@ -64,11 +66,7 @@ class NoteCardComponent extends StatelessWidget {
                   Divider(height: 24.0),
                   Container(
                       margin: EdgeInsets.only(),
-                    child: Text(
-                      '${noteData.meaningContent.trim().split('\n').first.length <= 40 ? noteData.meaningContent.trim().split('\n').first : noteData.meaningContent.trim().split('\n').first.substring(0, 40) + '...'}',
-                      style:
-                          TextStyle(fontSize: 14, color: Colors.grey.shade50),
-                    ),
+                      child: isVisible ?  Text('${noteData.meaningContent.trim().split('\n').first.length <= 40 ? noteData.meaningContent.trim().split('\n').first : noteData.meaningContent.trim().split('\n').first.substring(0, 40) + '...'}', style: TextStyle(fontSize: 14, color: Colors.grey.shade50),) : Container(),
                   ),
                   // Container(
                   //   margin: EdgeInsets.only(top: 14),
