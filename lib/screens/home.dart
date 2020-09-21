@@ -262,6 +262,7 @@ class _MyHomePageState extends State<MyHomePage> {
           noteComponentsList.add(NoteCardComponent(
             noteData: note,
             onTapAction: openNoteToRead,
+            isVisible: isVisibilityOn,
           ));
       });
       return noteComponentsList;
