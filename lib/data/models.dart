@@ -6,19 +6,22 @@ class NotesModel {
   String meaningContent;
   bool isImportant;
   DateTime date;
+  DateTime dueDate;
 
   NotesModel(
       {this.id,
       this.originalContent,
       this.meaningContent,
       this.isImportant,
-      this.date});
+      this.date,
+      this.dueDate,});
 
   NotesModel.fromMap(Map<String, dynamic> map) {
     this.id = map['_id'];
     this.originalContent = map['originalContent'];
     this.meaningContent = map['meaningContent'];
     this.date = DateTime.parse(map['date']);
+    this.dueDate = DateTime.parse(map['dueDate']);
     this.isImportant = map['isImportant'] == 1 ? true : false;
   }
 
@@ -28,7 +31,8 @@ class NotesModel {
       'originalContent': this.originalContent,
       'meaningContent': this.meaningContent,
       'isImportant': this.isImportant == true ? 1 : 0,
-      'date': this.date.toIso8601String()
+      'date': this.date.toIso8601String(),
+      'dueDate': this.date.toIso8601String(),
     };
   }
 
@@ -38,5 +42,6 @@ class NotesModel {
     this.meaningContent = 'Lorem Ipsum ' * (Random().nextInt(4) + 1);
     this.isImportant = Random().nextBool();
     this.date = DateTime.now().add(Duration(hours: Random().nextInt(100)));
+    this.dueDate = DateTime.now().add(Duration(hours: Random().nextInt(100)));
   }
 }

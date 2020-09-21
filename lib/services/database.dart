@@ -26,7 +26,7 @@ class NotesDatabaseService {
     return await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       await db.execute(
-          'CREATE TABLE Notes (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, date TEXT, isImportant INTEGER);');
+          'CREATE TABLE Notes (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, date TEXT, dueDate TEXT, isImportant INTEGER);');
       print('New table created at $path');
     });
   }
@@ -35,7 +35,7 @@ class NotesDatabaseService {
     final db = await database;
     List<NotesModel> notesList = [];
     List<Map> maps = await db.query('Notes',
-        columns: ['_id', 'originalContent', 'meaningContent', 'date', 'isImportant']);
+        columns: ['_id', 'originalContent', 'meaningContent', 'date', 'dueDate', 'isImportant']);
     if (maps.length > 0) {
       maps.forEach((map) {
         notesList.add(NotesModel.fromMap(map));
@@ -62,7 +62,7 @@ class NotesDatabaseService {
     final db = await database;
     int id = await db.transaction((transaction) {
       transaction.rawInsert(
-          'INSERT into Notes(originalContent, meaningContent, date, isImportant) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.date.toIso8601String()}", ${newNote.isImportant == true ? 1 : 0});');
+          'INSERT into Notes(originalContent, meaningContent, date, dueDate, isImportant) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}", ${newNote.isImportant == true ? 1 : 0});');
     });
     newNote.id = id;
     print('Note added: ${newNote.originalContent} ${newNote.meaningContent}');

@@ -42,6 +42,7 @@ class _EditNotePageState extends State<EditNotePage> {
           originalContent: '',
           meaningContent: '',
           date: DateTime.now(),
+          dueDate: DateTime.now(),
           isImportant: false);
       isNoteNew = true;
     } else {

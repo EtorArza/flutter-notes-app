@@ -25,10 +25,12 @@ class NoteCardComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-//    String neatDate = DateFormat.yMd().format(noteData.date);
+    bool isDue =  noteData.dueDate.difference(DateTime.now()).inSeconds <= 0;
     Color color = colorList.elementAt(noteData.meaningContent.length % colorList.length);
+    double circleSize = 10.0;
+    Widget accentCircle = Align(alignment: Alignment.topRight, child: Icon(Icons.brightness_1, color: Theme.of(context).accentColor, size: circleSize,),);
     return Container(
-        margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0,),
+        margin: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 8.0),
         height: 90,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -46,10 +48,11 @@ class NoteCardComponent extends StatelessWidget {
             splashColor: color.withAlpha(20),
             highlightColor: color.withAlpha(10),
             child: Container(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.fromLTRB(16,16.0 - circleSize,16,16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                      isDue ? accentCircle : Container(height: circleSize,), 
                   Container(
                       margin: EdgeInsets.only(),
                     child: Text(
