@@ -26,7 +26,7 @@ class NoteCardComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String neatDate = DateFormat.yMd().add_jm().format(noteData.date);
-    Color color = colorList.elementAt(noteData.title.length % colorList.length);
+    Color color = colorList.elementAt(noteData.meaningContent.length % colorList.length);
     return Container(
         margin: EdgeInsets.fromLTRB(10, 8, 10, 8),
         height: 110,
@@ -50,15 +50,6 @@ class NoteCardComponent extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    '${noteData.title.trim().length <= 20 ? noteData.title.trim() : noteData.title.trim().substring(0, 20) + '...'}',
-                    style: TextStyle(
-                        fontFamily: 'ZillaSlab',
-                        fontSize: 20,
-                        fontWeight: noteData.isImportant
-                            ? FontWeight.w800
-                            : FontWeight.normal),
-                  ),
                   Container(
                       margin: EdgeInsets.only(top: 8),
                     child: Text(

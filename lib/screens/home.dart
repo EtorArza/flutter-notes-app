@@ -245,10 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     if (searchController.text.isNotEmpty) {
       notesList.forEach((note) {
-        if (note.title
-                .toLowerCase()
-                .contains(searchController.text.toLowerCase()) ||
-            note.originalContent
+        if (note.originalContent
                 .toLowerCase()
                 .contains(searchController.text.toLowerCase()) ||
             note.meaningContent

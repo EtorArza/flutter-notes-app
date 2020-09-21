@@ -31,7 +31,6 @@ class _EditNotePageState extends State<EditNotePage> {
   FocusNode meaningContentFocus = FocusNode();
 
   NotesModel currentNote;
-  TextEditingController titleController = TextEditingController();
   TextEditingController originalContentController = TextEditingController();
   TextEditingController meaningContentController = TextEditingController();
 
@@ -42,7 +41,6 @@ class _EditNotePageState extends State<EditNotePage> {
       currentNote = NotesModel(
           originalContent: '',
           meaningContent: '',
-          title: '',
           date: DateTime.now(),
           isImportant: false);
       isNoteNew = true;
@@ -50,7 +48,6 @@ class _EditNotePageState extends State<EditNotePage> {
       currentNote = widget.existingNote;
       isNoteNew = false;
     }
-    titleController.text = currentNote.title;
     originalContentController.text = currentNote.originalContent;
     meaningContentController.text = currentNote.meaningContent;
   }
@@ -65,38 +62,7 @@ class _EditNotePageState extends State<EditNotePage> {
             Container(
               height: 80,
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                focusNode: titleFocus,
-                autofocus: true,
-                controller: titleController,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                onSubmitted: (text) {
-                  titleFocus.unfocus();
-                  FocusScope.of(context).requestFocus(originalContentFocus);
-                },
-                onChanged: (value) {
-                  markTitleAsDirty(value);
-                },
-                textInputAction: TextInputAction.next,
-                style: TextStyle(
-                    fontFamily: 'ZillaSlab',
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700),
-                decoration: InputDecoration.collapsed(
-                  hintText: 'Enter a title',
-                  hintStyle: TextStyle(
-                      color: Colors.grey.shade400,
-                      fontSize: 32,
-                      fontFamily: 'ZillaSlab',
-                      fontWeight: FontWeight.w700),
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-            Padding(
+              Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 focusNode: originalContentFocus,
@@ -167,13 +133,10 @@ class _EditNotePageState extends State<EditNotePage> {
                         icon: Icon(currentNote.isImportant
                             ? Icons.flag
                             : Icons.outlined_flag),
-                        onPressed: titleController.text.trim().isNotEmpty &&
-                                originalContentController.text
-                                    .trim()
-                                    .isNotEmpty &&
-                                meaningContentController.text.trim().isNotEmpty
-                            ? markImportantAsDirty
-                            : null,
+                        onPressed: originalContentController.text.trim().isNotEmpty &&
+                                   meaningContentController.text.trim().isNotEmpty
+                                   ? markImportantAsDirty
+                                   : null,
                       ),
                       IconButton(
                         icon: Icon(Icons.delete_outline),
@@ -213,7 +176,6 @@ class _EditNotePageState extends State<EditNotePage> {
 
   void handleSave() async {
     setState(() {
-      currentNote.title = titleController.text;
       currentNote.originalContent = originalContentController.text;
       currentNote.meaningContent = meaningContentController.text;
       print(

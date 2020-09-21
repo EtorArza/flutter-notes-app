@@ -59,7 +59,7 @@ class _ViewNotePageState extends State<ViewNotePage> {
                 duration: Duration(milliseconds: 200),
                 curve: Curves.easeIn,
                 child: Text(
-                  widget.currentNote.title,
+                  widget.currentNote.originalContent,
                   style: TextStyle(
                     fontFamily: 'ZillaSlab',
                     fontWeight: FontWeight.w700,
@@ -168,7 +168,7 @@ class _ViewNotePageState extends State<ViewNotePage> {
 
   void handleShare() {
     Share.share(
-        '${widget.currentNote.title.trim()}\n(On: ${widget.currentNote.date.toIso8601String().substring(0, 10)})\n\n${widget.currentNote.originalContent}: ${widget.currentNote.meaningContent}');
+        '${widget.currentNote.originalContent.trim()}\n(On: ${widget.currentNote.date.toIso8601String().substring(0, 10)})\n\n${widget.currentNote.originalContent}: ${widget.currentNote.meaningContent}');
   }
 
   void handleBack() {
