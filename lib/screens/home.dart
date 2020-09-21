@@ -191,26 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget buildHeaderWidget(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        AnimatedContainer(
-          duration: Duration(milliseconds: 200),
-          curve: Curves.easeIn,
-          margin: EdgeInsets.only(top: 8, bottom: 32, left: 10),
-          width: headerShouldHide ? 0 : 200,
-          child: Text(
-            'Your Notes',
-            style: TextStyle(
-                fontFamily: 'ZillaSlab',
-                fontWeight: FontWeight.w700,
-                fontSize: 36,
-                color: Theme.of(context).primaryColor),
-            overflow: TextOverflow.clip,
-            softWrap: false,
-          ),
-        ),
-      ],
-    );
+    return Row();
   }
 
   Widget testListItem(Color color) {

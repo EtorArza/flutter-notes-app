@@ -25,11 +25,11 @@ class NoteCardComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String neatDate = DateFormat.yMd().add_jm().format(noteData.date);
+//    String neatDate = DateFormat.yMd().format(noteData.date);
     Color color = colorList.elementAt(noteData.meaningContent.length % colorList.length);
     return Container(
-        margin: EdgeInsets.fromLTRB(10, 8, 10, 8),
-        height: 110,
+        margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0,),
+        height: 90,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           boxShadow: [buildBoxShadow(color, context)],
@@ -51,43 +51,44 @@ class NoteCardComponent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                      margin: EdgeInsets.only(top: 8),
+                      margin: EdgeInsets.only(),
                     child: Text(
-                      '${noteData.originalContent.trim().split('\n').first.length <= 30 ? noteData.originalContent.trim().split('\n').first : noteData.originalContent.trim().split('\n').first.substring(0, 30) + '...'}',
+                      '${noteData.originalContent.trim().split('\n').first.length <= 40 ? noteData.originalContent.trim().split('\n').first : noteData.originalContent.trim().split('\n').first.substring(0, 40) + '...'}',
                       style:
-                          TextStyle(fontSize: 14, color: Colors.grey.shade400),
+                          TextStyle(fontSize: 14, color: Colors.grey.shade50),
                     ),
                   ),
+                  Divider(height: 24.0),
                   Container(
-                      margin: EdgeInsets.only(top: 8),
+                      margin: EdgeInsets.only(),
                     child: Text(
-                      '${noteData.meaningContent.trim().split('\n').first.length <= 30 ? noteData.meaningContent.trim().split('\n').first : noteData.meaningContent.trim().split('\n').first.substring(0, 30) + '...'}',
+                      '${noteData.meaningContent.trim().split('\n').first.length <= 40 ? noteData.meaningContent.trim().split('\n').first : noteData.meaningContent.trim().split('\n').first.substring(0, 40) + '...'}',
                       style:
-                          TextStyle(fontSize: 14, color: Colors.grey.shade400),
+                          TextStyle(fontSize: 14, color: Colors.grey.shade50),
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(top: 14),
-                    alignment: Alignment.centerRight,
-                    child: Row(
-                      children: <Widget>[
-                        Icon(Icons.flag,
-                            size: 16,
-                            color: noteData.isImportant
-                                ? color
-                                : Colors.transparent),
-                        Spacer(),
-                        Text(
-                          '$neatDate',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade300,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                  )
+                  // Container(
+                  //   margin: EdgeInsets.only(top: 14),
+                  //   alignment: Alignment.centerRight,
+                  //   child: Row(
+                  //     children: <Widget>[
+                  //       Icon(Icons.flag,
+                  //           size: 16,
+                  //           color: noteData.isImportant
+                  //               ? color
+                  //               : Colors.transparent),
+                  //       Spacer(),
+                  //       Text(
+                  //         '$neatDate',
+                  //         textAlign: TextAlign.right,
+                  //         style: TextStyle(
+                  //             fontSize: 12,
+                  //             color: Colors.grey.shade300,
+                  //             fontWeight: FontWeight.w500),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // )
                 ],
               ),
             ),

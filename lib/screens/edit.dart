@@ -87,6 +87,7 @@ class _EditNotePageState extends State<EditNotePage> {
                 ),
               ),
             ),
+            Divider(height: 16.0,),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
