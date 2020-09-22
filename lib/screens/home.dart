@@ -362,7 +362,7 @@ Widget getVisibilityButton(int isVisibilityOn)
               width: 50,
               child: Icon(OMIcons.visibility, color: Colors.grey.shade300,),
               decoration: BoxDecoration(
-                gradient: LinearGradient( begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [accentColor, Colors.grey.shade700]),
+                gradient: LinearGradient( begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [accentColor, Colors.transparent]),
                 color: accentColor,
                 border: Border.all(width:1, color: Colors.grey.shade300),
                 borderRadius: BorderRadius.all(Radius.circular(16))
@@ -377,7 +377,7 @@ Widget getVisibilityButton(int isVisibilityOn)
               width: 50,
               child: Icon(OMIcons.visibility, color: Colors.grey.shade300,),
               decoration: BoxDecoration(
-                gradient: LinearGradient( begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [accentColor, Colors.grey.shade800]),
+                gradient: LinearGradient( begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [accentColor, Colors.transparent]),
                 color: accentColor,
                 border: Border.all(width:1, color: Colors.grey.shade300),
                 borderRadius: BorderRadius.all(Radius.circular(16))
