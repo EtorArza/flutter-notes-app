@@ -30,7 +30,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool isFlagOn = false;
-  int isVisibilityOn = 0;
+  int visibilityIndex = 0;
   bool headerShouldHide = false;
   List<NotesModel> notesList = [];
   TextEditingController searchController = TextEditingController();
@@ -158,10 +158,10 @@ class _MyHomePageState extends State<MyHomePage> {
           GestureDetector(
             onTap: () {
               setState(() {
-                isVisibilityOn = (isVisibilityOn+1) % 3;
+                visibilityIndex = (visibilityIndex+1) % 3;
               });
             },
-            child: getVisibilityButton(isVisibilityOn),
+            child: getVisibilityButton(visibilityIndex),
           ),
           Expanded(
             child: Container(
@@ -257,7 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
           noteComponentsList.add(NoteCardComponent(
             noteData: note,
             onTapAction: openNoteToRead,
-            isVisible: isVisibilityOn,
+            isVisible: visibilityIndex,
           ));
       });
       return noteComponentsList;
@@ -268,7 +268,7 @@ class _MyHomePageState extends State<MyHomePage> {
           noteComponentsList.add(NoteCardComponent(
             noteData: note,
             onTapAction: openNoteToRead,
-            isVisible: isVisibilityOn,
+            isVisible: visibilityIndex,
           ));
       });
     } else {
@@ -276,7 +276,7 @@ class _MyHomePageState extends State<MyHomePage> {
         noteComponentsList.add(NoteCardComponent(
           noteData: note,
           onTapAction: openNoteToRead,
-          isVisible: isVisibilityOn,
+          isVisible: visibilityIndex,
         ));
       });
     }
@@ -335,11 +335,11 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 
-Widget getVisibilityButton(int isVisibilityOn)
+Widget getVisibilityButton(int visibilityIndex)
 {
   Widget visibilityButton; 
   Color accentColor = appThemeDark.accentColor;
-      if (isVisibilityOn==0) {
+      if (visibilityIndex==0) {
       visibilityButton = 
         AnimatedContainer(
               duration: Duration(milliseconds: 250),
@@ -354,7 +354,7 @@ Widget getVisibilityButton(int isVisibilityOn)
               ),
         ); 
     }
-    else if(isVisibilityOn == 1) 
+    else if(visibilityIndex == 1) 
     {
       visibilityButton = 
         Container(
@@ -369,7 +369,7 @@ Widget getVisibilityButton(int isVisibilityOn)
               ),
         ); 
     }
-    else if(isVisibilityOn == 2) 
+    else if(visibilityIndex == 2) 
     {
       visibilityButton = 
         Container(
