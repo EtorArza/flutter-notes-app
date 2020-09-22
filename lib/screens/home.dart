@@ -256,7 +256,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 .contains(searchController.text.toLowerCase()))
           noteComponentsList.add(NoteCardComponent(
             noteData: note,
-            onTapAction: openNoteToRead,
+            onHoldAction: openNoteToRead,
+            onTapAction: expandNoteCard,
             isVisible: visibilityIndex,
           ));
       });
@@ -267,7 +268,8 @@ class _MyHomePageState extends State<MyHomePage> {
         if (note.isImportant)
           noteComponentsList.add(NoteCardComponent(
             noteData: note,
-            onTapAction: openNoteToRead,
+            onHoldAction: openNoteToRead,
+            onTapAction: expandNoteCard,
             isVisible: visibilityIndex,
           ));
       });
@@ -275,7 +277,8 @@ class _MyHomePageState extends State<MyHomePage> {
       notesList.forEach((note) {
         noteComponentsList.add(NoteCardComponent(
           noteData: note,
-          onTapAction: openNoteToRead,
+          onHoldAction: openNoteToRead,
+          onTapAction: expandNoteCard,
           isVisible: visibilityIndex,
         ));
       });
@@ -324,6 +327,16 @@ class _MyHomePageState extends State<MyHomePage> {
       headerShouldHide = false;
     });
   }
+
+
+
+  expandNoteCard(NotesModel noteData) async {
+    setState(() {
+      noteData.toggleExpand();
+    });
+  }
+
+
 
   void cancelSearch() {
     FocusScope.of(context).requestFocus(new FocusNode());

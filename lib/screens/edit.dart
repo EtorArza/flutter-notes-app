@@ -43,7 +43,9 @@ class _EditNotePageState extends State<EditNotePage> {
           meaningContent: '',
           date: DateTime.now(),
           dueDate: DateTime.now(),
-          isImportant: false);
+          isImportant: false,
+          isExpanded: false,
+          );
       isNoteNew = true;
     } else {
       currentNote = widget.existingNote;

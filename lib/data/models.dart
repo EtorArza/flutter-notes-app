@@ -5,6 +5,7 @@ class NotesModel {
   String originalContent;
   String meaningContent;
   bool isImportant;
+  bool isExpanded;
   DateTime date;
   DateTime dueDate;
 
@@ -13,6 +14,7 @@ class NotesModel {
       this.originalContent,
       this.meaningContent,
       this.isImportant,
+      this.isExpanded,
       this.date,
       this.dueDate,});
 
@@ -23,6 +25,7 @@ class NotesModel {
     this.date = DateTime.parse(map['date']);
     this.dueDate = DateTime.parse(map['dueDate']);
     this.isImportant = map['isImportant'] == 1 ? true : false;
+    this.isExpanded = false;
   }
 
   Map<String, dynamic> toMap() {
@@ -43,5 +46,13 @@ class NotesModel {
     this.isImportant = Random().nextBool();
     this.date = DateTime.now().add(Duration(hours: Random().nextInt(100)));
     this.dueDate = DateTime.now().add(Duration(hours: Random().nextInt(100)));
+    this.isExpanded = false;
   }
+
+  void toggleExpand(){
+    this.isExpanded = !this.isExpanded;
+  
+
+  }
+
 }
