@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,8 @@ import 'package:notes/services/database.dart';
 import 'settings.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import '../components/cards.dart';
+import '../data/theme.dart';
+
 
 class MyHomePage extends StatefulWidget {
   Function(Brightness brightness) changeTheme;
@@ -27,7 +30,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool isFlagOn = false;
-  bool isVisibilityOn = false;
+  int isVisibilityOn = 0;
   bool headerShouldHide = false;
   List<NotesModel> notesList = [];
   TextEditingController searchController = TextEditingController();
@@ -113,6 +116,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget buildButtonRow() {
+
+
+    
+
+    
+
+
+
+
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10),
       child: Row(
@@ -146,27 +158,10 @@ class _MyHomePageState extends State<MyHomePage> {
           GestureDetector(
             onTap: () {
               setState(() {
-                isVisibilityOn = !isVisibilityOn;
+                isVisibilityOn = (isVisibilityOn+1) % 3;
               });
             },
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 160),
-              height: 50,
-              width: 50,
-              curve: Curves.slowMiddle,
-              child: Icon(
-                isVisibilityOn ? Icons.visibility : OMIcons.visibility,
-                color: isVisibilityOn ? Colors.white : Colors.grey.shade300,
-              ),
-              decoration: BoxDecoration(
-                  color: isVisibilityOn ? Colors.blue : Colors.transparent,
-                  border: Border.all(
-                    width: isVisibilityOn ? 2 : 1,
-                    color:
-                        isVisibilityOn ? Colors.blue.shade700 : Colors.grey.shade300,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(16))),
-            ),
+            child: getVisibilityButton(isVisibilityOn),
           ),
           Expanded(
             child: Container(
@@ -337,4 +332,59 @@ class _MyHomePageState extends State<MyHomePage> {
       isSearchEmpty = true;
     });
   }
+}
+
+
+Widget getVisibilityButton(int isVisibilityOn)
+{
+  Widget visibilityButton; 
+  Color accentColor = appThemeDark.accentColor;
+      if (isVisibilityOn==0) {
+      visibilityButton = 
+        AnimatedContainer(
+              duration: Duration(milliseconds: 250),
+              height: 50,
+              width: 50,
+              curve: Curves.slowMiddle,
+              child: Icon(Icons.visibility, color: Colors.white,),
+              decoration: BoxDecoration(
+                color: accentColor,
+                border: Border.all(width:2, color: Colors.blue.shade700),
+                borderRadius: BorderRadius.all(Radius.circular(16))
+              ),
+        ); 
+    }
+    else if(isVisibilityOn == 1) 
+    {
+      visibilityButton = 
+        Container(
+              height: 50,
+              width: 50,
+              child: Icon(OMIcons.visibility, color: Colors.grey.shade300,),
+              decoration: BoxDecoration(
+                gradient: LinearGradient( begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [accentColor, Colors.grey.shade700]),
+                color: accentColor,
+                border: Border.all(width:1, color: Colors.grey.shade300),
+                borderRadius: BorderRadius.all(Radius.circular(16))
+              ),
+        ); 
+    }
+    else if(isVisibilityOn == 2) 
+    {
+      visibilityButton = 
+        Container(
+              height: 50,
+              width: 50,
+              child: Icon(OMIcons.visibility, color: Colors.grey.shade300,),
+              decoration: BoxDecoration(
+                gradient: LinearGradient( begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [accentColor, Colors.grey.shade800]),
+                color: accentColor,
+                border: Border.all(width:1, color: Colors.grey.shade300),
+                borderRadius: BorderRadius.all(Radius.circular(16))
+              ),
+        ); 
+
+    }
+
+    return visibilityButton;
 }

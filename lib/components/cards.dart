@@ -23,7 +23,7 @@ class NoteCardComponent extends StatelessWidget {
 
   final NotesModel noteData;
   final Function(NotesModel noteData) onTapAction;
-  final bool isVisible;
+  final int isVisible;
 
   @override
   Widget build(BuildContext context) {
@@ -57,16 +57,13 @@ class NoteCardComponent extends StatelessWidget {
                       isDue ? accentCircle : Container(height: circleSize,), 
                   Container(
                       margin: EdgeInsets.only(),
-                    child: Text(
-                      '${noteData.originalContent.trim().split('\n').first.length <= 40 ? noteData.originalContent.trim().split('\n').first : noteData.originalContent.trim().split('\n').first.substring(0, 40) + '...'}',
-                      style:
-                          TextStyle(fontSize: 14, color: Colors.grey.shade50),
-                    ),
+                    child: isVisible==0 || isVisible==1 ?  Text('${noteData.originalContent.trim().split('\n').first.length <= 40 ? noteData.originalContent.trim().split('\n').first : noteData.originalContent.trim().split('\n').first.substring(0, 40) + '...'}', style:TextStyle(fontSize: 14, color: Colors.grey.shade50),) : Text(' ', style:TextStyle(fontSize: 14, color: Colors.grey.shade50),),
                   ),
+                  
                   Divider(height: 24.0),
                   Container(
                       margin: EdgeInsets.only(),
-                      child: isVisible ?  Text('${noteData.meaningContent.trim().split('\n').first.length <= 40 ? noteData.meaningContent.trim().split('\n').first : noteData.meaningContent.trim().split('\n').first.substring(0, 40) + '...'}', style: TextStyle(fontSize: 14, color: Colors.grey.shade50),) : Container(),
+                      child: isVisible==0 || isVisible==2 ?  Text('${noteData.meaningContent.trim().split('\n').first.length <= 40 ? noteData.meaningContent.trim().split('\n').first : noteData.meaningContent.trim().split('\n').first.substring(0, 40) + '...'}', style: TextStyle(fontSize: 14, color: Colors.grey.shade50),) : Container(),
                   ),
                   // Container(
                   //   margin: EdgeInsets.only(top: 14),
