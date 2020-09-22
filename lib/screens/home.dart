@@ -30,7 +30,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool isFlagOn = false;
-  int visibilityIndex = 0;
+  int visibilityIndex = 1;
   bool headerShouldHide = false;
   List<NotesModel> notesList = [];
   TextEditingController searchController = TextEditingController();
@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     NotesDatabaseService.db.init();
     setNotesFromDB();
+    visibilityIndex = 1;
   }
 
   setNotesFromDB() async {
@@ -118,20 +119,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget buildButtonRow() {
 
 
-    
-
-    
-
-
-
-
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10),
       child: Row(
         children: <Widget>[
           GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SecondScreen()));
+            onTap: () { gotoReview();
             },
             child: AnimatedContainer(
               duration: Duration(milliseconds: 160),
@@ -326,6 +319,16 @@ class _MyHomePageState extends State<MyHomePage> {
             builder: (context) =>
                 EditNotePage(triggerRefetch: refetchNotesFromDB)));
   }
+
+
+  void gotoReview() {
+    Navigator.push(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => ReviewScreen()));
+  }
+
+
 
   void refetchNotesFromDB() async {
     await setNotesFromDB();
