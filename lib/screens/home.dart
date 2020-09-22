@@ -13,7 +13,7 @@ import 'settings.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import '../components/cards.dart';
 import '../data/theme.dart';
-
+import '../screens/review.dart';
 
 class MyHomePage extends StatefulWidget {
   Function(Brightness brightness) changeTheme;
@@ -131,6 +131,27 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           GestureDetector(
             onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SecondScreen()));
+            },
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 160),
+              height: 50,
+              width: 50,
+              curve: Curves.slowMiddle,
+              child: Icon(Icons.local_library, color:Colors.grey.shade300),
+              decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(
+                    width: 1,
+                    color: Colors.grey.shade300,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(16))),
+            ),
+          ),
+          Container(width: 8.0,),
+
+          GestureDetector(
+            onTap: () {
               setState(() {
                 isFlagOn = !isFlagOn;
               });
@@ -213,7 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget buildHeaderWidget(BuildContext context) {
-    return Row();
+    return Row(    );
   }
 
   Widget testListItem(Color color) {
