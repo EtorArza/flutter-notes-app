@@ -32,6 +32,7 @@ class _ReviewScreen extends State<ReviewScreen> {
 
   @override
   void initState() {
+    currentNote = null;
     super.initState();
     NotesDatabaseService.db.init();
     loadMostDueNoteFromDB();
