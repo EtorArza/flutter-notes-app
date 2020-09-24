@@ -4,7 +4,8 @@ import 'package:notes/components/cards.dart';
 import '../data/models.dart';
 import '../data/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
-
+import '../components/cards.dart';
+import 'package:notes/services/database.dart';
 
 
 
@@ -19,6 +20,30 @@ class ReviewScreen extends StatefulWidget {
 
 
 class _ReviewScreen extends State<ReviewScreen> {
+
+
+  NotesModel currentNote;
+  TextEditingController searchController = TextEditingController();
+  NoteCardComponent currentDisplayedCard;
+
+  bool isSearchEmpty = true;
+
+  @override
+  void initState() {
+    super.initState();
+    NotesDatabaseService.db.init();
+    loadMostDueNoteFromDB();
+  }
+
+  loadMostDueNoteFromDB() async {
+    print("Entered setNotes");
+    NotesModel fetchedNote = await NotesDatabaseService.db.getMostDueNoteFromDB();
+    setState(() {
+      currentNote = fetchedNote;
+    });
+  }
+
+
 
 
   Widget buildCardWidget(Widget child) {
@@ -41,6 +66,19 @@ class _ReviewScreen extends State<ReviewScreen> {
 
   @override
   Widget build (BuildContext context) {
+    currentDisplayedCard = NoteCardComponent(
+      noteData: currentNote,
+      onHoldAction: (currentNote) {},
+      onTapAction: (currentNote) {},
+      isVisible: 1,
+    );
+
+    print("Duedate on loaded card:");
+    print(currentNote.dueDate.toString());
+
+    print("original name on card:");
+    print(currentNote.originalContent.toString());
+
     return  Scaffold(
       body: ListView(
         physics: BouncingScrollPhysics(),
@@ -63,47 +101,13 @@ class _ReviewScreen extends State<ReviewScreen> {
                 padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
                 child: buildHeaderWidget(context),
               ),
-              buildCardWidget(Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text('App Theme',
-                      style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24)),
-                  Container(
-                    height: 20,
-                  ),
-                ],
-              )),
+              buildCardWidget(
+                currentDisplayedCard.getNonExpandedCard(1, context)
+              ),
                   Container(
                     height: 30,
                   ),
-                  Center(
-                    child: Text('Made With'.toUpperCase(),
-                        style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 1)),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          FlutterLogo(
-                            size: 40,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Flutter',
-                              style: TextStyle(
-                                  fontFamily: 'ZillaSlab', fontSize: 24),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+                  
                 ],
               ))
             ],

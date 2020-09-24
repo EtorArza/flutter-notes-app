@@ -34,12 +34,40 @@ class NoteCardComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    Widget nonExpandedCard = getNonExpandedCard(1, context);
+    
+    Widget expandedCard = Column(
+      children: <Widget>[
+        nonExpandedCard,
+        Row(
+          mainAxisAlignment:MainAxisAlignment.spaceEvenly,
+          children: <Widget>[ 
+            GestureDetector(
+              onTap: () { print('tapped_button_1');},
+              child: getButtonBelowCard(Icons.access_alarm),
+            ),
+            GestureDetector(
+              onTap: () { print('tapped_button_2');},
+              child: getButtonBelowCard(Icons.snooze),
+            ),
+          ],
+        ),
+        Padding(padding: const EdgeInsetsDirectional.only(top:8.0),),
+      ],
+    );
+
+    return noteData.isExpanded ? expandedCard : nonExpandedCard ;
+  }
+
+  Widget getNonExpandedCard(int nRows, BuildContext context)
+  {
     bool isDue =  noteData.dueDate.difference(DateTime.now()).inSeconds <= 0;
     Color color = colorList.elementAt(noteData.meaningContent.length % colorList.length);
     double circleSize = 10.0;
     Widget accentCircle = Align(alignment: Alignment.topRight, child: Icon(Icons.brightness_1, color: Theme.of(context).accentColor, size: circleSize,),);
     
-    Widget nonExpandedCard = Container(
+    return Container(
         margin: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 8.0),
         height: 90,
         decoration: BoxDecoration(
@@ -103,28 +131,6 @@ class NoteCardComponent extends StatelessWidget {
             ),
           ),
         ));
-    
-    Widget expandedCard = Column(
-      children: <Widget>[
-        nonExpandedCard,
-        Row(
-          mainAxisAlignment:MainAxisAlignment.spaceEvenly,
-          children: <Widget>[ 
-            GestureDetector(
-              onTap: () { print('tapped_button_1');},
-              child: getButtonBelowCard(Icons.access_alarm),
-            ),
-            GestureDetector(
-              onTap: () { print('tapped_button_2');},
-              child: getButtonBelowCard(Icons.snooze),
-            ),
-          ],
-        ),
-        Padding(padding: const EdgeInsetsDirectional.only(top:8.0),),
-      ],
-    );
-
-    return noteData.isExpanded ? expandedCard : nonExpandedCard ;
   }
 
   BoxShadow buildBoxShadow(Color color, BuildContext context) {

@@ -258,7 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Widget> buildNoteComponentsList() {
     List<Widget> noteComponentsList = [];
     notesList.sort((a, b) {
-      return b.date.compareTo(a.date);
+      return b.dueDate.compareTo(a.dueDate);
     });
     if (searchController.text.isNotEmpty) {
       notesList.forEach((note) {

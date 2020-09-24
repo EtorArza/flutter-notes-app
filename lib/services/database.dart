@@ -34,8 +34,7 @@ class NotesDatabaseService {
   Future<List<NotesModel>> getNotesFromDB() async {
     final db = await database;
     List<NotesModel> notesList = [];
-    List<Map> maps = await db.query('Notes',
-        columns: ['_id', 'originalContent', 'meaningContent', 'date', 'dueDate', 'isImportant']);
+    List<Map> maps = await db.query('Notes', columns: ['_id', 'originalContent', 'meaningContent', 'date', 'dueDate', 'isImportant'], limit: 200);
     if (maps.length > 0) {
       maps.forEach((map) {
         notesList.add(NotesModel.fromMap(map));
@@ -43,6 +42,17 @@ class NotesDatabaseService {
     }
     return notesList;
   }
+
+  Future<NotesModel> getMostDueNoteFromDB() async {
+    final db = await database;
+    NotesModel notesList;
+    List<Map> maps = await db.query('Notes', columns: ['_id', 'originalContent', 'meaningContent', 'date', 'dueDate', 'isImportant'], limit:1, orderBy:'dueDate');
+    print(maps);
+    notesList = NotesModel.fromMap(maps.first);
+    return notesList;
+  }
+
+
 
   updateNoteInDB(NotesModel updatedNote) async {
     final db = await database;
