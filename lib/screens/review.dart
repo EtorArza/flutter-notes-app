@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notes/components/cards.dart';
@@ -10,9 +12,9 @@ import 'package:notes/services/database.dart';
 
 
 class ReviewScreen extends StatefulWidget {
-  Function(Brightness brightness) changeTheme;
-  ReviewScreen({Key key, })
-      : super(key: key);
+  ReviewScreen({Key key,}) : super(key: key) {
+  }
+
   @override
   _ReviewScreen createState() => _ReviewScreen();
 }
@@ -35,8 +37,7 @@ class _ReviewScreen extends State<ReviewScreen> {
     loadMostDueNoteFromDB();
   }
 
-  loadMostDueNoteFromDB() async {
-    print("Entered setNotes");
+  void loadMostDueNoteFromDB() async {
     NotesModel fetchedNote = await NotesDatabaseService.db.getMostDueNoteFromDB();
     setState(() {
       currentNote = fetchedNote;
@@ -66,18 +67,19 @@ class _ReviewScreen extends State<ReviewScreen> {
 
   @override
   Widget build (BuildContext context) {
-    currentDisplayedCard = NoteCardComponent(
+
+      if (currentNote == null) {
+        print("null");
+        return Container();
+      }
+
+      currentDisplayedCard = NoteCardComponent(
       noteData: currentNote,
       onHoldAction: (currentNote) {},
       onTapAction: (currentNote) {},
       isVisible: 1,
     );
 
-    print("Duedate on loaded card:");
-    print(currentNote.dueDate.toString());
-
-    print("original name on card:");
-    print(currentNote.originalContent.toString());
 
     return  Scaffold(
       body: ListView(

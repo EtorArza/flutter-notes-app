@@ -321,11 +321,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-  void gotoReview() {
+  void gotoReview() async {
+    await Future.delayed(Duration(milliseconds: 630), () {});
     Navigator.push(
         context,
         CupertinoPageRoute(
             builder: (context) => ReviewScreen()));
+    await Future.delayed(Duration(milliseconds: 630), () {});
+
   }
 
 
