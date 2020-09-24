@@ -70,7 +70,6 @@ class _ReviewScreen extends State<ReviewScreen> {
   Widget build (BuildContext context) {
 
       if (currentNote == null) {
-        print("null");
         return Container();
       }
 
