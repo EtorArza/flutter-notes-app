@@ -82,39 +82,33 @@ class _ReviewScreen extends State<ReviewScreen> {
 
 
     return  Scaffold(
-      body: ListView(
-        physics: BouncingScrollPhysics(),
-        children: <Widget>[
-          Container(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                    padding:
-                        const EdgeInsets.only(top: 24, left: 24, right: 24),
-                    child: Icon(OMIcons.arrowBack)),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
-                child: buildHeaderWidget(context),
-              ),
-              currentDisplayedCard.getNonExpandedCard(1, context) // Card
-              ,
-                  Container(
-                    height: 30,
-                  ),
-                  
-                ],
-              ))
-            ],
-          ),
-          );
-  }
+      body: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              height: 25,
+            ),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                  padding:
+                      const EdgeInsets.only(top: 24, left: 24, right: 24),
+                  child: Icon(OMIcons.arrowBack)),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
+              child: buildHeaderWidget(context),
+            ),
+            currentDisplayedCard.getNonExpandedCard(1, context), // Card
+          ],
+        ),
+      ),
+  );
+}
 
   Widget buildHeaderWidget(BuildContext context) {
     return Container();

@@ -69,7 +69,7 @@ class NoteCardComponent extends StatelessWidget {
     
     return Container(
         margin: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 8.0),
-        height: 90,
+        //height: 90,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           boxShadow: [buildBoxShadow(color, context)],
@@ -96,13 +96,13 @@ class NoteCardComponent extends StatelessWidget {
                       isDue ? accentCircle : Container(height: circleSize,), 
                   Container(
                       margin: EdgeInsets.only(),
-                    child: isVisible==0 || isVisible==1 || noteData.isExpanded ?  Text('${noteData.originalContent.trim().split('\n').first.length <= 40 ? noteData.originalContent.trim().split('\n').first : noteData.originalContent.trim().split('\n').first.substring(0, 40) + '...'}', style:TextStyle(fontSize: 14, color: Colors.grey.shade50),) : Text(' ', style:TextStyle(fontSize: 14, color: Colors.grey.shade50),),
+                    child: isVisible==0 || isVisible==1 || noteData.isExpanded ? FormattedText(nLines:1, completeString:noteData.originalContent)  : Text(" "),
                   ),
                   
                   Divider(height: 24.0),
                   Container(
                       margin: EdgeInsets.only(),
-                      child: isVisible==0 || isVisible==2 || noteData.isExpanded ?  Text('${noteData.meaningContent.trim().split('\n').first.length <= 40 ? noteData.meaningContent.trim().split('\n').first : noteData.meaningContent.trim().split('\n').first.substring(0, 40) + '...'}', style: TextStyle(fontSize: 14, color: Colors.grey.shade50),) : Container(),
+                      child: isVisible==0 || isVisible==2 || noteData.isExpanded ?  Text('${noteData.meaningContent.trim().split('\n').first.length <= 40 ? noteData.meaningContent.trim().split('\n').first : noteData.meaningContent.trim().split('\n').first.substring(0, 40) + '...'}', style: TextStyle(fontSize: 16, color: Colors.grey.shade50),) : Container(),
                   ),
                   // Container(
                   //   margin: EdgeInsets.only(top: 14),
@@ -217,4 +217,55 @@ Widget getButtonBelowCard(IconData icon)
   
 
     return res;
+}
+
+
+
+class FormattedText extends StatelessWidget {
+  const FormattedText({
+    this.nLines,
+    this.completeString,
+    Key key,
+  }) : super(key: key);
+
+
+  final int nLines;
+  final String completeString;
+
+
+    @override
+    Widget build(BuildContext context) {
+      return RichText(
+        text: TextSpan(
+          text: '',
+          style: DefaultTextStyle.of(context).style,
+          children: buildListOfTextSpan(completeString, context),
+        ),
+      );
+    }
+
+  List<TextSpan> buildListOfTextSpan(String text, BuildContext context)
+  {
+    const String sep = ":";
+    const List<String> highlightColors = ["green","blue","red"];
+    List<TextSpan> res = [];
+
+    for (var textPiece in text.split(sep)) {
+      res.add(
+        TextSpan(
+        style: TextStyle(
+          color: Colors.white, 
+          fontFamily: DefaultTextStyle.of(context).style.fontFamily,
+          fontSize: 16.0,
+          ),
+        text: textPiece,
+        )  
+      );
+    }
+
+    print(text.split(sep));
+    print(text.split(sep)[0]=='');
+    return res;
+  }
+
 }
