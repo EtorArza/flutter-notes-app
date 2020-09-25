@@ -103,9 +103,8 @@ class _ReviewScreen extends State<ReviewScreen> {
                 padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
                 child: buildHeaderWidget(context),
               ),
-              buildCardWidget(
-                currentDisplayedCard.getNonExpandedCard(1, context)
-              ),
+              currentDisplayedCard.getNonExpandedCard(1, context) // Card
+              ,
                   Container(
                     height: 30,
                   ),
