@@ -27,7 +27,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   bool isFlagOn = false;
   int visibilityIndex = 1;
   bool headerShouldHide = false;
@@ -260,21 +260,27 @@ class _MyHomePageState extends State<MyHomePage> {
     if (isFlagOn) {
       notesList.forEach((note) {
         if (note.isImportant)
-          noteComponentsList.add(NoteCardComponent(
-            noteData: note,
-            onHoldAction: openNoteToRead,
-            onTapAction: expandNoteCard,
-            isVisible: visibilityIndex,
-          ));
+          noteComponentsList.add(AnimatedSize(
+              duration: Duration(milliseconds: 1000),
+              vsync: this,
+              child: NoteCardComponent(
+                noteData: note,
+                onHoldAction: openNoteToRead,
+                onTapAction: expandNoteCard,
+                isVisible: visibilityIndex,
+              )));
       });
     } else {
       notesList.forEach((note) {
-        noteComponentsList.add(NoteCardComponent(
-          noteData: note,
-          onHoldAction: openNoteToRead,
-          onTapAction: expandNoteCard,
-          isVisible: visibilityIndex,
-        ));
+        noteComponentsList.add(AnimatedSize(
+            duration: Duration(milliseconds: 1000),
+            vsync: this,
+            child: NoteCardComponent(
+              noteData: note,
+              onHoldAction: openNoteToRead,
+              onTapAction: expandNoteCard,
+              isVisible: visibilityIndex,
+            )));
       });
     }
     return noteComponentsList;
