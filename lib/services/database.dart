@@ -23,8 +23,7 @@ class NotesDatabaseService {
     path = join(path, 'notes.db');
     print("Entered path $path");
 
-    return await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
+    return await openDatabase(path, version: 1, onCreate: (Database db, int version) async {
       await db.execute(
           'CREATE TABLE Notes (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, date TEXT, dueDate TEXT, isImportant INTEGER);');
       print('New table created at $path');
@@ -46,19 +45,16 @@ class NotesDatabaseService {
   Future<NotesModel> getMostDueNoteFromDB() async {
     final db = await database;
     NotesModel notesList;
-    List<Map> maps = await db.query('Notes', columns: ['_id', 'originalContent', 'meaningContent', 'date', 'dueDate', 'isImportant'], limit:1, orderBy:'dueDate');
+    List<Map> maps = await db.query('Notes',
+        columns: ['_id', 'originalContent', 'meaningContent', 'date', 'dueDate', 'isImportant'], limit: 1, orderBy: 'dueDate');
     notesList = NotesModel.fromMap(maps.first);
     return notesList;
   }
 
-
-
   updateNoteInDB(NotesModel updatedNote) async {
     final db = await database;
-    await db.update('Notes', updatedNote.toMap(),
-        where: '_id = ?', whereArgs: [updatedNote.id]);
-    print(
-        'Note updated: ${updatedNote.originalContent} ${updatedNote.meaningContent}');
+    await db.update('Notes', updatedNote.toMap(), where: '_id = ?', whereArgs: [updatedNote.id]);
+    print('Note updated: ${updatedNote.originalContent} ${updatedNote.meaningContent}');
   }
 
   deleteNoteInDB(NotesModel noteToDelete) async {

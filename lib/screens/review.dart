@@ -9,21 +9,16 @@ import 'package:outline_material_icons/outline_material_icons.dart';
 import '../components/cards.dart';
 import 'package:notes/services/database.dart';
 
-
-
 class ReviewScreen extends StatefulWidget {
-  ReviewScreen({Key key,}) : super(key: key) {
-  }
+  ReviewScreen({
+    Key key,
+  }) : super(key: key) {}
 
   @override
   _ReviewScreen createState() => _ReviewScreen();
 }
-        
-
 
 class _ReviewScreen extends State<ReviewScreen> {
-
-
   NotesModel currentNote;
   TextEditingController searchController = TextEditingController();
   NoteCardComponent currentDisplayedCard;
@@ -45,43 +40,32 @@ class _ReviewScreen extends State<ReviewScreen> {
     });
   }
 
-
-
-
   Widget buildCardWidget(Widget child) {
     return Container(
       decoration: BoxDecoration(
           color: Theme.of(context).dialogBackgroundColor,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-                offset: Offset(0, 8),
-                color: Colors.black.withAlpha(20),
-                blurRadius: 16)
-          ]),
+          boxShadow: [BoxShadow(offset: Offset(0, 8), color: Colors.black.withAlpha(20), blurRadius: 16)]),
       margin: EdgeInsets.all(24),
       padding: EdgeInsets.all(16),
       child: child,
     );
   }
 
-
   @override
-  Widget build (BuildContext context) {
+  Widget build(BuildContext context) {
+    if (currentNote == null) {
+      return Container();
+    }
 
-      if (currentNote == null) {
-        return Container();
-      }
-
-      currentDisplayedCard = NoteCardComponent(
+    currentDisplayedCard = NoteCardComponent(
       noteData: currentNote,
       onHoldAction: (currentNote) {},
-      onTapAction: (currentNote) {},
+      onTapAction: expandNoteCard,
       isVisible: 1,
     );
 
-
-    return  Scaffold(
+    return Scaffold(
       body: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,27 +78,26 @@ class _ReviewScreen extends State<ReviewScreen> {
               onTap: () {
                 Navigator.pop(context);
               },
-              child: Container(
-                  padding:
-                      const EdgeInsets.only(top: 24, left: 24, right: 24),
-                  child: Icon(OMIcons.arrowBack)),
+              child: Container(padding: const EdgeInsets.only(top: 24, left: 24, right: 24), child: Icon(OMIcons.arrowBack)),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
               child: buildHeaderWidget(context),
             ),
-            currentDisplayedCard.getNonExpandedCard(1, context), // Card
+            currentDisplayedCard, // Card
           ],
         ),
       ),
-  );
-}
+    );
+  }
 
   Widget buildHeaderWidget(BuildContext context) {
     return Container();
   }
 
-
-
-
+  expandNoteCard(NotesModel noteData) async {
+    setState(() {
+      noteData.toggleExpand();
+    });
+  }
 }

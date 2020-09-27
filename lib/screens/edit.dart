@@ -14,8 +14,7 @@ import 'package:outline_material_icons/outline_material_icons.dart';
 class EditNotePage extends StatefulWidget {
   Function() triggerRefetch;
   NotesModel existingNote;
-  EditNotePage({Key key, Function() triggerRefetch, NotesModel existingNote})
-      : super(key: key) {
+  EditNotePage({Key key, Function() triggerRefetch, NotesModel existingNote}) : super(key: key) {
     this.triggerRefetch = triggerRefetch;
     this.existingNote = existingNote;
   }
@@ -39,13 +38,13 @@ class _EditNotePageState extends State<EditNotePage> {
     super.initState();
     if (widget.existingNote == null) {
       currentNote = NotesModel(
-          originalContent: '',
-          meaningContent: '',
-          date: DateTime.now(),
-          dueDate: DateTime.now(),
-          isImportant: false,
-          isExpanded: false,
-          );
+        originalContent: '',
+        meaningContent: '',
+        date: DateTime.now(),
+        dueDate: DateTime.now(),
+        isImportant: false,
+        isExpanded: false,
+      );
       isNoteNew = true;
     } else {
       currentNote = widget.existingNote;
@@ -65,7 +64,7 @@ class _EditNotePageState extends State<EditNotePage> {
             Container(
               height: 80,
             ),
-              Padding(
+            Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 focusNode: originalContentFocus,
@@ -82,15 +81,14 @@ class _EditNotePageState extends State<EditNotePage> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                 decoration: InputDecoration.collapsed(
                   hintText: 'Concept to learn...',
-                  hintStyle: TextStyle(
-                      color: Colors.grey.shade400,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500),
+                  hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 18, fontWeight: FontWeight.w500),
                   border: InputBorder.none,
                 ),
               ),
             ),
-            Divider(height: 16.0,),
+            Divider(
+              height: 16.0,
+            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
@@ -108,10 +106,7 @@ class _EditNotePageState extends State<EditNotePage> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                 decoration: InputDecoration.collapsed(
                   hintText: 'Meaning...',
-                  hintStyle: TextStyle(
-                      color: Colors.grey.shade400,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500),
+                  hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 18, fontWeight: FontWeight.w500),
                   border: InputBorder.none,
                 ),
               ),
@@ -134,13 +129,10 @@ class _EditNotePageState extends State<EditNotePage> {
                       Spacer(),
                       IconButton(
                         tooltip: 'Mark note as important',
-                        icon: Icon(currentNote.isImportant
-                            ? Icons.flag
-                            : Icons.outlined_flag),
-                        onPressed: originalContentController.text.trim().isNotEmpty &&
-                                   meaningContentController.text.trim().isNotEmpty
-                                   ? markImportantAsDirty
-                                   : null,
+                        icon: Icon(currentNote.isImportant ? Icons.flag : Icons.outlined_flag),
+                        onPressed: originalContentController.text.trim().isNotEmpty && meaningContentController.text.trim().isNotEmpty
+                            ? markImportantAsDirty
+                            : null,
                       ),
                       IconButton(
                         icon: Icon(Icons.delete_outline),
@@ -158,9 +150,7 @@ class _EditNotePageState extends State<EditNotePage> {
                           color: Theme.of(context).accentColor,
                           textColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(100),
-                                  bottomLeft: Radius.circular(100))),
+                              borderRadius: BorderRadius.only(topLeft: Radius.circular(100), bottomLeft: Radius.circular(100))),
                           icon: Icon(Icons.done),
                           label: Text(
                             'SAVE',
@@ -182,8 +172,7 @@ class _EditNotePageState extends State<EditNotePage> {
     setState(() {
       currentNote.originalContent = originalContentController.text;
       currentNote.meaningContent = meaningContentController.text;
-      print(
-          'Hey there ${currentNote.originalContent} , ${currentNote.meaningContent}');
+      print('Hey there ${currentNote.originalContent} , ${currentNote.meaningContent}');
     });
     if (isNoteNew) {
       var latestNote = await NotesDatabaseService.db.addNoteInDB(currentNote);
@@ -230,17 +219,12 @@ class _EditNotePageState extends State<EditNotePage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               title: Text('Delete Note'),
               content: Text('This note will be deleted permanently'),
               actions: <Widget>[
                 FlatButton(
-                  child: Text('DELETE',
-                      style: prefix0.TextStyle(
-                          color: Colors.red.shade300,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 1)),
+                  child: Text('DELETE', style: prefix0.TextStyle(color: Colors.red.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
                   onPressed: () async {
                     await NotesDatabaseService.db.deleteNoteInDB(currentNote);
                     widget.triggerRefetch();
@@ -249,11 +233,7 @@ class _EditNotePageState extends State<EditNotePage> {
                   },
                 ),
                 FlatButton(
-                  child: Text('CANCEL',
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 1)),
+                  child: Text('CANCEL', style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w500, letterSpacing: 1)),
                   onPressed: () {
                     Navigator.pop(context);
                   },

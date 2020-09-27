@@ -9,14 +9,15 @@ class NotesModel {
   DateTime date;
   DateTime dueDate;
 
-  NotesModel(
-      {this.id,
-      this.originalContent,
-      this.meaningContent,
-      this.isImportant,
-      this.isExpanded,
-      this.date,
-      this.dueDate,});
+  NotesModel({
+    this.id,
+    this.originalContent,
+    this.meaningContent,
+    this.isImportant,
+    this.isExpanded,
+    this.date,
+    this.dueDate,
+  });
 
   NotesModel.fromMap(Map<String, dynamic> map) {
     this.id = map['_id'];
@@ -49,10 +50,7 @@ class NotesModel {
     this.isExpanded = false;
   }
 
-  void toggleExpand(){
+  void toggleExpand() {
     this.isExpanded = !this.isExpanded;
-  
-
   }
-
 }

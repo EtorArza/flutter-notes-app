@@ -17,8 +17,7 @@ import '../screens/review.dart';
 
 class MyHomePage extends StatefulWidget {
   Function(Brightness brightness) changeTheme;
-  MyHomePage({Key key, this.title, Function(Brightness brightness) changeTheme})
-      : super(key: key) {
+  MyHomePage({Key key, this.title, Function(Brightness brightness) changeTheme}) : super(key: key) {
     this.changeTheme = changeTheme;
   }
 
@@ -79,11 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (context) => SettingsPage(
-                                  changeTheme: widget.changeTheme)));
+                      Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(changeTheme: widget.changeTheme)));
                     },
                     child: AnimatedContainer(
                       duration: Duration(milliseconds: 200),
@@ -91,9 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       alignment: Alignment.centerRight,
                       child: Icon(
                         OMIcons.settings,
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.grey.shade600
-                            : Colors.grey.shade300,
+                        color: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade600 : Colors.grey.shade300,
                       ),
                     ),
                   ),
@@ -104,8 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
               buildImportantIndicatorText(),
               Container(height: 32),
               ...buildNoteComponentsList(),
-              GestureDetector(
-                  onTap: gotoEditNote, child: AddNoteCardComponent()),
+              GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()),
               Container(height: 100)
             ],
           ),
@@ -117,21 +109,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget buildButtonRow() {
-
-
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10),
       child: Row(
         children: <Widget>[
           GestureDetector(
-            onTap: () { gotoReview();
+            onTap: () {
+              gotoReview();
             },
             child: AnimatedContainer(
               duration: Duration(milliseconds: 160),
               height: 50,
               width: 50,
               curve: Curves.slowMiddle,
-              child: Icon(Icons.local_library, color:Colors.grey.shade300),
+              child: Icon(Icons.local_library, color: Colors.grey.shade300),
               decoration: BoxDecoration(
                   color: Colors.transparent,
                   border: Border.all(
@@ -141,8 +132,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   borderRadius: BorderRadius.all(Radius.circular(16))),
             ),
           ),
-          Container(width: 8.0,),
-
+          Container(
+            width: 8.0,
+          ),
           GestureDetector(
             onTap: () {
               setState(() {
@@ -162,17 +154,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: isFlagOn ? Colors.blue : Colors.transparent,
                   border: Border.all(
                     width: isFlagOn ? 2 : 1,
-                    color:
-                        isFlagOn ? Colors.blue.shade700 : Colors.grey.shade300,
+                    color: isFlagOn ? Colors.blue.shade700 : Colors.grey.shade300,
                   ),
                   borderRadius: BorderRadius.all(Radius.circular(16))),
             ),
           ),
-          Container(width: 8.0,),
+          Container(
+            width: 8.0,
+          ),
           GestureDetector(
             onTap: () {
               setState(() {
-                visibilityIndex = (visibilityIndex+1) % 3;
+                visibilityIndex = (visibilityIndex + 1) % 3;
               });
             },
             child: getVisibilityButton(visibilityIndex),
@@ -183,9 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
               margin: EdgeInsets.only(left: 8),
               padding: EdgeInsets.only(left: 16),
               height: 50,
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.all(Radius.circular(16))),
+              decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.all(Radius.circular(16))),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -199,22 +190,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       autofocus: false,
                       keyboardType: TextInputType.text,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                       textInputAction: TextInputAction.search,
                       decoration: InputDecoration.collapsed(
                         hintText: 'Search',
-                        hintStyle: TextStyle(
-                            color: Colors.grey.shade300,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500),
+                        hintStyle: TextStyle(color: Colors.grey.shade300, fontSize: 18, fontWeight: FontWeight.w500),
                         border: InputBorder.none,
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: Icon(isSearchEmpty ? Icons.search : Icons.cancel,
-                        color: Colors.grey.shade300),
+                    icon: Icon(isSearchEmpty ? Icons.search : Icons.cancel, color: Colors.grey.shade300),
                     onPressed: cancelSearch,
                   ),
                 ],
@@ -227,7 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget buildHeaderWidget(BuildContext context) {
-    return Row(    );
+    return Row();
   }
 
   Widget testListItem(Color color) {
@@ -243,15 +229,13 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.only(top: 8),
         child: Text(
           'Only showing notes marked important'.toUpperCase(),
-          style: TextStyle(
-              fontSize: 12, color: Colors.blue, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 12, color: Colors.blue, fontWeight: FontWeight.w500),
         ),
       ),
       secondChild: Container(
         height: 2,
       ),
-      crossFadeState:
-          isFlagOn ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      crossFadeState: isFlagOn ? CrossFadeState.showFirst : CrossFadeState.showSecond,
     );
   }
 
@@ -262,12 +246,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     if (searchController.text.isNotEmpty) {
       notesList.forEach((note) {
-        if (note.originalContent
-                .toLowerCase()
-                .contains(searchController.text.toLowerCase()) ||
-            note.meaningContent
-                .toLowerCase()
-                .contains(searchController.text.toLowerCase()))
+        if (note.originalContent.toLowerCase().contains(searchController.text.toLowerCase()) ||
+            note.meaningContent.toLowerCase().contains(searchController.text.toLowerCase()))
           noteComponentsList.add(NoteCardComponent(
             noteData: note,
             onHoldAction: openNoteToRead,
@@ -313,24 +293,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void gotoEditNote() {
-    Navigator.push(
-        context,
-        CupertinoPageRoute(
-            builder: (context) =>
-                EditNotePage(triggerRefetch: refetchNotesFromDB)));
+    Navigator.push(context, CupertinoPageRoute(builder: (context) => EditNotePage(triggerRefetch: refetchNotesFromDB)));
   }
-
 
   void gotoReview() async {
-  
-    Navigator.push(
-        context,
-        CupertinoPageRoute(
-            builder: (context) => ReviewScreen()));
-
+    Navigator.push(context, CupertinoPageRoute(builder: (context) => ReviewScreen()));
   }
-
-
 
   void refetchNotesFromDB() async {
     await setNotesFromDB();
@@ -342,11 +310,7 @@ class _MyHomePageState extends State<MyHomePage> {
       headerShouldHide = true;
     });
     await Future.delayed(Duration(milliseconds: 230), () {});
-    Navigator.push(
-        context,
-        FadeRoute(
-            page: ViewNotePage(
-                triggerRefetch: refetchNotesFromDB, currentNote: noteData)));
+    Navigator.push(context, FadeRoute(page: ViewNotePage(triggerRefetch: refetchNotesFromDB, currentNote: noteData)));
     await Future.delayed(Duration(milliseconds: 300), () {});
 
     setState(() {
@@ -354,15 +318,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
-
   expandNoteCard(NotesModel noteData) async {
     setState(() {
       noteData.toggleExpand();
     });
   }
-
-
 
   void cancelSearch() {
     FocusScope.of(context).requestFocus(new FocusNode());
@@ -373,57 +333,51 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
-Widget getVisibilityButton(int visibilityIndex)
-{
-  Widget visibilityButton; 
+Widget getVisibilityButton(int visibilityIndex) {
+  Widget visibilityButton;
   Color accentColor = appThemeDark.accentColor;
-      if (visibilityIndex==0) {
-      visibilityButton = 
-        AnimatedContainer(
-              duration: Duration(milliseconds: 250),
-              height: 50,
-              width: 50,
-              curve: Curves.slowMiddle,
-              child: Icon(Icons.visibility, color: Colors.white,),
-              decoration: BoxDecoration(
-                color: accentColor,
-                border: Border.all(width:2, color: Colors.blue.shade700),
-                borderRadius: BorderRadius.all(Radius.circular(16))
-              ),
-        ); 
-    }
-    else if(visibilityIndex == 1) 
-    {
-      visibilityButton = 
-        Container(
-              height: 50,
-              width: 50,
-              child: Icon(OMIcons.visibility, color: Colors.grey.shade300,),
-              decoration: BoxDecoration(
-                gradient: LinearGradient( begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [accentColor, Colors.transparent]),
-                color: accentColor,
-                border: Border.all(width:1, color: Colors.grey.shade300),
-                borderRadius: BorderRadius.all(Radius.circular(16))
-              ),
-        ); 
-    }
-    else if(visibilityIndex == 2) 
-    {
-      visibilityButton = 
-        Container(
-              height: 50,
-              width: 50,
-              child: Icon(OMIcons.visibility, color: Colors.grey.shade300,),
-              decoration: BoxDecoration(
-                gradient: LinearGradient( begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [accentColor, Colors.transparent]),
-                color: accentColor,
-                border: Border.all(width:1, color: Colors.grey.shade300),
-                borderRadius: BorderRadius.all(Radius.circular(16))
-              ),
-        ); 
+  if (visibilityIndex == 0) {
+    visibilityButton = AnimatedContainer(
+      duration: Duration(milliseconds: 250),
+      height: 50,
+      width: 50,
+      curve: Curves.slowMiddle,
+      child: Icon(
+        Icons.visibility,
+        color: Colors.white,
+      ),
+      decoration: BoxDecoration(
+          color: accentColor, border: Border.all(width: 2, color: Colors.blue.shade700), borderRadius: BorderRadius.all(Radius.circular(16))),
+    );
+  } else if (visibilityIndex == 1) {
+    visibilityButton = Container(
+      height: 50,
+      width: 50,
+      child: Icon(
+        OMIcons.visibility,
+        color: Colors.grey.shade300,
+      ),
+      decoration: BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [accentColor, Colors.transparent]),
+          color: accentColor,
+          border: Border.all(width: 1, color: Colors.grey.shade300),
+          borderRadius: BorderRadius.all(Radius.circular(16))),
+    );
+  } else if (visibilityIndex == 2) {
+    visibilityButton = Container(
+      height: 50,
+      width: 50,
+      child: Icon(
+        OMIcons.visibility,
+        color: Colors.grey.shade300,
+      ),
+      decoration: BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [accentColor, Colors.transparent]),
+          color: accentColor,
+          border: Border.all(width: 1, color: Colors.grey.shade300),
+          borderRadius: BorderRadius.all(Radius.circular(16))),
+    );
+  }
 
-    }
-
-    return visibilityButton;
+  return visibilityButton;
 }

@@ -15,8 +15,7 @@ import 'package:share/share.dart';
 class ViewNotePage extends StatefulWidget {
   Function() triggerRefetch;
   NotesModel currentNote;
-  ViewNotePage({Key key, Function() triggerRefetch, NotesModel currentNote})
-      : super(key: key) {
+  ViewNotePage({Key key, Function() triggerRefetch, NotesModel currentNote}) : super(key: key) {
     this.triggerRefetch = triggerRefetch;
     this.currentNote = currentNote;
   }
@@ -42,45 +41,41 @@ class _ViewNotePageState extends State<ViewNotePage> {
   bool headerShouldShow = false;
   @override
   Widget build(BuildContext context) {
-    
-  dynamic textAlign = TextAlign.left;
+    dynamic textAlign = TextAlign.left;
 
-    if(widget.currentNote.originalContent.trim().split('\n').length == 1 && widget.currentNote.originalContent.length < 30)
-    {
+    if (widget.currentNote.originalContent.trim().split('\n').length == 1 && widget.currentNote.originalContent.length < 30) {
       textAlign = TextAlign.center;
     }
-    
+
     return Scaffold(
         body: Stack(
       children: <Widget>[
         ListView(
           physics: BouncingScrollPhysics(),
           children: <Widget>[
-            Padding(padding: const EdgeInsets.symmetric(vertical: 20.0),),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+            ),
             Container(
               height: 40,
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 24.0, top: 36, bottom: 24, right: 24),
+              padding: const EdgeInsets.only(left: 24.0, top: 36, bottom: 24, right: 24),
               child: Text(
                 widget.currentNote.originalContent,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                 textAlign: textAlign,
               ),
             ),
-
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 24.0, top: 36, bottom: 24, right: 24),
-              child:
-               Expanded(
-                child: Divider(height: 16.0,)
-               ),   
+              padding: const EdgeInsets.only(left: 24.0, top: 36, bottom: 24, right: 24),
+              child: Expanded(
+                  child: Divider(
+                height: 16.0,
+              )),
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 24.0, top: 36, bottom: 24, right: 24),
+              padding: const EdgeInsets.only(left: 24.0, top: 36, bottom: 24, right: 24),
               child: Text(
                 widget.currentNote.meaningContent,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
@@ -104,9 +99,7 @@ class _ViewNotePageState extends State<ViewNotePage> {
                       ),
                       Spacer(),
                       IconButton(
-                        icon: Icon(widget.currentNote.isImportant
-                            ? Icons.flag
-                            : Icons.outlined_flag),
+                        icon: Icon(widget.currentNote.isImportant ? Icons.flag : Icons.outlined_flag),
                         onPressed: () {
                           markImportantAsDirty();
                         },
@@ -169,31 +162,21 @@ class _ViewNotePageState extends State<ViewNotePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             title: Text('Delete Note'),
             content: Text('This note will be deleted permanently'),
             actions: <Widget>[
               FlatButton(
-                child: Text('DELETE',
-                    style: TextStyle(
-                        color: Colors.red.shade300,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 1)),
+                child: Text('DELETE', style: TextStyle(color: Colors.red.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
                 onPressed: () async {
-                  await NotesDatabaseService.db
-                      .deleteNoteInDB(widget.currentNote);
+                  await NotesDatabaseService.db.deleteNoteInDB(widget.currentNote);
                   widget.triggerRefetch();
                   Navigator.pop(context);
                   Navigator.pop(context);
                 },
               ),
               FlatButton(
-                child: Text('CANCEL',
-                    style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 1)),
+                child: Text('CANCEL', style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w500, letterSpacing: 1)),
                 onPressed: () {
                   Navigator.pop(context);
                 },
