@@ -27,7 +27,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage> {
   bool isFlagOn = false;
   int visibilityIndex = 1;
   bool headerShouldHide = false;
@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           FocusScope.of(context).requestFocus(new FocusNode());
         },
         child: AnimatedContainer(
-          duration: Duration(milliseconds: 200),
+          duration: Duration(milliseconds: 230),
           child: ListView(
             physics: BouncingScrollPhysics(),
             children: <Widget>[
@@ -260,27 +260,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     if (isFlagOn) {
       notesList.forEach((note) {
         if (note.isImportant)
-          noteComponentsList.add(AnimatedSize(
-              duration: Duration(milliseconds: 1000),
-              vsync: this,
+          noteComponentsList.add(Container(
               child: NoteCardComponent(
-                noteData: note,
-                onHoldAction: openNoteToRead,
-                onTapAction: expandNoteCard,
-                isVisible: visibilityIndex,
-              )));
+            noteData: note,
+            onHoldAction: openNoteToRead,
+            onTapAction: expandNoteCard,
+            isVisible: visibilityIndex,
+          )));
       });
     } else {
       notesList.forEach((note) {
-        noteComponentsList.add(AnimatedSize(
-            duration: Duration(milliseconds: 1000),
-            vsync: this,
+        noteComponentsList.add(Container(
             child: NoteCardComponent(
-              noteData: note,
-              onHoldAction: openNoteToRead,
-              onTapAction: expandNoteCard,
-              isVisible: visibilityIndex,
-            )));
+          noteData: note,
+          onHoldAction: openNoteToRead,
+          onTapAction: expandNoteCard,
+          isVisible: visibilityIndex,
+        )));
       });
     }
     return noteComponentsList;

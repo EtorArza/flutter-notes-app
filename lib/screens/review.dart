@@ -18,7 +18,7 @@ class ReviewScreen extends StatefulWidget {
   _ReviewScreen createState() => _ReviewScreen();
 }
 
-class _ReviewScreen extends State<ReviewScreen> {
+class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
   NotesModel currentNote;
   TextEditingController searchController = TextEditingController();
   NoteCardComponent currentDisplayedCard;
@@ -58,35 +58,32 @@ class _ReviewScreen extends State<ReviewScreen> {
       return Container();
     }
 
-    currentDisplayedCard = NoteCardComponent(
-      noteData: currentNote,
-      onHoldAction: (currentNote) {},
-      onTapAction: expandNoteCard,
-      isVisible: 1,
-    );
-
     return Scaffold(
-      body: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              height: 25,
-            ),
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(padding: const EdgeInsets.only(top: 24, left: 24, right: 24), child: Icon(OMIcons.arrowBack)),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
-              child: buildHeaderWidget(context),
-            ),
-            currentDisplayedCard, // Card
-          ],
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            height: 25,
+          ),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(padding: const EdgeInsets.only(top: 24, left: 24, right: 24), child: Icon(OMIcons.arrowBack)),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
+            child: buildHeaderWidget(context),
+          ),
+          Container(
+              child: NoteCardComponent(
+            noteData: currentNote,
+            onHoldAction: (currentNote) {},
+            onTapAction: expandNoteCard,
+            isVisible: 1,
+          )),
+        ],
       ),
     );
   }

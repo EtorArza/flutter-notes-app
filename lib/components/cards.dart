@@ -6,19 +6,29 @@ import 'package:outline_material_icons/outline_material_icons.dart';
 
 List<Color> colorList = [Colors.blue, Colors.green, Colors.indigo, Colors.red, Colors.cyan, Colors.teal, Colors.amber.shade900, Colors.deepOrange];
 
-class NoteCardComponent extends StatelessWidget {
-  const NoteCardComponent({
+class NoteCardComponent extends StatefulWidget {
+  NoteCardComponent({
+    Key key,
     this.noteData,
     this.onHoldAction,
     this.onTapAction,
     this.isVisible,
-    Key key,
   }) : super(key: key);
 
   final NotesModel noteData;
   final Function(NotesModel noteData) onHoldAction;
   final Function(NotesModel noteData) onTapAction;
   final int isVisible;
+
+  @override
+  _NoteCardComponentState createState() => _NoteCardComponentState();
+}
+
+class _NoteCardComponentState extends State<NoteCardComponent> with SingleTickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,12 +72,16 @@ class NoteCardComponent extends StatelessWidget {
       ],
     );
 
-    return noteData.isExpanded ? expandedCard : nonExpandedCard;
+    return AnimatedSize(
+        duration: Duration(milliseconds: 230),
+        alignment: Alignment.topCenter,
+        vsync: this,
+        child: this.widget.noteData.isExpanded ? expandedCard : nonExpandedCard);
   }
 
   Widget getNonExpandedCard(int nRows, BuildContext context) {
-    bool isDue = noteData.dueDate.difference(DateTime.now()).inSeconds <= 0;
-    Color color = colorList.elementAt(noteData.meaningContent.length % colorList.length);
+    bool isDue = this.widget.noteData.dueDate.difference(DateTime.now()).inSeconds <= 0;
+    Color color = colorList.elementAt(this.widget.noteData.meaningContent.length % colorList.length);
     double circleSize = 10.0;
     Widget accentCircle = Align(
       alignment: Alignment.topRight,
@@ -92,10 +106,10 @@ class NoteCardComponent extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: () {
-              onTapAction(noteData);
+              this.widget.onTapAction(this.widget.noteData);
             },
             onLongPress: () {
-              onHoldAction(noteData);
+              this.widget.onHoldAction(this.widget.noteData);
             },
             splashColor: color.withAlpha(20),
             highlightColor: color.withAlpha(10),
@@ -111,17 +125,17 @@ class NoteCardComponent extends StatelessWidget {
                         ),
                   Container(
                     margin: EdgeInsets.only(),
-                    child: isVisible == 0 || isVisible == 1 || noteData.isExpanded
-                        ? FormattedText(nLines: 1, completeString: noteData.originalContent)
+                    child: this.widget.isVisible == 0 || this.widget.isVisible == 1 || this.widget.noteData.isExpanded
+                        ? FormattedText(nLines: 1, completeString: this.widget.noteData.originalContent)
                         : Text(" "),
                   ),
 
                   Divider(height: 24.0),
                   Container(
                     margin: EdgeInsets.only(),
-                    child: isVisible == 0 || isVisible == 2 || noteData.isExpanded
+                    child: this.widget.isVisible == 0 || this.widget.isVisible == 2 || this.widget.noteData.isExpanded
                         ? Text(
-                            '${noteData.meaningContent.trim().split('\n').first.length <= 40 ? noteData.meaningContent.trim().split('\n').first : noteData.meaningContent.trim().split('\n').first.substring(0, 40) + '...'}',
+                            '${this.widget.noteData.meaningContent.trim().split('\n').first.length <= 40 ? this.widget.noteData.meaningContent.trim().split('\n').first : this.widget.noteData.meaningContent.trim().split('\n').first.substring(0, 40) + '...'}',
                             style: TextStyle(fontSize: 16, color: Colors.grey.shade50),
                           )
                         : Container(),
@@ -158,9 +172,12 @@ class NoteCardComponent extends StatelessWidget {
   BoxShadow buildBoxShadow(Color color, BuildContext context) {
     if (Theme.of(context).brightness == Brightness.dark) {
       return BoxShadow(
-          color: noteData.isImportant == true ? Colors.black.withAlpha(100) : Colors.black.withAlpha(10), blurRadius: 8, offset: Offset(0, 8));
+          color: this.widget.noteData.isImportant == true ? Colors.black.withAlpha(100) : Colors.black.withAlpha(10),
+          blurRadius: 8,
+          offset: Offset(0, 8));
     }
-    return BoxShadow(color: noteData.isImportant == true ? color.withAlpha(60) : color.withAlpha(25), blurRadius: 8, offset: Offset(0, 8));
+    return BoxShadow(
+        color: this.widget.noteData.isImportant == true ? color.withAlpha(60) : color.withAlpha(25), blurRadius: 8, offset: Offset(0, 8));
   }
 } // class NoteComponentCard
 
