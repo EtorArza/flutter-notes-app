@@ -32,12 +32,33 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    Widget nonExpandedCard = getNonExpandedCard(1, context);
+    Widget nonExpandedCard = getNonExpandedCard(1, context, false);
 
-    Widget expandedCard = Column(
-      children: <Widget>[
-        nonExpandedCard,
-        Row(
+    Widget expandedCard = getNonExpandedCard(1, context, true);
+
+    return AnimatedSize(
+        duration: Duration(milliseconds: 230),
+        alignment: Alignment.topCenter,
+        vsync: this,
+        child: Container(child: Container(child: this.widget.noteData.isExpanded ? expandedCard : nonExpandedCard)));
+  }
+
+  Widget getNonExpandedCard(int nRows, BuildContext context, bool showLowerButtons) {
+    bool isDue = this.widget.noteData.dueDate.difference(DateTime.now()).inSeconds <= 0;
+    Color color = colorList.elementAt(this.widget.noteData.meaningContent.length % colorList.length);
+    double circleSize = 10.0;
+    Widget accentCircle = Align(
+      alignment: Alignment.topRight,
+      child: Icon(
+        Icons.brightness_1,
+        color: Theme.of(context).accentColor,
+        size: circleSize,
+      ),
+    );
+
+    Widget buttonRow = Padding(
+        padding: EdgeInsets.only(top: 20),
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             GestureDetector(
@@ -65,32 +86,7 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
               child: ButtonBelowCard(icon: Icons.snooze),
             ),
           ],
-        ),
-        Padding(
-          padding: const EdgeInsetsDirectional.only(top: 8.0),
-        ),
-      ],
-    );
-
-    return AnimatedSize(
-        duration: Duration(milliseconds: 230),
-        alignment: Alignment.topCenter,
-        vsync: this,
-        child: this.widget.noteData.isExpanded ? expandedCard : nonExpandedCard);
-  }
-
-  Widget getNonExpandedCard(int nRows, BuildContext context) {
-    bool isDue = this.widget.noteData.dueDate.difference(DateTime.now()).inSeconds <= 0;
-    Color color = colorList.elementAt(this.widget.noteData.meaningContent.length % colorList.length);
-    double circleSize = 10.0;
-    Widget accentCircle = Align(
-      alignment: Alignment.topRight,
-      child: Icon(
-        Icons.brightness_1,
-        color: Theme.of(context).accentColor,
-        size: circleSize,
-      ),
-    );
+        ));
 
     return Container(
         margin: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 8.0),
@@ -140,6 +136,7 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
                           )
                         : Container(),
                   ),
+                  showLowerButtons ? buttonRow : Container(),
                   // Container(
                   //   margin: EdgeInsets.only(top: 14),
                   //   alignment: Alignment.centerRight,

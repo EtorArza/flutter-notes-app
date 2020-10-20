@@ -67,8 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: () {
           FocusScope.of(context).requestFocus(new FocusNode());
         },
-        child: AnimatedContainer(
-          duration: Duration(milliseconds: 230),
+        child: Container(
           child: ListView(
             physics: BouncingScrollPhysics(),
             children: <Widget>[
@@ -80,8 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onTap: () {
                       Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(changeTheme: widget.changeTheme)));
                     },
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 200),
+                    child: Container(
                       padding: EdgeInsets.all(16),
                       alignment: Alignment.centerRight,
                       child: Icon(

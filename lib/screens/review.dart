@@ -58,6 +58,16 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
       return Container();
     }
 
+    NoteCardComponent noteCard = NoteCardComponent(
+      noteData: currentNote,
+      onHoldAction: (currentNote) {},
+      onTapAction: expandNoteCard,
+      isVisible: 1,
+    );
+
+    MediaQueryData queryData;
+    queryData = MediaQuery.of(context);
+
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,13 +86,7 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
             padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
             child: buildHeaderWidget(context),
           ),
-          Container(
-              child: NoteCardComponent(
-            noteData: currentNote,
-            onHoldAction: (currentNote) {},
-            onTapAction: expandNoteCard,
-            isVisible: 1,
-          )),
+          noteCard,
         ],
       ),
     );
