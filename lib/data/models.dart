@@ -14,18 +14,18 @@ class NotesModel {
     this.originalContent,
     this.meaningContent,
     this.isImportant,
-    this.isExpanded,
     this.date,
     this.dueDate,
+    this.isExpanded,
   });
 
   NotesModel.fromMap(Map<String, dynamic> map) {
     this.id = map['_id'];
     this.originalContent = map['originalContent'];
     this.meaningContent = map['meaningContent'];
+    this.isImportant = map['isImportant'] == 1 ? true : false;
     this.date = DateTime.parse(map['date']);
     this.dueDate = DateTime.parse(map['dueDate']);
-    this.isImportant = map['isImportant'] == 1 ? true : false;
     this.isExpanded = false;
   }
 
@@ -36,7 +36,7 @@ class NotesModel {
       'meaningContent': this.meaningContent,
       'isImportant': this.isImportant == true ? 1 : 0,
       'date': this.date.toIso8601String(),
-      'dueDate': this.date.toIso8601String(),
+      'dueDate': this.dueDate.toIso8601String(),
     };
   }
 

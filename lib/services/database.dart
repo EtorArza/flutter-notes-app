@@ -25,7 +25,7 @@ class NotesDatabaseService {
 
     return await openDatabase(path, version: 1, onCreate: (Database db, int version) async {
       await db.execute(
-          'CREATE TABLE Notes (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, date TEXT, dueDate TEXT, isImportant INTEGER);');
+          'CREATE TABLE Notes (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
       print('New table created at $path');
     });
   }
@@ -33,7 +33,7 @@ class NotesDatabaseService {
   Future<List<NotesModel>> getNotesFromDB() async {
     final db = await database;
     List<NotesModel> notesList = [];
-    List<Map> maps = await db.query('Notes', columns: ['_id', 'originalContent', 'meaningContent', 'date', 'dueDate', 'isImportant'], limit: 200);
+    List<Map> maps = await db.query('Notes', columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 200);
     if (maps.length > 0) {
       maps.forEach((map) {
         notesList.add(NotesModel.fromMap(map));
@@ -46,15 +46,21 @@ class NotesDatabaseService {
     final db = await database;
     NotesModel notesList;
     List<Map> maps = await db.query('Notes',
-        columns: ['_id', 'originalContent', 'meaningContent', 'date', 'dueDate', 'isImportant'], limit: 1, orderBy: 'dueDate');
+        columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
     notesList = NotesModel.fromMap(maps.first);
     return notesList;
   }
 
   updateNoteInDB(NotesModel updatedNote) async {
+    print("--------");
+    print("date of updated note:" + updatedNote.dueDate.toIso8601String());
     final db = await database;
     await db.update('Notes', updatedNote.toMap(), where: '_id = ?', whereArgs: [updatedNote.id]);
-    print('Note updated: ${updatedNote.originalContent} ${updatedNote.meaningContent}');
+    NotesModel mostRecentNote = await getMostDueNoteFromDB();
+    print('Note updated, most recent note date: ' +
+        mostRecentNote.dueDate.toIso8601String() +
+        '  ${updatedNote.originalContent} ${updatedNote.meaningContent}');
+    print("--------");
   }
 
   deleteNoteInDB(NotesModel noteToDelete) async {
@@ -67,7 +73,7 @@ class NotesDatabaseService {
     final db = await database;
     int id = await db.transaction((transaction) {
       transaction.rawInsert(
-          'INSERT into Notes(originalContent, meaningContent, date, dueDate, isImportant) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}", ${newNote.isImportant == true ? 1 : 0});');
+          'INSERT into Notes(originalContent, meaningContent, isImportant, date, dueDate) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.isImportant == true ? 1 : 0}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}");');
     });
     newNote.id = id;
     print('Note added: ${newNote.originalContent} ${newNote.meaningContent}');
