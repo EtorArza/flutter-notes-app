@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../data/models.dart';
 import '../data/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
+import '../services/database.dart';
 
 List<Color> colorList = [Colors.blue, Colors.green, Colors.indigo, Colors.red, Colors.cyan, Colors.teal, Colors.amber.shade900, Colors.deepOrange];
 
@@ -43,6 +44,20 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
         child: Container(child: Container(child: this.widget.noteData.isExpanded ? expandedCard : nonExpandedCard)));
   }
 
+  void refetchNotesFromDB() async {
+    //await setNotesFromDB();
+    print("Refetched notes");
+  }
+
+  void updateDueDateCard(Duration timeFromNow) {
+    DateTime now = DateTime.now();
+    this.widget.noteData.dueDate = now.add(timeFromNow);
+    NotesDatabaseService.db.updateNoteInDB(this.widget.noteData);
+    setState(() {
+      this.widget.noteData.toggleExpand();
+    });
+  }
+
   Widget getNonExpandedCard(int nRows, BuildContext context, bool showLowerButtons) {
     bool isDue = this.widget.noteData.dueDate.difference(DateTime.now()).inSeconds <= 0;
     Color color = colorList.elementAt(this.widget.noteData.meaningContent.length % colorList.length);
@@ -63,27 +78,27 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
           children: <Widget>[
             GestureDetector(
               onTap: () {
-                print('tapped_button_1');
+                updateDueDateCard(Duration(days: -10));
               },
-              child: ButtonBelowCard(icon: Icons.access_alarm),
+              child: ButtonBelowCard(icon: Icons.repeat),
             ),
             GestureDetector(
               onTap: () {
-                print('tapped_button_2');
+                updateDueDateCard(Duration(days: 1));
               },
-              child: ButtonBelowCard(icon: Icons.snooze),
+              child: ButtonBelowCard(icon: Icons.repeat_one),
             ),
             GestureDetector(
               onTap: () {
-                print('tapped_button_3');
+                updateDueDateCard(Duration(days: 5));
               },
-              child: ButtonBelowCard(icon: Icons.snooze),
+              child: ButtonBelowCard(icon: Icons.replay_5),
             ),
             GestureDetector(
               onTap: () {
-                print('tapped_button_4');
+                updateDueDateCard(Duration(days: 30));
               },
-              child: ButtonBelowCard(icon: Icons.snooze),
+              child: ButtonBelowCard(icon: Icons.replay_30),
             ),
           ],
         ));
@@ -192,13 +207,13 @@ class ButtonBelowCard extends StatelessWidget {
     Color accentColor = appThemeDark.accentColor;
     Widget res = Container(
       height: 50,
-      width: 80.902,
+      width: 70,
       child: Icon(
         icon,
         color: Colors.grey.shade300,
       ),
       decoration: BoxDecoration(
-          color: Colors.transparent, border: Border.all(width: 1, color: Colors.grey.shade300), borderRadius: BorderRadius.all(Radius.circular(16))),
+          color: Colors.transparent, border: Border.all(width: 1.0, color: Colors.grey.shade300), borderRadius: BorderRadius.all(Radius.circular(6))),
     );
 
     return res;
