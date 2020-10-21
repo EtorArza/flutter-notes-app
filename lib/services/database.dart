@@ -52,15 +52,8 @@ class NotesDatabaseService {
   }
 
   updateNoteInDB(NotesModel updatedNote) async {
-    print("--------");
-    print("date of updated note:" + updatedNote.dueDate.toIso8601String());
     final db = await database;
     await db.update('Notes', updatedNote.toMap(), where: '_id = ?', whereArgs: [updatedNote.id]);
-    NotesModel mostRecentNote = await getMostDueNoteFromDB();
-    print('Note updated, most recent note date: ' +
-        mostRecentNote.dueDate.toIso8601String() +
-        '  ${updatedNote.originalContent} ${updatedNote.meaningContent}');
-    print("--------");
   }
 
   deleteNoteInDB(NotesModel noteToDelete) async {

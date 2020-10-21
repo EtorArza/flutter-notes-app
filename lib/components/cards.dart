@@ -82,26 +82,25 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            GestureDetector(
+            InkWell(
               onTap: () {
-                print("PRessed button_1");
                 updateDueDateCard(Duration(days: -10));
               },
               child: ButtonBelowCard(icon: Icons.repeat),
             ),
-            GestureDetector(
+            InkWell(
               onTap: () {
                 updateDueDateCard(Duration(days: 1));
               },
               child: ButtonBelowCard(icon: Icons.repeat_one),
             ),
-            GestureDetector(
+            InkWell(
               onTap: () {
                 updateDueDateCard(Duration(days: 5));
               },
               child: ButtonBelowCard(icon: Icons.replay_5),
             ),
-            GestureDetector(
+            InkWell(
               onTap: () {
                 updateDueDateCard(Duration(days: 30));
               },
@@ -148,10 +147,6 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
                         : Text(" "),
                   ),
 
-                  Divider(height: 24.0),
-                  Container(
-                    child: Text(this.widget.noteData.dueDate.toIso8601String()),
-                  ),
                   Divider(height: 24.0),
                   Container(
                     margin: EdgeInsets.only(),
@@ -314,8 +309,8 @@ class FormattedText extends StatelessWidget {
       ));
     }
 
-    // print(text.split(sep));
-    // print(text.split(sep)[0] == '');
+    print(text.split(sep));
+    print(text.split(sep)[0] == '');
     return res;
   }
 }

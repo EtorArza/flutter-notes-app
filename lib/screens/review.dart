@@ -54,7 +54,6 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print("build_review (now):" + DateTime.now().toIso8601String());
     if (currentNote == null) {
       return Container();
     }

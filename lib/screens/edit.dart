@@ -140,25 +140,19 @@ class _EditNotePageState extends State<EditNotePage> {
                           handleDelete();
                         },
                       ),
-                      AnimatedContainer(
-                        margin: EdgeInsets.only(left: 10),
-                        duration: Duration(milliseconds: 200),
-                        width: isDirty ? 100 : 0,
-                        height: 42,
-                        curve: Curves.decelerate,
-                        child: RaisedButton.icon(
-                          color: Theme.of(context).accentColor,
-                          textColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(topLeft: Radius.circular(100), bottomLeft: Radius.circular(100))),
-                          icon: Icon(Icons.done),
-                          label: Text(
-                            'SAVE',
-                            style: TextStyle(letterSpacing: 1),
-                          ),
-                          onPressed: handleSave,
-                        ),
-                      )
+                      GestureDetector(
+                          onTap: handleSave,
+                          child: AnimatedContainer(
+                            margin: EdgeInsets.only(left: 10),
+                            duration: Duration(milliseconds: 200),
+                            width: isDirty ? 100 : 0,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).accentColor,
+                              borderRadius: BorderRadius.only(topLeft: Radius.circular(100), bottomLeft: Radius.circular(100)),
+                            ),
+                            child: Icon(Icons.done),
+                          ))
                     ],
                   ),
                 ),
@@ -167,6 +161,16 @@ class _EditNotePageState extends State<EditNotePage> {
       ],
     ));
   }
+
+// curve: Curves.decelerate,
+// child: RaisedButton.icon(
+//   color: Theme.of(context).accentColor,
+//   textColor: Colors.white,
+//   shape: RoundedRectangleBorder(
+//       borderRadius: BorderRadius.only(topLeft: Radius.circular(100), bottomLeft: Radius.circular(100))),
+//   icon: Icon(Icons.done),
+//   onPressed: handleSave,
+//   label: Text(''),
 
   void handleSave() async {
     setState(() {

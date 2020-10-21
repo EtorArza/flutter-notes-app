@@ -69,10 +69,9 @@ class _ViewNotePageState extends State<ViewNotePage> {
             ),
             Padding(
               padding: const EdgeInsets.only(left: 24.0, top: 36, bottom: 24, right: 24),
-              child: Expanded(
-                  child: Divider(
+              child: Divider(
                 height: 16.0,
-              )),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 24.0, top: 36, bottom: 24, right: 24),
