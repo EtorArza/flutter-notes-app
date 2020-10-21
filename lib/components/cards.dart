@@ -295,18 +295,40 @@ class FormattedText extends StatelessWidget {
 
   List<TextSpan> buildListOfTextSpan(String text, BuildContext context) {
     const String sep = ":";
-    const List<String> highlightColors = ["green", "blue", "red"];
+    const List<String> highlightColorNames = ["red", "green", "blue", "white"];
+    const List<Color> highlightColors = [
+      Color.fromARGB(255, 255, 51, 92),
+      Color.fromARGB(255, 0, 255, 128),
+      Color.fromARGB(255, 0, 196, 255),
+      Color.fromARGB(255, 255, 255, 255),
+    ];
     List<TextSpan> res = [];
 
-    for (var textPiece in text.split(sep)) {
-      res.add(TextSpan(
-        style: TextStyle(
-          color: Colors.white,
-          fontFamily: DefaultTextStyle.of(context).style.fontFamily,
-          fontSize: 16.0,
-        ),
-        text: textPiece,
-      ));
+    Color currentColor = highlightColors[highlightColorNames.indexWhere((element) {
+      return element == "white";
+    })];
+
+    bool colorChanged = true;
+    List<String> splittedText = text.split(sep);
+
+    for (var i = 0; i < splittedText.length; ++i) {
+      final textPiece = splittedText[i];
+      if (highlightColorNames.contains(textPiece) && i != 0 && i != splittedText.length - 1) {
+        colorChanged = true;
+        currentColor = highlightColors[highlightColorNames.indexWhere((element) {
+          return element == textPiece;
+        })];
+      } else {
+        res.add(TextSpan(
+          style: TextStyle(
+            color: currentColor,
+            fontFamily: DefaultTextStyle.of(context).style.fontFamily,
+            fontSize: 16.0,
+          ),
+          text: colorChanged ? textPiece : ":" + textPiece,
+        ));
+        colorChanged = false;
+      }
     }
 
     print(text.split(sep));
