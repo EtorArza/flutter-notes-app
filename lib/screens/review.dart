@@ -10,7 +10,10 @@ import '../components/cards.dart';
 import 'package:notes/services/database.dart';
 
 class ReviewScreen extends StatefulWidget {
+  final Function() triggerRefetch;
+
   ReviewScreen({
+    this.triggerRefetch,
     Key key,
   }) : super(key: key) {}
 
@@ -79,6 +82,7 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
+              this.widget.triggerRefetch();
               Navigator.pop(context);
             },
             child: Container(padding: const EdgeInsets.only(top: 24, left: 24, right: 24), child: Icon(OMIcons.arrowBack)),

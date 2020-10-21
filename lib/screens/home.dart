@@ -304,7 +304,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void gotoReview() async {
-    Navigator.push(context, CupertinoPageRoute(builder: (context) => ReviewScreen()));
+    Navigator.push(context, CupertinoPageRoute(builder: (context) => ReviewScreen(triggerRefetch: refetchNotesFromDB)));
   }
 
   void refetchNotesFromDB() async {
