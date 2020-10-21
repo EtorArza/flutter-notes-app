@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../data/models.dart';
@@ -14,12 +16,14 @@ class NoteCardComponent extends StatefulWidget {
     this.onHoldAction,
     this.onTapAction,
     this.isVisible,
+    this.refreshView,
   }) : super(key: key);
 
   final NotesModel noteData;
   final Function(NotesModel noteData) onHoldAction;
   final Function(NotesModel noteData) onTapAction;
   final int isVisible;
+  final Function() refreshView;
 
   @override
   _NoteCardComponentState createState() => _NoteCardComponentState();
@@ -49,12 +53,14 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
     print("Refetched notes");
   }
 
-  void updateDueDateCard(Duration timeFromNow) {
+  void updateDueDateCard(Duration timeFromNow) async {
     DateTime now = DateTime.now();
+
     this.widget.noteData.dueDate = now.add(timeFromNow);
-    NotesDatabaseService.db.updateNoteInDB(this.widget.noteData);
+    await NotesDatabaseService.db.updateNoteInDB(this.widget.noteData);
     setState(() {
       this.widget.noteData.toggleExpand();
+      this.widget.refreshView();
     });
   }
 
@@ -78,6 +84,7 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
           children: <Widget>[
             GestureDetector(
               onTap: () {
+                print("PRessed button_1");
                 updateDueDateCard(Duration(days: -10));
               },
               child: ButtonBelowCard(icon: Icons.repeat),
@@ -141,6 +148,10 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
                         : Text(" "),
                   ),
 
+                  Divider(height: 24.0),
+                  Container(
+                    child: Text(this.widget.noteData.dueDate.toIso8601String()),
+                  ),
                   Divider(height: 24.0),
                   Container(
                     margin: EdgeInsets.only(),
@@ -303,8 +314,8 @@ class FormattedText extends StatelessWidget {
       ));
     }
 
-    print(text.split(sep));
-    print(text.split(sep)[0] == '');
+    // print(text.split(sep));
+    // print(text.split(sep)[0] == '');
     return res;
   }
 }

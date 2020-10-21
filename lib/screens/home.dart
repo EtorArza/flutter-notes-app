@@ -52,8 +52,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  refreshHome() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    //print("build_home: " + DateTime.now().toIso8601String());
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Theme.of(context).primaryColor,
@@ -264,6 +269,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onHoldAction: openNoteToRead,
             onTapAction: expandNoteCard,
             isVisible: visibilityIndex,
+            refreshView: refreshHome,
           )));
       });
     } else {
@@ -274,6 +280,7 @@ class _MyHomePageState extends State<MyHomePage> {
           onHoldAction: openNoteToRead,
           onTapAction: expandNoteCard,
           isVisible: visibilityIndex,
+          refreshView: refreshHome,
         )));
       });
     }
