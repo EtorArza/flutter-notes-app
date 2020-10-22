@@ -295,12 +295,16 @@ class FormattedText extends StatelessWidget {
 
   List<TextSpan> buildListOfTextSpan(String text, BuildContext context) {
     const String sep = ":";
-    const List<String> highlightColorNames = ["red", "green", "blue", "white"];
+    const List<String> highlightColorNames = ["white", "red", "green", "blue", "pink", "yellow", "orange", "purple"];
     const List<Color> highlightColors = [
-      Color.fromARGB(255, 255, 51, 92),
-      Color.fromARGB(255, 0, 255, 128),
-      Color.fromARGB(255, 0, 196, 255),
-      Color.fromARGB(255, 255, 255, 255),
+      Color.fromARGB(255, 255, 255, 255), // white
+      Color.fromARGB(255, 255, 51, 92), // red
+      Color.fromARGB(255, 0, 255, 128), // green
+      Color.fromARGB(255, 0, 196, 255), // blue
+      Color.fromARGB(255, 255, 128, 249), // pink
+      Color.fromARGB(255, 255, 255, 128), // yellow
+      Color.fromARGB(255, 255, 180, 94), // orange
+      Color.fromARGB(255, 160, 82, 255), // purple
     ];
     List<TextSpan> res = [];
 
