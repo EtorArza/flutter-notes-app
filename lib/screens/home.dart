@@ -60,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     //print("build_home: " + DateTime.now().toIso8601String());
     return Scaffold(
+      drawer: getLibraryWidget(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Theme.of(context).primaryColor,
         onPressed: () {
@@ -77,8 +78,24 @@ class _MyHomePageState extends State<MyHomePage> {
             physics: BouncingScrollPhysics(),
             children: <Widget>[
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
+                  new Builder(builder: (context) {
+                    return new GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(16),
+                        alignment: Alignment.centerRight,
+                        child: Icon(
+                          OMIcons.viewHeadline,
+                          color: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade600 : Colors.grey.shade300,
+                        ),
+                      ),
+                    );
+                  }),
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
@@ -387,4 +404,40 @@ Widget getVisibilityButton(int visibilityIndex) {
   }
 
   return visibilityButton;
+}
+
+Widget getLibraryWidget(BuildContext context) {
+  return Drawer(
+    // Add a ListView to the drawer. This ensures the user can scroll
+    // through the options in the drawer if there isn't enough vertical
+    // space to fit everything.
+    child: ListView(
+      // Important: Remove any padding from the ListView.
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        DrawerHeader(
+          child: Text('Drawer Header'),
+          decoration: BoxDecoration(
+            color: Colors.blue,
+          ),
+        ),
+        ListTile(
+          title: Text('Item 1'),
+          onTap: () {
+            // Update the state of the app.
+            // ...
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          title: Text('Item 2'),
+          onTap: () {
+            // Update the state of the app.
+            // ...
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ),
+  );
 }
