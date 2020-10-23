@@ -416,28 +416,32 @@ Widget getLibraryWidget(BuildContext context) {
       padding: EdgeInsets.zero,
       children: <Widget>[
         DrawerHeader(
-          child: Text('Drawer Header'),
+          child: FittedBox(fit: BoxFit.fitWidth, child: Image(image: AssetImage('images/libraryDrawer.jpg'))),
           decoration: BoxDecoration(
-            color: Colors.blue,
+            color: Colors.grey.shade900,
           ),
+          padding: EdgeInsets.zero,
+          margin: EdgeInsets.zero,
         ),
-        ListTile(
-          title: Text('Item 1'),
-          onTap: () {
-            // Update the state of the app.
-            // ...
-            Navigator.pop(context);
-          },
-        ),
-        ListTile(
-          title: Text('Item 2'),
-          onTap: () {
-            // Update the state of the app.
-            // ...
-            Navigator.pop(context);
-          },
-        ),
+        ...getAllItemsInDrawer(context),
       ],
     ),
   );
+}
+
+List<Widget> getAllItemsInDrawer(BuildContext context) {
+  List<Widget> res = [];
+  for (var i = 0; i < 20; i++) {
+    res.add(
+      ListTile(
+        title: Text('Item ' + i.toString()),
+        onTap: () {
+          // Update the state of the app.
+          // ...
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+  return res;
 }
