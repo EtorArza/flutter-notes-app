@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -32,6 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int visibilityIndex = 1;
   bool headerShouldHide = false;
   List<NotesModel> notesList = [];
+  List<String> listOfCollectionNames = [];
   TextEditingController searchController = TextEditingController();
 
   bool isSearchEmpty = true;
@@ -46,9 +48,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   setNotesFromDB() async {
     print("Entered setNotes");
-    var fetchedNotes = await NotesDatabaseService.db.getNotesFromDB();
+    var fetchedNotes = await NotesDatabaseService.db.getNotesFromCollection();
+    var fetchedListOfCollectionNames = await NotesDatabaseService.db.listOfCollectionNames();
+
     setState(() {
       notesList = fetchedNotes;
+      listOfCollectionNames = fetchedListOfCollectionNames;
     });
   }
 
@@ -355,6 +360,58 @@ class _MyHomePageState extends State<MyHomePage> {
       isSearchEmpty = true;
     });
   }
+
+  List<Widget> getAllItemsInDrawer(BuildContext context) {
+    List<Widget> res = [];
+    for (String item in this.listOfCollectionNames) {
+      res.add(
+        ListTile(
+          title: Text(item),
+          onTap: () async {
+            // Update the state of the app.
+            // ...
+            await NotesDatabaseService.db.markCollectionAsOpen(item);
+
+            refetchNotesFromDB();
+            Navigator.pop(context);
+          },
+        ),
+      );
+    }
+    return res;
+  }
+
+  Widget getLibraryWidget(BuildContext context) {
+    return Drawer(
+      // Add a ListView to the drawer. This ensures the user can scroll
+      // through the options in the drawer if there isn't enough vertical
+      // space to fit everything.
+      child: ListView(
+        // Important: Remove any padding from the ListView.
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+            child: FittedBox(fit: BoxFit.fitWidth, child: Image(image: AssetImage('images/libraryDrawer.jpg'))),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+            ),
+            padding: EdgeInsets.zero,
+            margin: EdgeInsets.zero,
+          ),
+          ...getAllItemsInDrawer(context),
+          ListTile(
+            title: Text('Add collection'),
+            onTap: () async {
+              // Update the state of the app.
+              // ...
+              await NotesDatabaseService.db.createNewCollection('newnote' + Random.secure().nextInt(295539).toString());
+              refetchNotesFromDB();
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 Widget getVisibilityButton(int visibilityIndex) {
@@ -404,44 +461,4 @@ Widget getVisibilityButton(int visibilityIndex) {
   }
 
   return visibilityButton;
-}
-
-Widget getLibraryWidget(BuildContext context) {
-  return Drawer(
-    // Add a ListView to the drawer. This ensures the user can scroll
-    // through the options in the drawer if there isn't enough vertical
-    // space to fit everything.
-    child: ListView(
-      // Important: Remove any padding from the ListView.
-      padding: EdgeInsets.zero,
-      children: <Widget>[
-        DrawerHeader(
-          child: FittedBox(fit: BoxFit.fitWidth, child: Image(image: AssetImage('images/libraryDrawer.jpg'))),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade900,
-          ),
-          padding: EdgeInsets.zero,
-          margin: EdgeInsets.zero,
-        ),
-        ...getAllItemsInDrawer(context),
-      ],
-    ),
-  );
-}
-
-List<Widget> getAllItemsInDrawer(BuildContext context) {
-  List<Widget> res = [];
-  for (var i = 0; i < 20; i++) {
-    res.add(
-      ListTile(
-        title: Text('Item ' + i.toString()),
-        onTap: () {
-          // Update the state of the app.
-          // ...
-          Navigator.pop(context);
-        },
-      ),
-    );
-  }
-  return res;
 }

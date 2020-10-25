@@ -2,6 +2,8 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../data/models.dart';
 
+const collectionListName = 'ehahdugvbypgtuttjrvexksuehgpqmn';
+
 class NotesDatabaseService {
   String path;
 
@@ -21,19 +23,79 @@ class NotesDatabaseService {
   init() async {
     String path = await getDatabasesPath();
     path = join(path, 'notes.db');
-    print("Entered path $path");
+    print("Opening database at path $path");
 
     return await openDatabase(path, version: 1, onCreate: (Database db, int version) async {
+      await db.execute('CREATE TABLE ' + collectionListName + ' (_id INTEGER PRIMARY KEY, collectionName TEXT, isOpen INTEGER);');
       await db.execute(
-          'CREATE TABLE Notes (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
-      print('New table created at $path');
+          'CREATE TABLE "NewCollection" (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
+      await db.transaction((transaction) {
+        transaction.rawInsert('INSERT into ' + collectionListName + '(collectionName, isOpen) VALUES ("NewCollection", "1");');
+      });
     });
   }
 
-  Future<List<NotesModel>> getNotesFromDB() async {
+  Future<String> whichCollectionIsOpen() async {
+    final db = await database;
+    List<Map> maps = await db.query(collectionListName, columns: ['_id', 'collectionName', 'isOpen'], limit: 1, orderBy: 'isOpen DESC');
+    String openCollectionName = maps.first['collectionName'];
+    return openCollectionName;
+  }
+
+  markCollectionAsOpen(String collectionName) async {
+    print('markCollectionAsOpen(' + collectionName + ')');
+    final db = await database;
+    await db.update(collectionListName, <String, int>{'isOpen': 0}, where: 'isOpen = ?', whereArgs: [1]);
+    await db.update(collectionListName, <String, int>{'isOpen': 1}, where: 'collectionName = ?', whereArgs: [collectionName]);
+    print(await whichCollectionIsOpen() + ' is open in markCollectionAsOpen() after update');
+    return;
+  }
+
+  Future<int> getNumberOfCollections() async {
+    final db = await database;
+    final result = await db.rawQuery('SELECT COUNT(*) FROM ' + collectionListName);
+    final count = Sqflite.firstIntValue(result);
+    return count;
+  }
+
+  createNewCollection(String collectionName) async {
+    final db = await database;
+    print('Creating collection -> ' + collectionName);
+    await db.execute('CREATE TABLE ' +
+        collectionName +
+        ' (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
+    int id = await db.transaction((transaction) {
+      transaction.rawInsert('INSERT into ' + collectionListName + '(collectionName, isOpen) VALUES ("$collectionName", "0");');
+    });
+    print('Table ' + collectionName + 'added, transaction id: ' + id.toString());
+    return;
+  }
+
+  void deleteCollection(String collectionName) async {
+    final db = await database;
+    int numberOfCOllections = await getNumberOfCollections();
+    print('numberOfCOllections = ' + numberOfCOllections.toString());
+    db.execute('DROP TABLE ' + collectionName);
+    await db.rawDelete('DELETE FROM ' + collectionListName + ' WHERE collectionName = ?', [collectionName]);
+  }
+
+  Future<List<String>> listOfCollectionNames() async {
+    final db = await database;
+    List<String> res = [];
+    List<Map> maps = await db.query(collectionListName, columns: ['collectionName']);
+    for (var item in maps) {
+      res.add(item['collectionName']);
+    }
+    return res;
+  }
+
+  Future<List<NotesModel>> getNotesFromCollection() async {
+    String collectionName = await whichCollectionIsOpen();
+    print('Collection ' + collectionName + 'is open in getNotesFromCollection.');
     final db = await database;
     List<NotesModel> notesList = [];
-    List<Map> maps = await db.query('Notes', columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 200);
+    List<Map> maps =
+        await db.query(collectionName, columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 200);
     if (maps.length > 0) {
       maps.forEach((map) {
         notesList.add(NotesModel.fromMap(map));
@@ -43,33 +105,38 @@ class NotesDatabaseService {
   }
 
   Future<NotesModel> getMostDueNoteFromDB() async {
+    String collectionName = await whichCollectionIsOpen();
     final db = await database;
     NotesModel notesList;
-    List<Map> maps = await db.query('Notes',
+    List<Map> maps = await db.query(collectionName,
         columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
     notesList = NotesModel.fromMap(maps.first);
     return notesList;
   }
 
   updateNoteInDB(NotesModel updatedNote) async {
+    String collectionName = await whichCollectionIsOpen();
     final db = await database;
-    await db.update('Notes', updatedNote.toMap(), where: '_id = ?', whereArgs: [updatedNote.id]);
+    await db.update(collectionName, updatedNote.toMap(), where: '_id = ?', whereArgs: [updatedNote.id]);
   }
 
   deleteNoteInDB(NotesModel noteToDelete) async {
+    String collectionName = await whichCollectionIsOpen();
     final db = await database;
-    await db.delete('Notes', where: '_id = ?', whereArgs: [noteToDelete.id]);
+    await db.delete(collectionName, where: '_id = ?', whereArgs: [noteToDelete.id]);
     print('Note deleted');
   }
 
   Future<NotesModel> addNoteInDB(NotesModel newNote) async {
+    String collectionName = await whichCollectionIsOpen();
     final db = await database;
     int id = await db.transaction((transaction) {
-      transaction.rawInsert(
-          'INSERT into Notes(originalContent, meaningContent, isImportant, date, dueDate) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.isImportant == true ? 1 : 0}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}");');
+      transaction.rawInsert('INSERT into ' +
+          collectionName +
+          '(originalContent, meaningContent, isImportant, date, dueDate) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.isImportant == true ? 1 : 0}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}");');
     });
     newNote.id = id;
-    print('Note added: ${newNote.originalContent} ${newNote.meaningContent}');
+    print('Note added into ' + collectionName + ': ${newNote.originalContent} ${newNote.meaningContent}');
     return newNote;
   }
 }
