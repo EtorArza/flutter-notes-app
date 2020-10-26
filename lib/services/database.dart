@@ -26,16 +26,17 @@ class NotesDatabaseService {
     print("Opening database at path $path");
 
     return await openDatabase(path, version: 1, onCreate: (Database db, int version) async {
+      String newCollectionName = fromCollectionNameToTableName("NewCollection");
       await db.execute('CREATE TABLE ' + collectionListName + ' (_id INTEGER PRIMARY KEY, collectionName TEXT, isOpen INTEGER);');
       await db.execute(
-          'CREATE TABLE "NewCollection" (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
+          'CREATE TABLE $newCollectionName (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
       await db.transaction((transaction) {
-        transaction.rawInsert('INSERT into ' + collectionListName + '(collectionName, isOpen) VALUES ("NewCollection", "1");');
+        transaction.rawInsert('INSERT into ' + collectionListName + '(collectionName, isOpen) VALUES ($newCollectionName, "1");');
       });
     });
   }
 
-  Future<String> whichCollectionIsOpen() async {
+  Future<String> whichTableIsOpen() async {
     final db = await database;
     List<Map> maps = await db.query(collectionListName, columns: ['_id', 'collectionName', 'isOpen'], limit: 1, orderBy: 'isOpen DESC');
     String openCollectionName = maps.first['collectionName'];
@@ -44,10 +45,11 @@ class NotesDatabaseService {
 
   markCollectionAsOpen(String collectionName) async {
     print('markCollectionAsOpen(' + collectionName + ')');
+    String tableName = fromCollectionNameToTableName(collectionName);
     final db = await database;
     await db.update(collectionListName, <String, int>{'isOpen': 0}, where: 'isOpen = ?', whereArgs: [1]);
-    await db.update(collectionListName, <String, int>{'isOpen': 1}, where: 'collectionName = ?', whereArgs: [collectionName]);
-    print(await whichCollectionIsOpen() + ' is open in markCollectionAsOpen() after update');
+    await db.update(collectionListName, <String, int>{'isOpen': 1}, where: 'collectionName = ?', whereArgs: [tableName]);
+    print(await whichTableIsOpen() + ' is open in markCollectionAsOpen() after update');
     return;
   }
 
@@ -59,24 +61,26 @@ class NotesDatabaseService {
   }
 
   createNewCollection(String collectionName) async {
+    String tableName = fromCollectionNameToTableName(collectionName);
     final db = await database;
     print('Creating collection -> ' + collectionName);
     await db.execute('CREATE TABLE ' +
-        collectionName +
+        tableName +
         ' (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
     int id = await db.transaction((transaction) {
-      transaction.rawInsert('INSERT into ' + collectionListName + '(collectionName, isOpen) VALUES ("$collectionName", "0");');
+      transaction.rawInsert('INSERT into ' + collectionListName + '(collectionName, isOpen) VALUES ($tableName, "0");');
     });
-    print('Table ' + collectionName + 'added, transaction id: ' + id.toString());
+    print('Table ' + tableName + 'added, transaction id: ' + id.toString());
     return;
   }
 
   void deleteCollection(String collectionName) async {
     final db = await database;
+    String tableName = fromCollectionNameToTableName(collectionName);
     int numberOfCOllections = await getNumberOfCollections();
     print('numberOfCOllections = ' + numberOfCOllections.toString());
-    db.execute('DROP TABLE ' + collectionName);
-    await db.rawDelete('DELETE FROM ' + collectionListName + ' WHERE collectionName = ?', [collectionName]);
+    db.execute('DROP TABLE ' + tableName);
+    await db.rawDelete('DELETE FROM ' + collectionListName + ' WHERE collectionName = ?', [tableName]);
   }
 
   Future<List<String>> listOfCollectionNames() async {
@@ -84,18 +88,17 @@ class NotesDatabaseService {
     List<String> res = [];
     List<Map> maps = await db.query(collectionListName, columns: ['collectionName']);
     for (var item in maps) {
-      res.add(item['collectionName']);
+      res.add(fromTableNameToCollectionName(item['collectionName']));
     }
     return res;
   }
 
   Future<List<NotesModel>> getNotesFromCollection() async {
-    String collectionName = await whichCollectionIsOpen();
-    print('Collection ' + collectionName + 'is open in getNotesFromCollection.');
+    String tablenName = await whichTableIsOpen();
+    print('Table ' + tablenName + 'is open in getNotesFromCollection.');
     final db = await database;
     List<NotesModel> notesList = [];
-    List<Map> maps =
-        await db.query(collectionName, columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 200);
+    List<Map> maps = await db.query(tablenName, columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 200);
     if (maps.length > 0) {
       maps.forEach((map) {
         notesList.add(NotesModel.fromMap(map));
@@ -105,38 +108,60 @@ class NotesDatabaseService {
   }
 
   Future<NotesModel> getMostDueNoteFromDB() async {
-    String collectionName = await whichCollectionIsOpen();
+    String tablenName = await whichTableIsOpen();
     final db = await database;
     NotesModel notesList;
-    List<Map> maps = await db.query(collectionName,
+    List<Map> maps = await db.query(tablenName,
         columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
     notesList = NotesModel.fromMap(maps.first);
     return notesList;
   }
 
   updateNoteInDB(NotesModel updatedNote) async {
-    String collectionName = await whichCollectionIsOpen();
+    String collectionName = await whichTableIsOpen();
     final db = await database;
     await db.update(collectionName, updatedNote.toMap(), where: '_id = ?', whereArgs: [updatedNote.id]);
   }
 
   deleteNoteInDB(NotesModel noteToDelete) async {
-    String collectionName = await whichCollectionIsOpen();
+    String collectionName = await whichTableIsOpen();
     final db = await database;
     await db.delete(collectionName, where: '_id = ?', whereArgs: [noteToDelete.id]);
     print('Note deleted');
   }
 
   Future<NotesModel> addNoteInDB(NotesModel newNote) async {
-    String collectionName = await whichCollectionIsOpen();
+    String tablenName = await whichTableIsOpen();
     final db = await database;
     int id = await db.transaction((transaction) {
       transaction.rawInsert('INSERT into ' +
-          collectionName +
+          tablenName +
           '(originalContent, meaningContent, isImportant, date, dueDate) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.isImportant == true ? 1 : 0}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}");');
     });
     newNote.id = id;
-    print('Note added into ' + collectionName + ': ${newNote.originalContent} ${newNote.meaningContent}');
+    print('Note added into ' + tablenName + ': ${newNote.originalContent} ${newNote.meaningContent}');
     return newNote;
   }
+}
+
+// String fromCollectionNameToTableName(String collectionName) {
+//   return '"' + collectionName + '"';
+// }
+
+// String fromTableNameToCollectionName(String collectionName) {
+//   return collectionName; // remove _ from begining
+// }
+
+String scapeString = 'syde2w7acu4fu';
+
+String fromCollectionNameToTableName(String collectionName) {
+  String res = collectionName.replaceAll('"', '');
+  return '"_' + res.replaceAll(' ', scapeString) + '"';
+}
+
+String fromTableNameToCollectionName(String collectionName) {
+  String res = collectionName.replaceAll('"', '');
+  res = res.replaceFirst('_', '');
+  res = res.replaceAll(scapeString, ' ');
+  return res;
 }

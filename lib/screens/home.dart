@@ -404,7 +404,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onTap: () async {
               // Update the state of the app.
               // ...
-              await NotesDatabaseService.db.createNewCollection('newnote' + Random.secure().nextInt(295539).toString());
+              await NotesDatabaseService.db.createNewCollection('new note' + Random.secure().nextInt(295539).toString());
               refetchNotesFromDB();
             },
           ),
