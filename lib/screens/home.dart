@@ -375,6 +375,9 @@ class _MyHomePageState extends State<MyHomePage> {
             refetchNotesFromDB();
             Navigator.pop(context);
           },
+          onLongPress: () {
+            showCollectionOptionsAlertDialog(context, item);
+          },
         ),
       );
     }
@@ -461,4 +464,98 @@ Widget getVisibilityButton(int visibilityIndex) {
   }
 
   return visibilityButton;
+}
+
+void showCollectionOptionsAlertDialog(BuildContext context, String currentCollectionName) {
+  Widget cancelButton = FlatButton(
+    child: Text("Cancel"),
+    onPressed: () {
+      Navigator.pop(context);
+    },
+  );
+
+  Widget renameButton = FlatButton(
+    child: Text("Rename"),
+    onPressed: () {
+      Navigator.pop(context);
+      showTextInputAlertDialog(context, currentCollectionName);
+    },
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("Dialog title"),
+    content: Text("This is a Flutter AlertDialog."),
+    actions: [
+      cancelButton,
+      renameButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+String showTextInputAlertDialog(BuildContext context, String currentCollectionName) {
+  Widget cancelButton = FlatButton(
+    child: Text("Cancel"),
+    onPressed: () {
+      Navigator.pop(context);
+    },
+  );
+
+  Widget cokButton = FlatButton(
+    child: Text("Ok"),
+    onPressed: () {
+      Navigator.pop(context);
+    },
+  );
+
+  Widget renameButton = FlatButton(
+    child: Text("Rename"),
+    onPressed: () async {},
+  );
+
+  String dialogText;
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      // return object of type Dialog
+      return AlertDialog(
+        title: new Text("Alert Dialog title"),
+        content: TextField(
+          onChanged: (String textTyped) {
+            dialogText = textTyped;
+          },
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(hintText: 'collection name'),
+        ),
+        actions: <Widget>[
+          // usually buttons at the bottom of the dialog
+          Row(
+            children: <Widget>[
+              new FlatButton(
+                  child: new Text("Cancel"),
+                  onPressed: () {
+                    dialogText = '';
+                    Navigator.of(context).pop();
+                  }),
+              new FlatButton(
+                child: new Text("OK"),
+                onPressed: () async {
+                  await NotesDatabaseService.db.renameCollection(currentCollectionName, dialogText);
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          ),
+        ],
+      );
+    },
+  );
 }
