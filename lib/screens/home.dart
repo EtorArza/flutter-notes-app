@@ -376,7 +376,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.pop(context);
           },
           onLongPress: () {
-            showCollectionOptionsAlertDialog(context, item);
+            showCollectionOptionsAlertDialog(context, item, refetchNotesFromDB);
           },
         ),
       );
@@ -466,7 +466,7 @@ Widget getVisibilityButton(int visibilityIndex) {
   return visibilityButton;
 }
 
-void showCollectionOptionsAlertDialog(BuildContext context, String currentCollectionName) {
+void showCollectionOptionsAlertDialog(BuildContext context, String currentCollectionName, Function callInRenameSave) {
   Widget cancelButton = FlatButton(
     child: Text("Cancel"),
     onPressed: () {
@@ -478,17 +478,19 @@ void showCollectionOptionsAlertDialog(BuildContext context, String currentCollec
     child: Text("Rename"),
     onPressed: () {
       Navigator.pop(context);
-      showTextInputAlertDialog(context, currentCollectionName);
+      showTextInputAlertDialog(context, currentCollectionName, callInRenameSave);
     },
   );
 
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
-    title: Text("Dialog title"),
-    content: Text("This is a Flutter AlertDialog."),
+    title: Text(currentCollectionName),
+    content: Text(" "),
     actions: [
-      cancelButton,
-      renameButton,
+      Row(children: [
+        cancelButton,
+        renameButton,
+      ]),
     ],
   );
 
@@ -501,39 +503,20 @@ void showCollectionOptionsAlertDialog(BuildContext context, String currentCollec
   );
 }
 
-String showTextInputAlertDialog(BuildContext context, String currentCollectionName) {
-  Widget cancelButton = FlatButton(
-    child: Text("Cancel"),
-    onPressed: () {
-      Navigator.pop(context);
-    },
-  );
-
-  Widget cokButton = FlatButton(
-    child: Text("Ok"),
-    onPressed: () {
-      Navigator.pop(context);
-    },
-  );
-
-  Widget renameButton = FlatButton(
-    child: Text("Rename"),
-    onPressed: () async {},
-  );
-
+showTextInputAlertDialog(BuildContext context, String currentCollectionName, Function callInRenameSave) {
   String dialogText;
   showDialog(
     context: context,
     builder: (BuildContext context) {
       // return object of type Dialog
       return AlertDialog(
-        title: new Text("Alert Dialog title"),
+        title: new Text("Rename collection"),
         content: TextField(
           onChanged: (String textTyped) {
             dialogText = textTyped;
           },
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(hintText: 'collection name'),
+          keyboardType: TextInputType.text,
+          decoration: InputDecoration(hintText: 'eg: Geman Verbs'),
         ),
         actions: <Widget>[
           // usually buttons at the bottom of the dialog
@@ -549,6 +532,7 @@ String showTextInputAlertDialog(BuildContext context, String currentCollectionNa
                 child: new Text("OK"),
                 onPressed: () async {
                   await NotesDatabaseService.db.renameCollection(currentCollectionName, dialogText);
+                  await callInRenameSave();
                   Navigator.of(context).pop();
                 },
               )

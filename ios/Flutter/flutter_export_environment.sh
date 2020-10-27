@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
 export "FLUTTER_ROOT=/home/paran/snap/flutter/common/flutter"
-export "FLUTTER_APPLICATION_PATH=/home/paran/flutter-notes-app"
+export "FLUTTER_APPLICATION_PATH=/home/paran/Dropbox/Apps/MemoCards"
 export "FLUTTER_TARGET=lib/main.dart"
 export "FLUTTER_BUILD_DIR=build"
 export "SYMROOT=${SOURCE_ROOT}/../build/ios"

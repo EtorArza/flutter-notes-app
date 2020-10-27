@@ -2,7 +2,10 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../data/models.dart';
 
-const collectionListName = 'ehahdugvbypgtuttjrvexksuehgpqmn';
+const String collectionListName = 'ehahdugvbypgtuttjrvexksuehgpqmn';
+const String stringToReplaceSpace = 'syde2w7acu4fu';
+const String stringToReplaceLeftParenthesis = 'k5utzq5n5z3z';
+const String stringToReplaceRightParenthesis = 'k2vuh93u937i';
 
 class NotesDatabaseService {
   String path;
@@ -76,13 +79,26 @@ class NotesDatabaseService {
 
   renameCollection(String oldCollectionName, String newCollectionName) async {
     print("Renaming $oldCollectionName to $newCollectionName");
-
     String oldTableName = fromCollectionNameToTableName(oldCollectionName);
     String newTableName = fromCollectionNameToTableName(newCollectionName);
+    if (oldTableName == newTableName) {
+      return;
+    }
+    List<String> tableNames = await listOfTableNames();
+
+    int alreadyExistCounter = 2;
+    String candidateTableName = newTableName;
+
+    while (tableNames.contains(candidateTableName)) {
+      candidateTableName =
+          newTableName + stringToReplaceSpace + stringToReplaceLeftParenthesis + alreadyExistCounter.toString() + stringToReplaceRightParenthesis;
+      alreadyExistCounter += 1;
+    }
+
     final db = await database;
-    await db.execute('ALTER TABLE $oldTableName RENAME TO $newTableName;');
+    await db.execute('ALTER TABLE $oldTableName RENAME TO $candidateTableName;');
     print(await listOfTableNames());
-    await db.update(collectionListName, <String, String>{'tableName': '$newTableName'}, where: 'tableName = ?', whereArgs: [oldTableName]);
+    await db.update(collectionListName, <String, String>{'tableName': '$candidateTableName'}, where: 'tableName = ?', whereArgs: [oldTableName]);
     print(await listOfTableNames());
     //await db.update(collectionListName, <String, int>{'isOpen': 1}, where: 'tableName = ?', whereArgs: [tableName]);
 
@@ -177,10 +193,11 @@ class NotesDatabaseService {
 //   return collectionName; // remove _ from begining
 // }
 
-String scapeString = 'syde2w7acu4fu';
-
 String fromCollectionNameToTableName(String collectionName) {
-  String res = '_' + collectionName.replaceAll(' ', scapeString);
+  String res = '_' + collectionName;
+  res = res.replaceAll(' ', stringToReplaceSpace);
+  res = res.replaceAll('(', stringToReplaceLeftParenthesis);
+  res = res.replaceAll(')', stringToReplaceRightParenthesis);
   print("$collectionName -> $res");
   return res;
 }
@@ -188,7 +205,9 @@ String fromCollectionNameToTableName(String collectionName) {
 String fromTableNameToCollectionName(String tableName) {
   String res = tableName.replaceAll('"', '');
   res = res.replaceFirst('_', '');
-  res = res.replaceAll(scapeString, ' ');
+  res = res.replaceAll(stringToReplaceSpace, ' ');
+  res = res.replaceAll(stringToReplaceLeftParenthesis, '(');
+  res = res.replaceAll(stringToReplaceRightParenthesis, ')');
   print("$tableName -> $res");
   return res;
 }
