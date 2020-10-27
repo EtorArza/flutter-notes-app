@@ -3,9 +3,9 @@ import 'package:sqflite/sqflite.dart';
 import '../data/models.dart';
 
 const String collectionListName = 'ehahdugvbypgtuttjrvexksuehgpqmn';
-const String stringToReplaceSpace = 'syde2w7acu4fu';
-const String stringToReplaceLeftParenthesis = 'k5utzq5n5z3z';
-const String stringToReplaceRightParenthesis = 'k2vuh93u937i';
+
+const String stringToReplaceLeftBracket = 'k5utzq5n5z3z';
+const String stringToReplaceRightBracket = 'k2vuh93u937i';
 
 class NotesDatabaseService {
   String path;
@@ -32,7 +32,7 @@ class NotesDatabaseService {
       String newTableName = fromCollectionNameToTableName("NewCollection");
       await db.execute('CREATE TABLE ' + collectionListName + ' (_id INTEGER PRIMARY KEY, tableName TEXT, isOpen INTEGER);');
       await db.execute(
-          'CREATE TABLE $newTableName (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
+          'CREATE TABLE [$newTableName] (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
       await db.transaction((transaction) {
         transaction.rawInsert('INSERT into ' + collectionListName + '(tableName, isOpen) VALUES ("$newTableName", "1");');
       });
@@ -67,9 +67,9 @@ class NotesDatabaseService {
     String tableName = fromCollectionNameToTableName(collectionName);
     final db = await database;
     print('Creating collection -> ' + collectionName);
-    await db.execute('CREATE TABLE ' +
+    await db.execute('CREATE TABLE [' +
         tableName +
-        ' (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
+        '] (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
     int id = await db.transaction((transaction) {
       transaction.rawInsert('INSERT into ' + collectionListName + '(tableName, isOpen) VALUES ("$tableName", "0");');
     });
@@ -90,13 +90,12 @@ class NotesDatabaseService {
     String candidateTableName = newTableName;
 
     while (tableNames.contains(candidateTableName)) {
-      candidateTableName =
-          newTableName + stringToReplaceSpace + stringToReplaceLeftParenthesis + alreadyExistCounter.toString() + stringToReplaceRightParenthesis;
+      candidateTableName = newTableName + ' (' + alreadyExistCounter.toString() + ')';
       alreadyExistCounter += 1;
     }
 
     final db = await database;
-    await db.execute('ALTER TABLE $oldTableName RENAME TO $candidateTableName;');
+    await db.execute('ALTER TABLE [$oldTableName] RENAME TO [$candidateTableName];');
     print(await listOfTableNames());
     await db.update(collectionListName, <String, String>{'tableName': '$candidateTableName'}, where: 'tableName = ?', whereArgs: [oldTableName]);
     print(await listOfTableNames());
@@ -110,7 +109,7 @@ class NotesDatabaseService {
     String tableName = fromCollectionNameToTableName(collectionName);
     int numberOfCOllections = await getNumberOfCollections();
     print('numberOfCOllections = ' + numberOfCOllections.toString());
-    db.execute('DROP TABLE ' + tableName);
+    db.execute('DROP TABLE [' + tableName + ']');
     await db.rawDelete('DELETE FROM ' + collectionListName + ' WHERE tableName = ?', [tableName]);
   }
 
@@ -175,9 +174,9 @@ class NotesDatabaseService {
     String tablenName = await whichTableIsOpen();
     final db = await database;
     int id = await db.transaction((transaction) {
-      transaction.rawInsert('INSERT into ' +
+      transaction.rawInsert('INSERT into [' +
           tablenName +
-          '(originalContent, meaningContent, isImportant, date, dueDate) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.isImportant == true ? 1 : 0}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}");');
+          '] (originalContent, meaningContent, isImportant, date, dueDate) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.isImportant == true ? 1 : 0}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}");');
     });
     newNote.id = id;
     print('Note added into ' + tablenName + ': ${newNote.originalContent} ${newNote.meaningContent}');
@@ -194,20 +193,19 @@ class NotesDatabaseService {
 // }
 
 String fromCollectionNameToTableName(String collectionName) {
-  String res = '_' + collectionName;
-  res = res.replaceAll(' ', stringToReplaceSpace);
-  res = res.replaceAll('(', stringToReplaceLeftParenthesis);
-  res = res.replaceAll(')', stringToReplaceRightParenthesis);
+  String res = '_' + collectionName.trim();
+
+  res = res.replaceAll('[', stringToReplaceLeftBracket);
+  res = res.replaceAll(']', stringToReplaceRightBracket);
   print("$collectionName -> $res");
   return res;
 }
 
 String fromTableNameToCollectionName(String tableName) {
-  String res = tableName.replaceAll('"', '');
-  res = res.replaceFirst('_', '');
-  res = res.replaceAll(stringToReplaceSpace, ' ');
-  res = res.replaceAll(stringToReplaceLeftParenthesis, '(');
-  res = res.replaceAll(stringToReplaceRightParenthesis, ')');
+  String res = tableName.replaceFirst('_', '');
+
+  res = res.replaceAll(stringToReplaceLeftBracket, '[');
+  res = res.replaceAll(stringToReplaceRightBracket, ']');
   print("$tableName -> $res");
   return res;
 }
