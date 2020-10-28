@@ -138,7 +138,7 @@ class NotesDatabaseService {
     print('Table ' + tablenName + 'is open in getNotesFromCollection.');
     final db = await database;
     List<NotesModel> notesList = [];
-    List<Map> maps = await db.query(tablenName, columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 200);
+    List<Map> maps = await db.rawQuery('SELECT _id, originalContent, meaningContent, isImportant, date, dueDate FROM [$tablenName] LIMIT 200');
     if (maps.length > 0) {
       maps.forEach((map) {
         notesList.add(NotesModel.fromMap(map));

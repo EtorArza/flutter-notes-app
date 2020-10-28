@@ -366,7 +366,10 @@ class _MyHomePageState extends State<MyHomePage> {
     for (String item in this.listOfCollectionNames) {
       res.add(
         ListTile(
-          title: Text(item),
+          title: Text(
+            item,
+            style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+          ),
           onTap: () async {
             // Update the state of the app.
             // ...
@@ -403,7 +406,42 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           ...getAllItemsInDrawer(context),
           ListTile(
-            title: Text('Add collection'),
+            title: Container(
+                margin: EdgeInsets.fromLTRB(10, 3, 10, 3),
+                height: 80,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Theme.of(context).primaryColor, width: 2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Material(
+                  borderRadius: BorderRadius.circular(16),
+                  clipBehavior: Clip.antiAlias,
+                  child: Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Icon(
+                                Icons.add,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              Padding(
+                                  padding: const EdgeInsets.all(1.0),
+                                  child: Text(
+                                    'Add new collection',
+                                    style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+                                  ))
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                )),
             onTap: () async {
               // Update the state of the app.
               // ...
@@ -484,7 +522,10 @@ void showCollectionOptionsAlertDialog(BuildContext context, String currentCollec
 
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
-    title: Text(currentCollectionName),
+    title: Text(
+      currentCollectionName,
+      style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+    ),
     content: Text(" "),
     actions: [
       Row(children: [
@@ -510,13 +551,17 @@ showTextInputAlertDialog(BuildContext context, String currentCollectionName, Fun
     builder: (BuildContext context) {
       // return object of type Dialog
       return AlertDialog(
-        title: new Text("Rename collection"),
+        title: new Text(
+          "Rename collection",
+          style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+        ),
         content: TextField(
           onChanged: (String textTyped) {
             dialogText = textTyped;
           },
           keyboardType: TextInputType.text,
           decoration: InputDecoration(hintText: 'eg: Geman Verbs'),
+          style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
         ),
         actions: <Widget>[
           // usually buttons at the bottom of the dialog
