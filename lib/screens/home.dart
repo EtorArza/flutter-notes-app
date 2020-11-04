@@ -361,9 +361,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  static const String tempCollectionName = 'temp_collection_namerjw9843h34fdwflk04';
+
   List<Widget> getAllItemsInDrawer(BuildContext context) {
     List<Widget> res = [];
     for (String item in this.listOfCollectionNames) {
+      if (item == tempCollectionName) {
+        continue;
+      }
       res.add(
         ListTile(
           title: Text(
@@ -393,7 +398,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // through the options in the drawer if there isn't enough vertical
       // space to fit everything.
       child: ListView(
-        // Important: Remove any padding from the ListView.
+        physics: BouncingScrollPhysics(),
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
@@ -442,11 +447,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 )),
-            onTap: () async {
-              // Update the state of the app.
-              // ...
-              await NotesDatabaseService.db.createNewCollection('new note' + Random.secure().nextInt(295539).toString());
-              refetchNotesFromDB();
+            onTap: () {
+              // Add new collection
+              showTextInputAlertDialog(context, tempCollectionName, (buttonNameAndInputTextTouple) async {
+                String buttonName = buttonNameAndInputTextTouple[0];
+                String inputText = buttonNameAndInputTextTouple[1];
+                if (buttonName == 'Cancel' || buttonName == 'Back') {
+                } else if (buttonName == 'OK') {
+                  await NotesDatabaseService.db.createNewCollection(inputText == '' ? 'New Collection' : inputText);
+                  await refetchNotesFromDB();
+                  await print('After refetch:' + this.listOfCollectionNames.toString());
+                } else {
+                  print('Error, unrecognized button.');
+                }
+              });
             },
           ),
         ],
@@ -516,7 +530,14 @@ void showCollectionOptionsAlertDialog(BuildContext context, String currentCollec
     child: Text("Rename"),
     onPressed: () {
       Navigator.pop(context);
-      showTextInputAlertDialog(context, currentCollectionName, callInRenameSave);
+      showTextInputAlertDialog(context, currentCollectionName, (buttonNameAndInputTextTouple) async {
+        String buttonName = buttonNameAndInputTextTouple[0];
+        String inputText = buttonNameAndInputTextTouple[1];
+        if (inputText != '') {
+          await NotesDatabaseService.db.renameCollection(currentCollectionName, inputText);
+          await callInRenameSave();
+        }
+      });
     },
   );
 
@@ -544,7 +565,7 @@ void showCollectionOptionsAlertDialog(BuildContext context, String currentCollec
   );
 }
 
-showTextInputAlertDialog(BuildContext context, String currentCollectionName, Function callInRenameSave) {
+String showTextInputAlertDialog(BuildContext context, String currentCollectionName, Function(List<String>) callInExit) {
   String dialogText;
   showDialog(
     context: context,
@@ -552,7 +573,7 @@ showTextInputAlertDialog(BuildContext context, String currentCollectionName, Fun
       // return object of type Dialog
       return AlertDialog(
         title: new Text(
-          "Rename collection",
+          "Collection name",
           style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
         ),
         content: TextField(
@@ -571,14 +592,12 @@ showTextInputAlertDialog(BuildContext context, String currentCollectionName, Fun
                   child: new Text("Cancel"),
                   onPressed: () {
                     dialogText = '';
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(['Cancel', dialogText]);
                   }),
               new FlatButton(
                 child: new Text("OK"),
                 onPressed: () async {
-                  await NotesDatabaseService.db.renameCollection(currentCollectionName, dialogText);
-                  await callInRenameSave();
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(['OK', dialogText]);
                 },
               )
             ],
@@ -586,5 +605,15 @@ showTextInputAlertDialog(BuildContext context, String currentCollectionName, Fun
         ],
       );
     },
-  );
+  ).then((exit) {
+    print("Exiting -> " + exit.toString());
+    if (exit == null) {
+      exit = ['Back', ''];
+    }
+    if (exit[1] == null) {
+      exit[1] = '';
+    }
+    callInExit(exit);
+  });
+  return dialogText;
 }

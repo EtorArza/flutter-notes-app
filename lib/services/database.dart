@@ -66,14 +66,25 @@ class NotesDatabaseService {
   createNewCollection(String collectionName) async {
     String tableName = fromCollectionNameToTableName(collectionName);
     final db = await database;
+
+    List<String> tableNames = await listOfTableNames();
+
+    int alreadyExistCounter = 2;
+    String candidateTableName = tableName;
+
+    while (tableNames.contains(candidateTableName)) {
+      candidateTableName = tableName + ' (' + alreadyExistCounter.toString() + ')';
+      alreadyExistCounter += 1;
+    }
+
     print('Creating collection -> ' + collectionName);
     await db.execute('CREATE TABLE [' +
-        tableName +
+        candidateTableName +
         '] (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
     int id = await db.transaction((transaction) {
-      transaction.rawInsert('INSERT into ' + collectionListName + '(tableName, isOpen) VALUES ("$tableName", "0");');
+      transaction.rawInsert('INSERT into ' + collectionListName + '(tableName, isOpen) VALUES ("$candidateTableName", "0");');
     });
-    print('Table ' + tableName + 'added, transaction id: ' + id.toString());
+    print('Table ' + candidateTableName + 'added, transaction id: ' + id.toString());
     return;
   }
 
