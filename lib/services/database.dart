@@ -125,7 +125,7 @@ class NotesDatabaseService {
     final db = await database;
     String tableName = fromCollectionNameToTableName(collectionName);
     int numberOfCOllections = await getNumberOfCollections();
-    print('numberOfCOllections = ' + numberOfCOllections.toString());
+    print('Deleting  ' + collectionName);
     db.execute('DROP TABLE [' + tableName + ']');
     await db.rawDelete('DELETE FROM ' + collectionListName + ' WHERE tableName = ?', [tableName]);
   }

@@ -526,11 +526,28 @@ Widget getVisibilityButton(int visibilityIndex) {
   return visibilityButton;
 }
 
-void showCollectionOptionsAlertDialog(BuildContext context, String currentCollectionName, Function callInRenameSave) {
+void showCollectionOptionsAlertDialog(BuildContext context, String currentCollectionName, Function reloadDB) {
   Widget cancelButton = FlatButton(
     child: Text("Cancel"),
     onPressed: () {
       Navigator.pop(context);
+    },
+  );
+
+  Widget deleteButton = FlatButton(
+    child: Text("Delete"),
+    onPressed: () {
+      showConfirmationDialog(
+        context,
+        'Delete ' + currentCollectionName + ' ?',
+        'Delete',
+        'Cancel',
+        () async {
+          await NotesDatabaseService.db.deleteCollection(currentCollectionName);
+          await reloadDB();
+          Navigator.pop(context);
+        },
+      );
     },
   );
 
@@ -543,9 +560,20 @@ void showCollectionOptionsAlertDialog(BuildContext context, String currentCollec
         String inputText = buttonNameAndInputTextTouple[1];
         if (inputText != '') {
           await NotesDatabaseService.db.renameCollection(currentCollectionName, inputText);
-          await callInRenameSave();
+          await reloadDB();
         }
       });
+    },
+  );
+
+  Widget openButton = FlatButton(
+    child: Text("Open"),
+    onPressed: () async {
+      // Update the state of the app.
+      // ...
+      await NotesDatabaseService.db.markCollectionAsOpen(currentCollectionName);
+      await reloadDB();
+      Navigator.pop(context);
     },
   );
 
@@ -559,7 +587,9 @@ void showCollectionOptionsAlertDialog(BuildContext context, String currentCollec
     actions: [
       Row(children: [
         cancelButton,
+        deleteButton,
         renameButton,
+        openButton,
       ]),
     ],
   );
@@ -625,4 +655,32 @@ String showTextInputAlertDialog(BuildContext context, String currentCollectionNa
     callInExit(exit);
   });
   return dialogText;
+}
+
+void showConfirmationDialog(
+    BuildContext context, String mainConfirmationText, String buttontextProceed, String buttontextCancel, Function callInConfirm) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(''),
+        content: Text(mainConfirmationText),
+        actions: <Widget>[
+          FlatButton(
+            child: Text(buttontextProceed),
+            onPressed: () {
+              callInConfirm();
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text(buttontextCancel),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
