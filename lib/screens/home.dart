@@ -573,6 +573,7 @@ void showCollectionOptionsAlertDialog(BuildContext context, String currentCollec
         context,
         'Delete ' + currentCollectionName + ' ?',
         'Delete',
+        Colors.red.shade300,
         'Cancel',
         () async {
           await NotesDatabaseService.db.deleteCollection(currentCollectionName);
@@ -666,8 +667,8 @@ String showTextInputAlertDialog(BuildContext context, String currentCollectionNa
                   Navigator.of(context).pop(['Cancel', dialogText]);
                 },
               ),
-              new Container(
-                width: 120,
+              Container(
+                width: 10,
               ),
               new FlatButton(
                 child: new Text('Ok'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
@@ -694,23 +695,29 @@ String showTextInputAlertDialog(BuildContext context, String currentCollectionNa
 }
 
 void showConfirmationDialog(
-    BuildContext context, String mainConfirmationText, String buttontextProceed, String buttontextCancel, Function callInConfirm) {
+  BuildContext context,
+  String mainConfirmationText,
+  String buttontextProceed,
+  Color buttonProceedColor,
+  String buttontextCancel,
+  Function callInConfirm,
+) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(''),
-        content: Text(buttontextProceed.toUpperCase(), style: TextStyle(color: Colors.red.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+        title: Text(mainConfirmationText),
+        content: Text(''),
         actions: <Widget>[
           FlatButton(
-            child: Text(buttontextProceed),
+            child: Text(buttontextProceed.toUpperCase(), style: TextStyle(color: buttonProceedColor, fontWeight: FontWeight.w500, letterSpacing: 1)),
             onPressed: () {
               callInConfirm();
               Navigator.of(context).pop();
             },
           ),
           FlatButton(
-            child: Text(buttontextCancel),
+            child: Text(buttontextCancel.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
             onPressed: () {
               Navigator.of(context).pop();
             },
