@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           gotoEditNote();
         },
-        label: Text('Add note'.toUpperCase()),
+        label: Text('Add card'.toUpperCase()),
         icon: Icon(Icons.add),
       ),
       body: GestureDetector(
@@ -121,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
               buildHeaderWidget(context),
-              buildButtonRow(),
+              buildButtonRow(context, this.notesList.length),
               buildImportantIndicatorText(),
               Container(height: 12),
               Text(
@@ -130,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Container(height: 12),
               ...buildNoteComponentsList(),
-              GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()),
+              notesList.length == 0 ? GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()) : Container(),
               Container(height: 100)
             ],
           ),
@@ -141,108 +141,140 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget buildButtonRow() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10, right: 10),
-      child: Row(
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              gotoReview();
-            },
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 160),
-              height: 50,
-              width: 50,
-              curve: Curves.slowMiddle,
-              child: Icon(Icons.local_library, color: Colors.grey.shade300),
-              decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  border: Border.all(
-                    width: 1,
-                    color: Colors.grey.shade300,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(16))),
-            ),
-          ),
-          Container(
-            width: 8.0,
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                isFlagOn = !isFlagOn;
-              });
-            },
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 160),
-              height: 50,
-              width: 50,
-              curve: Curves.slowMiddle,
-              child: Icon(
-                isFlagOn ? Icons.flag : OMIcons.flag,
-                color: isFlagOn ? Colors.white : Colors.grey.shade300,
-              ),
-              decoration: BoxDecoration(
-                  color: isFlagOn ? Colors.blue : Colors.transparent,
-                  border: Border.all(
-                    width: isFlagOn ? 2 : 1,
-                    color: isFlagOn ? Colors.blue.shade700 : Colors.grey.shade300,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(16))),
-            ),
-          ),
-          Container(
-            width: 8.0,
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                visibilityIndex = (visibilityIndex + 1) % 3;
-              });
-            },
-            child: getVisibilityButton(visibilityIndex),
-          ),
-          Expanded(
-            child: Container(
-              alignment: Alignment.center,
-              margin: EdgeInsets.only(left: 8),
-              padding: EdgeInsets.only(left: 16),
-              height: 50,
-              decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.all(Radius.circular(16))),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: TextField(
-                      controller: searchController,
-                      maxLines: 1,
-                      onChanged: (value) {
-                        handleSearch(value);
-                      },
-                      autofocus: false,
-                      keyboardType: TextInputType.text,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                      textInputAction: TextInputAction.search,
-                      decoration: InputDecoration.collapsed(
-                        hintText: 'Search',
-                        hintStyle: TextStyle(color: Colors.grey.shade300, fontSize: 18, fontWeight: FontWeight.w500),
-                        border: InputBorder.none,
+  Widget buildButtonRow(BuildContext paramContext, int nCards) {
+    return Builder(builder: (BuildContext innerContext) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 10, right: 10),
+        child: Row(
+          children: <Widget>[
+            GestureDetector(
+              onTap: () {
+                if (nCards == 0) {
+                  Scaffold.of(innerContext).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.blueGrey.shade800,
+                      content: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          //Icon widget of your choice HERE,
+                          Text('Add a card first.', style: TextStyle(color: Colors.white)),
+                          // GestureDetector(
+                          //   onTap: () {
+                          //     gotoEditNote();
+                          //   },
+                          //   child: Container(
+                          //       padding: EdgeInsets.symmetric(vertical: 3, horizontal: 9),
+                          //       decoration: BoxDecoration(
+                          //         color: Colors.white,
+                          //         borderRadius: BorderRadius.all(Radius.circular(100)),
+                          //       ),
+                          //       child: Row(children: <Widget>[
+                          //         Icon(Icons.add, color: Colors.black),
+                          //         Text('Add card'.toUpperCase(), style: TextStyle(color: Colors.black)),
+                          //       ])),
+                          // ),
+                        ],
                       ),
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(isSearchEmpty ? Icons.search : Icons.cancel, color: Colors.grey.shade300),
-                    onPressed: cancelSearch,
-                  ),
-                ],
+                  );
+                } else {
+                  gotoReview();
+                }
+              },
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 160),
+                height: 50,
+                width: 50,
+                curve: Curves.slowMiddle,
+                child: Icon(Icons.local_library, color: Colors.grey.shade300),
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    border: Border.all(
+                      width: 1,
+                      color: Colors.grey.shade300,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(16))),
               ),
             ),
-          )
-        ],
-      ),
-    );
+            Container(
+              width: 8.0,
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isFlagOn = !isFlagOn;
+                });
+              },
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 160),
+                height: 50,
+                width: 50,
+                curve: Curves.slowMiddle,
+                child: Icon(
+                  isFlagOn ? Icons.flag : OMIcons.flag,
+                  color: isFlagOn ? Colors.white : Colors.grey.shade300,
+                ),
+                decoration: BoxDecoration(
+                    color: isFlagOn ? Colors.blue : Colors.transparent,
+                    border: Border.all(
+                      width: isFlagOn ? 2 : 1,
+                      color: isFlagOn ? Colors.blue.shade700 : Colors.grey.shade300,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(16))),
+              ),
+            ),
+            Container(
+              width: 8.0,
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  visibilityIndex = (visibilityIndex + 1) % 3;
+                });
+              },
+              child: getVisibilityButton(visibilityIndex),
+            ),
+            Expanded(
+              child: Container(
+                alignment: Alignment.center,
+                margin: EdgeInsets.only(left: 8),
+                padding: EdgeInsets.only(left: 16),
+                height: 50,
+                decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.all(Radius.circular(16))),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        controller: searchController,
+                        maxLines: 1,
+                        onChanged: (value) {
+                          handleSearch(value);
+                        },
+                        autofocus: false,
+                        keyboardType: TextInputType.text,
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                        textInputAction: TextInputAction.search,
+                        decoration: InputDecoration.collapsed(
+                          hintText: 'Search',
+                          hintStyle: TextStyle(color: Colors.grey.shade300, fontSize: 18, fontWeight: FontWeight.w500),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(isSearchEmpty ? Icons.search : Icons.cancel, color: Colors.grey.shade300),
+                      onPressed: cancelSearch,
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      );
+    });
   }
 
   Widget buildHeaderWidget(BuildContext context) {
@@ -528,14 +560,14 @@ Widget getVisibilityButton(int visibilityIndex) {
 
 void showCollectionOptionsAlertDialog(BuildContext context, String currentCollectionName, Function reloadDB) {
   Widget cancelButton = FlatButton(
-    child: Text("Cancel"),
+    child: Text('Cancel'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
     onPressed: () {
       Navigator.pop(context);
     },
   );
 
   Widget deleteButton = FlatButton(
-    child: Text("Delete"),
+    child: Text('DELETE', style: TextStyle(color: Colors.red.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
     onPressed: () {
       showConfirmationDialog(
         context,
@@ -552,7 +584,7 @@ void showCollectionOptionsAlertDialog(BuildContext context, String currentCollec
   );
 
   Widget renameButton = FlatButton(
-    child: Text("Rename"),
+    child: Text('Rename'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
     onPressed: () {
       Navigator.pop(context);
       showTextInputAlertDialog(context, currentCollectionName, (buttonNameAndInputTextTouple) async {
@@ -567,7 +599,7 @@ void showCollectionOptionsAlertDialog(BuildContext context, String currentCollec
   );
 
   Widget openButton = FlatButton(
-    child: Text("Open"),
+    child: Text('Open'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
     onPressed: () async {
       // Update the state of the app.
       // ...
@@ -628,13 +660,17 @@ String showTextInputAlertDialog(BuildContext context, String currentCollectionNa
           Row(
             children: <Widget>[
               new FlatButton(
-                  child: new Text("Cancel"),
-                  onPressed: () {
-                    dialogText = '';
-                    Navigator.of(context).pop(['Cancel', dialogText]);
-                  }),
+                child: new Text('Cancel'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+                onPressed: () {
+                  dialogText = '';
+                  Navigator.of(context).pop(['Cancel', dialogText]);
+                },
+              ),
+              new Container(
+                width: 120,
+              ),
               new FlatButton(
-                child: new Text("OK"),
+                child: new Text('Ok'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
                 onPressed: () async {
                   Navigator.of(context).pop(['OK', dialogText]);
                 },
@@ -664,7 +700,7 @@ void showConfirmationDialog(
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(''),
-        content: Text(mainConfirmationText),
+        content: Text(buttontextProceed.toUpperCase(), style: TextStyle(color: Colors.red.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
         actions: <Widget>[
           FlatButton(
             child: Text(buttontextProceed),
