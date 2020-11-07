@@ -37,6 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String nameOfOpenCollection;
   TextEditingController searchController = TextEditingController();
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   bool isSearchEmpty = true;
 
   @override
@@ -64,10 +66,41 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
+  void showInSnackBar(String value) {
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.blueGrey.shade800,
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            //Icon widget of your choice HERE,
+            Text(value, style: TextStyle(color: Colors.white)),
+            // GestureDetector(
+            //   onTap: () {
+            //     gotoEditNote();
+            //   },
+            //   child: Container(
+            //       padding: EdgeInsets.symmetric(vertical: 3, horizontal: 9),
+            //       decoration: BoxDecoration(
+            //         color: Colors.white,
+            //         borderRadius: BorderRadius.all(Radius.circular(100)),
+            //       ),
+            //       child: Row(children: <Widget>[
+            //         Icon(Icons.add, color: Colors.black),
+            //         Text('Add card'.toUpperCase(), style: TextStyle(color: Colors.black)),
+            //       ])),
+            // ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     //print("build_home: " + DateTime.now().toIso8601String());
     return Scaffold(
+      key: _scaffoldKey,
       drawer: getLibraryWidget(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Theme.of(context).primaryColor,
@@ -150,33 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
             GestureDetector(
               onTap: () {
                 if (nCards == 0) {
-                  Scaffold.of(innerContext).showSnackBar(
-                    SnackBar(
-                      backgroundColor: Colors.blueGrey.shade800,
-                      content: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          //Icon widget of your choice HERE,
-                          Text('Add a card first.', style: TextStyle(color: Colors.white)),
-                          // GestureDetector(
-                          //   onTap: () {
-                          //     gotoEditNote();
-                          //   },
-                          //   child: Container(
-                          //       padding: EdgeInsets.symmetric(vertical: 3, horizontal: 9),
-                          //       decoration: BoxDecoration(
-                          //         color: Colors.white,
-                          //         borderRadius: BorderRadius.all(Radius.circular(100)),
-                          //       ),
-                          //       child: Row(children: <Widget>[
-                          //         Icon(Icons.add, color: Colors.black),
-                          //         Text('Add card'.toUpperCase(), style: TextStyle(color: Colors.black)),
-                          //       ])),
-                          // ),
-                        ],
-                      ),
-                    ),
-                  );
+                  showInSnackBar('Add a card first.');
                 } else {
                   gotoReview();
                 }
@@ -424,7 +431,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.pop(context);
           },
           onLongPress: () {
-            showCollectionOptionsAlertDialog(context, item, refetchNotesFromDB);
+            showCollectionOptionsAlertDialog(context, item, refetchNotesFromDB, listOfCollectionNames.length);
           },
         ),
       );
@@ -507,223 +514,232 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
 
-Widget getVisibilityButton(int visibilityIndex) {
-  Widget visibilityButton;
-  Color accentColor = appThemeDark.accentColor;
-  if (visibilityIndex == 0) {
-    visibilityButton = AnimatedContainer(
-      duration: Duration(milliseconds: 250),
-      height: 50,
-      width: 50,
-      curve: Curves.slowMiddle,
-      child: Icon(
-        Icons.visibility,
-        color: Colors.white,
-      ),
-      decoration: BoxDecoration(
-          color: accentColor, border: Border.all(width: 2, color: Colors.blue.shade700), borderRadius: BorderRadius.all(Radius.circular(16))),
+  Widget getVisibilityButton(int visibilityIndex) {
+    Widget visibilityButton;
+    Color accentColor = appThemeDark.accentColor;
+    if (visibilityIndex == 0) {
+      visibilityButton = AnimatedContainer(
+        duration: Duration(milliseconds: 250),
+        height: 50,
+        width: 50,
+        curve: Curves.slowMiddle,
+        child: Icon(
+          Icons.visibility,
+          color: Colors.white,
+        ),
+        decoration: BoxDecoration(
+            color: accentColor, border: Border.all(width: 2, color: Colors.blue.shade700), borderRadius: BorderRadius.all(Radius.circular(16))),
+      );
+    } else if (visibilityIndex == 1) {
+      visibilityButton = Container(
+        height: 50,
+        width: 50,
+        child: Icon(
+          OMIcons.visibility,
+          color: Colors.grey.shade300,
+        ),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [accentColor, Colors.transparent]),
+            color: accentColor,
+            border: Border.all(width: 1, color: Colors.grey.shade300),
+            borderRadius: BorderRadius.all(Radius.circular(16))),
+      );
+    } else if (visibilityIndex == 2) {
+      visibilityButton = Container(
+        height: 50,
+        width: 50,
+        child: Icon(
+          OMIcons.visibility,
+          color: Colors.grey.shade300,
+        ),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [accentColor, Colors.transparent]),
+            color: accentColor,
+            border: Border.all(width: 1, color: Colors.grey.shade300),
+            borderRadius: BorderRadius.all(Radius.circular(16))),
+      );
+    }
+
+    return visibilityButton;
+  }
+
+  void showCollectionOptionsAlertDialog(BuildContext context, String currentCollectionName, Function reloadDB, int nCollections) {
+    Widget cancelButton = FlatButton(
+      child: Text('Cancel'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+      onPressed: () {
+        Navigator.pop(context);
+      },
     );
-  } else if (visibilityIndex == 1) {
-    visibilityButton = Container(
-      height: 50,
-      width: 50,
-      child: Icon(
-        OMIcons.visibility,
-        color: Colors.grey.shade300,
-      ),
-      decoration: BoxDecoration(
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [accentColor, Colors.transparent]),
-          color: accentColor,
-          border: Border.all(width: 1, color: Colors.grey.shade300),
-          borderRadius: BorderRadius.all(Radius.circular(16))),
+
+    Widget deleteButton = FlatButton(
+      child: Text('DELETE', style: TextStyle(color: Colors.red.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+      onPressed: () {
+        showConfirmationDialog(
+          context,
+          'Delete ' + currentCollectionName + ' ?',
+          'Delete',
+          Colors.red.shade300,
+          'Cancel',
+          () async {
+            if (nCollections == 1) {
+              await Navigator.pop(context);
+              await Navigator.pop(context);
+              showInSnackBar('Cannot remove last collection.');
+            } else {
+              await NotesDatabaseService.db.deleteCollection(currentCollectionName);
+              await reloadDB();
+              Navigator.pop(context);
+            }
+          },
+        );
+      },
     );
-  } else if (visibilityIndex == 2) {
-    visibilityButton = Container(
-      height: 50,
-      width: 50,
-      child: Icon(
-        OMIcons.visibility,
-        color: Colors.grey.shade300,
+
+    Widget renameButton = FlatButton(
+      child: Text('Rename'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+      onPressed: () {
+        Navigator.pop(context);
+        showTextInputAlertDialog(context, currentCollectionName, (buttonNameAndInputTextTouple) async {
+          String buttonName = buttonNameAndInputTextTouple[0];
+          String inputText = buttonNameAndInputTextTouple[1];
+          if (inputText != '') {
+            await NotesDatabaseService.db.renameCollection(currentCollectionName, inputText);
+            await reloadDB();
+          }
+        });
+      },
+    );
+
+    Widget openButton = FlatButton(
+      child: Text('Open'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+      onPressed: () async {
+        // Update the state of the app.
+        // ...
+        await NotesDatabaseService.db.markCollectionAsOpen(currentCollectionName);
+        await reloadDB();
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        currentCollectionName,
+        style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
       ),
-      decoration: BoxDecoration(
-          gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [accentColor, Colors.transparent]),
-          color: accentColor,
-          border: Border.all(width: 1, color: Colors.grey.shade300),
-          borderRadius: BorderRadius.all(Radius.circular(16))),
+      content: Text(" "),
+      actions: [
+        Row(children: [
+          cancelButton,
+          deleteButton,
+          renameButton,
+          openButton,
+        ]),
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 
-  return visibilityButton;
-}
-
-void showCollectionOptionsAlertDialog(BuildContext context, String currentCollectionName, Function reloadDB) {
-  Widget cancelButton = FlatButton(
-    child: Text('Cancel'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
-    onPressed: () {
-      Navigator.pop(context);
-    },
-  );
-
-  Widget deleteButton = FlatButton(
-    child: Text('DELETE', style: TextStyle(color: Colors.red.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
-    onPressed: () {
-      showConfirmationDialog(
-        context,
-        'Delete ' + currentCollectionName + ' ?',
-        'Delete',
-        Colors.red.shade300,
-        'Cancel',
-        () async {
-          await NotesDatabaseService.db.deleteCollection(currentCollectionName);
-          await reloadDB();
-          Navigator.pop(context);
-        },
-      );
-    },
-  );
-
-  Widget renameButton = FlatButton(
-    child: Text('Rename'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
-    onPressed: () {
-      Navigator.pop(context);
-      showTextInputAlertDialog(context, currentCollectionName, (buttonNameAndInputTextTouple) async {
-        String buttonName = buttonNameAndInputTextTouple[0];
-        String inputText = buttonNameAndInputTextTouple[1];
-        if (inputText != '') {
-          await NotesDatabaseService.db.renameCollection(currentCollectionName, inputText);
-          await reloadDB();
-        }
-      });
-    },
-  );
-
-  Widget openButton = FlatButton(
-    child: Text('Open'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
-    onPressed: () async {
-      // Update the state of the app.
-      // ...
-      await NotesDatabaseService.db.markCollectionAsOpen(currentCollectionName);
-      await reloadDB();
-      Navigator.pop(context);
-    },
-  );
-
-  // set up the AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: Text(
-      currentCollectionName,
-      style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
-    ),
-    content: Text(" "),
-    actions: [
-      Row(children: [
-        cancelButton,
-        deleteButton,
-        renameButton,
-        openButton,
-      ]),
-    ],
-  );
-
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}
-
-String showTextInputAlertDialog(BuildContext context, String currentCollectionName, Function(List<String>) callInExit) {
-  String dialogText;
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      // return object of type Dialog
-      return AlertDialog(
-        title: new Text(
-          "Collection name",
-          style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
-        ),
-        content: TextField(
-          maxLength: 40,
-          onChanged: (String textTyped) {
-            dialogText = textTyped;
-          },
-          keyboardType: TextInputType.text,
-          decoration: InputDecoration(hintText: 'eg: Geman Verbs'),
-          style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
-        ),
-        actions: <Widget>[
-          // usually buttons at the bottom of the dialog
-          Row(
-            children: <Widget>[
-              new FlatButton(
-                child: new Text('Cancel'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
-                onPressed: () {
-                  dialogText = '';
-                  Navigator.of(context).pop(['Cancel', dialogText]);
-                },
-              ),
-              Container(
-                width: 10,
-              ),
-              new FlatButton(
-                child: new Text('Ok'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
-                onPressed: () async {
-                  Navigator.of(context).pop(['OK', dialogText]);
-                },
-              )
-            ],
+  String showTextInputAlertDialog(BuildContext context, String currentCollectionName, Function(List<String>) callInExit) {
+    String dialogText;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(
+            "Collection name",
+            style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
           ),
-        ],
-      );
-    },
-  ).then((exit) {
-    print("Exiting -> " + exit.toString());
-    if (exit == null) {
-      exit = ['Back', ''];
-    }
-    if (exit[1] == null) {
-      exit[1] = '';
-    }
-    callInExit(exit);
-  });
-  return dialogText;
-}
-
-void showConfirmationDialog(
-  BuildContext context,
-  String mainConfirmationText,
-  String buttontextProceed,
-  Color buttonProceedColor,
-  String buttontextCancel,
-  Function callInConfirm,
-) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(mainConfirmationText),
-        content: Text(''),
-        actions: <Widget>[
-          FlatButton(
-            child: Text(buttontextProceed.toUpperCase(), style: TextStyle(color: buttonProceedColor, fontWeight: FontWeight.w500, letterSpacing: 1)),
-            onPressed: () {
-              callInConfirm();
-              Navigator.of(context).pop();
+          content: TextField(
+            maxLength: 40,
+            onChanged: (String textTyped) {
+              dialogText = textTyped;
             },
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(hintText: 'eg: Geman Verbs'),
+            style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
           ),
-          FlatButton(
-            child: Text(buttontextCancel.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            Row(
+              children: <Widget>[
+                new FlatButton(
+                  child:
+                      new Text('Cancel'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+                  onPressed: () {
+                    dialogText = '';
+                    Navigator.of(context).pop(['Cancel', dialogText]);
+                  },
+                ),
+                Container(
+                  width: 10,
+                ),
+                new FlatButton(
+                  child: new Text('Ok'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+                  onPressed: () async {
+                    Navigator.of(context).pop(['OK', dialogText]);
+                  },
+                )
+              ],
+            ),
+          ],
+        );
+      },
+    ).then((exit) {
+      print("Exiting -> " + exit.toString());
+      if (exit == null) {
+        exit = ['Back', ''];
+      }
+      if (exit[1] == null) {
+        exit[1] = '';
+      }
+      callInExit(exit);
+    });
+    return dialogText;
+  }
+
+  void showConfirmationDialog(
+    BuildContext context,
+    String mainConfirmationText,
+    String buttontextProceed,
+    Color buttonProceedColor,
+    String buttontextCancel,
+    Function callInConfirm,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(mainConfirmationText),
+          content: Text(''),
+          actions: <Widget>[
+            FlatButton(
+              child:
+                  Text(buttontextProceed.toUpperCase(), style: TextStyle(color: buttonProceedColor, fontWeight: FontWeight.w500, letterSpacing: 1)),
+              onPressed: () {
+                callInConfirm();
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child:
+                  Text(buttontextCancel.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
