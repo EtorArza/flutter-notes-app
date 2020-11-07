@@ -46,6 +46,12 @@ class NotesDatabaseService {
     return openTableName;
   }
 
+  Future<String> whichCollectionIsOpen() async {
+    String res = await whichTableIsOpen();
+    res = fromTableNameToCollectionName(res);
+    return res;
+  }
+
   markCollectionAsOpen(String collectionName) async {
     print('markCollectionAsOpen(' + collectionName + ')');
     String tableName = fromCollectionNameToTableName(collectionName);

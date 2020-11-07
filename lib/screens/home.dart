@@ -34,6 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool headerShouldHide = false;
   List<NotesModel> notesList = [];
   List<String> listOfCollectionNames = [];
+  String nameOfOpenCollection;
   TextEditingController searchController = TextEditingController();
 
   bool isSearchEmpty = true;
@@ -50,10 +51,12 @@ class _MyHomePageState extends State<MyHomePage> {
     print("Entered setNotes");
     var fetchedNotes = await NotesDatabaseService.db.getNotesFromCollection();
     var fetchedListOfCollectionNames = await NotesDatabaseService.db.listOfCollectionNames();
+    var fetchedOpenName = await NotesDatabaseService.db.whichCollectionIsOpen();
 
     setState(() {
       notesList = fetchedNotes;
       listOfCollectionNames = fetchedListOfCollectionNames;
+      nameOfOpenCollection = fetchedOpenName;
     });
   }
 
@@ -120,7 +123,12 @@ class _MyHomePageState extends State<MyHomePage> {
               buildHeaderWidget(context),
               buildButtonRow(),
               buildImportantIndicatorText(),
-              Container(height: 32),
+              Container(height: 12),
+              Text(
+                nameOfOpenCollection,
+                style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 30),
+              ),
+              Container(height: 12),
               ...buildNoteComponentsList(),
               GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()),
               Container(height: 100)
@@ -577,6 +585,7 @@ String showTextInputAlertDialog(BuildContext context, String currentCollectionNa
           style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
         ),
         content: TextField(
+          maxLength: 40,
           onChanged: (String textTyped) {
             dialogText = textTyped;
           },
