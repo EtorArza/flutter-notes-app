@@ -165,10 +165,10 @@ class NotesDatabaseService {
   }
 
   Future<NotesModel> getMostDueNoteFromDB() async {
-    String tablenName = await whichTableIsOpen();
+    String tableName = await whichTableIsOpen();
     final db = await database;
     NotesModel notesList;
-    List<Map> maps = await db.query(tablenName,
+    List<Map> maps = await db.query('[' + tableName + ']',
         columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
     notesList = NotesModel.fromMap(maps.first);
     return notesList;
@@ -177,13 +177,13 @@ class NotesDatabaseService {
   updateNoteInDB(NotesModel updatedNote) async {
     String tableName = await whichTableIsOpen();
     final db = await database;
-    await db.update(tableName, updatedNote.toMap(), where: '_id = ?', whereArgs: [updatedNote.id]);
+    await db.update('[' + tableName + ']', updatedNote.toMap(), where: '_id = ?', whereArgs: [updatedNote.id]);
   }
 
   deleteNoteInDB(NotesModel noteToDelete) async {
     String tableName = await whichTableIsOpen();
     final db = await database;
-    await db.delete(tableName, where: '_id = ?', whereArgs: [noteToDelete.id]);
+    await db.delete('[' + tableName + ']', where: '_id = ?', whereArgs: [noteToDelete.id]);
     print('Note deleted');
   }
 
