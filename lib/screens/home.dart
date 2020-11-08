@@ -577,7 +577,7 @@ class _MyHomePageState extends State<MyHomePage> {
       onPressed: () {
         showConfirmationDialog(
           context,
-          'Delete ' + currentCollectionName + ' ?',
+          'Delete "' + currentCollectionName + '"?',
           'Delete',
           Colors.red.shade300,
           'Cancel',
@@ -706,40 +706,38 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     return dialogText;
   }
+}
 
-  void showConfirmationDialog(
-    BuildContext context,
-    String mainConfirmationText,
-    String buttontextProceed,
-    Color buttonProceedColor,
-    String buttontextCancel,
-    Function callInConfirm,
-  ) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(mainConfirmationText),
-          content: Text(' '),
-          actions: <Widget>[
-            FlatButton(
-              child:
-                  Text(buttontextProceed.toUpperCase(), style: TextStyle(color: buttonProceedColor, fontWeight: FontWeight.w500, letterSpacing: 1)),
-              onPressed: () {
-                callInConfirm();
-                Navigator.of(context).pop();
-              },
-            ),
-            FlatButton(
-              child:
-                  Text(buttontextCancel.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+void showConfirmationDialog(
+  BuildContext context,
+  String mainConfirmationText,
+  String buttontextProceed,
+  Color buttonProceedColor,
+  String buttontextCancel,
+  Function callInConfirm,
+) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(mainConfirmationText),
+        content: Text(' '),
+        actions: <Widget>[
+          FlatButton(
+            child: Text(buttontextProceed.toUpperCase(), style: TextStyle(color: buttonProceedColor, fontWeight: FontWeight.w500, letterSpacing: 1)),
+            onPressed: () {
+              callInConfirm();
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text(buttontextCancel.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

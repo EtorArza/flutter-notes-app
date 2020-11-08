@@ -74,16 +74,17 @@ class NotesDatabaseService {
     final db = await database;
 
     List<String> tableNames = await listOfTableNames();
-
+    tableNames = tableNames.map((item) => item.toUpperCase()).toList();
+    print(tableNames);
     int alreadyExistCounter = 2;
     String candidateTableName = tableName;
 
-    while (tableNames.contains(candidateTableName)) {
+    while (tableNames.contains(candidateTableName.toUpperCase())) {
       candidateTableName = tableName + ' (' + alreadyExistCounter.toString() + ')';
       alreadyExistCounter += 1;
     }
 
-    print('Creating collection -> ' + collectionName);
+    print('Creating collection -> ' + candidateTableName);
     await db.execute('CREATE TABLE [' +
         candidateTableName +
         '] (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
@@ -102,11 +103,12 @@ class NotesDatabaseService {
       return;
     }
     List<String> tableNames = await listOfTableNames();
+    tableNames = tableNames.map((item) => item.toUpperCase()).toList();
 
     int alreadyExistCounter = 2;
     String candidateTableName = newTableName;
 
-    while (tableNames.contains(candidateTableName)) {
+    while (tableNames.contains(candidateTableName.toUpperCase())) {
       candidateTableName = newTableName + ' (' + alreadyExistCounter.toString() + ')';
       alreadyExistCounter += 1;
     }
