@@ -25,10 +25,10 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   bool isFlagOn = false;
   int visibilityIndex = 1;
   bool headerShouldHide = false;
@@ -154,14 +154,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-              buildHeaderWidget(context),
               buildButtonRow(context, this.notesList.length),
               buildImportantIndicatorText(),
               Container(height: 12),
-              Text(
-                nameOfOpenCollection,
-                style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 30),
-              ),
+              buildHeaderWidget(context),
               Container(height: 12),
               ...buildNoteComponentsList(),
               notesList.length == 0 ? GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()) : Container(),
@@ -286,7 +282,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget buildHeaderWidget(BuildContext context) {
-    return Row();
+    return Padding(
+      padding: EdgeInsets.only(left: 20),
+      child: Text(
+        nameOfOpenCollection == null ? ' ' : nameOfOpenCollection,
+        style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 30),
+      ),
+    );
   }
 
   Widget testListItem(Color color) {
@@ -374,7 +376,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void gotoReview() async {
-    Navigator.push(context, CupertinoPageRoute(builder: (context) => ReviewScreen(triggerRefetch: refetchNotesFromDB)));
+    Navigator.push(context, CupertinoPageRoute(builder: (context) => ReviewScreen(triggerRefetch: refetchNotesFromDB, homePageState: this)));
   }
 
   void refetchNotesFromDB() async {
@@ -514,55 +516,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
-  }
-
-  Widget getVisibilityButton(int visibilityIndex) {
-    Widget visibilityButton;
-    Color accentColor = appThemeDark.accentColor;
-    if (visibilityIndex == 0) {
-      visibilityButton = AnimatedContainer(
-        duration: Duration(milliseconds: 250),
-        height: 50,
-        width: 50,
-        curve: Curves.slowMiddle,
-        child: Icon(
-          Icons.visibility,
-          color: Colors.white,
-        ),
-        decoration: BoxDecoration(
-            color: accentColor, border: Border.all(width: 2, color: Colors.blue.shade700), borderRadius: BorderRadius.all(Radius.circular(16))),
-      );
-    } else if (visibilityIndex == 1) {
-      visibilityButton = Container(
-        height: 50,
-        width: 50,
-        child: Icon(
-          OMIcons.visibility,
-          color: Colors.grey.shade300,
-        ),
-        decoration: BoxDecoration(
-            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [accentColor, Colors.transparent]),
-            color: accentColor,
-            border: Border.all(width: 1, color: Colors.grey.shade300),
-            borderRadius: BorderRadius.all(Radius.circular(16))),
-      );
-    } else if (visibilityIndex == 2) {
-      visibilityButton = Container(
-        height: 50,
-        width: 50,
-        child: Icon(
-          OMIcons.visibility,
-          color: Colors.grey.shade300,
-        ),
-        decoration: BoxDecoration(
-            gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [accentColor, Colors.transparent]),
-            color: accentColor,
-            border: Border.all(width: 1, color: Colors.grey.shade300),
-            borderRadius: BorderRadius.all(Radius.circular(16))),
-      );
-    }
-
-    return visibilityButton;
   }
 
   void showCollectionOptionsAlertDialog(BuildContext context, String currentCollectionName, Function reloadDB, int nCollections) {

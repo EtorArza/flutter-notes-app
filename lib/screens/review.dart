@@ -8,12 +8,14 @@ import '../data/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import '../components/cards.dart';
 import 'package:notes/services/database.dart';
+import 'home.dart';
 
 class ReviewScreen extends StatefulWidget {
   final Function() triggerRefetch;
-
+  final MyHomePageState homePageState;
   ReviewScreen({
     this.triggerRefetch,
+    this.homePageState,
     Key key,
   }) : super(key: key) {}
 
@@ -25,8 +27,6 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
   NotesModel currentNote;
   TextEditingController searchController = TextEditingController();
   NoteCardComponent currentDisplayedCard;
-
-  bool isSearchEmpty = true;
 
   @override
   void initState() {
@@ -65,7 +65,7 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
       noteData: currentNote,
       onHoldAction: (currentNote) {},
       onTapAction: expandNoteCard,
-      isVisible: 1,
+      isVisible: this.widget.homePageState.visibilityIndex,
       refreshView: loadMostDueNoteFromDB,
     );
 
@@ -88,9 +88,18 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
             child: Container(padding: const EdgeInsets.only(top: 24, left: 24, right: 24), child: Icon(OMIcons.arrowBack)),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
+            padding: const EdgeInsets.only(left: 16, top: 0, right: 24),
             child: buildHeaderWidget(context),
           ),
+          Row(children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: this.widget.homePageState.buildHeaderWidget(context),
+            ),
+            Expanded(child: Container()),
+            buildButtonRowReview(),
+          ]),
+          Container(height: 8),
           noteCard,
         ],
       ),
@@ -106,4 +115,76 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
       noteData.toggleExpand();
     });
   }
+
+  Widget buildButtonRowReview() {
+    return Builder(builder: (BuildContext innerContext) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 10, right: 10),
+        child: Row(
+          children: <Widget>[
+            Container(
+              width: 8.0,
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  this.widget.homePageState.visibilityIndex = (this.widget.homePageState.visibilityIndex + 1) % 3;
+                });
+              },
+              child: getVisibilityButton(this.widget.homePageState.visibilityIndex),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+}
+
+Widget getVisibilityButton(int visibilityIndex) {
+  Widget visibilityButton;
+  Color accentColor = appThemeDark.accentColor;
+  if (visibilityIndex == 0) {
+    visibilityButton = AnimatedContainer(
+      duration: Duration(milliseconds: 250),
+      height: 50,
+      width: 50,
+      curve: Curves.slowMiddle,
+      child: Icon(
+        Icons.visibility,
+        color: Colors.white,
+      ),
+      decoration: BoxDecoration(
+          color: accentColor, border: Border.all(width: 2, color: Colors.blue.shade700), borderRadius: BorderRadius.all(Radius.circular(16))),
+    );
+  } else if (visibilityIndex == 1) {
+    visibilityButton = Container(
+      height: 50,
+      width: 50,
+      child: Icon(
+        OMIcons.visibility,
+        color: Colors.grey.shade300,
+      ),
+      decoration: BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [accentColor, Colors.transparent]),
+          color: accentColor,
+          border: Border.all(width: 1, color: Colors.grey.shade300),
+          borderRadius: BorderRadius.all(Radius.circular(16))),
+    );
+  } else if (visibilityIndex == 2) {
+    visibilityButton = Container(
+      height: 50,
+      width: 50,
+      child: Icon(
+        OMIcons.visibility,
+        color: Colors.grey.shade300,
+      ),
+      decoration: BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [accentColor, Colors.transparent]),
+          color: accentColor,
+          border: Border.all(width: 1, color: Colors.grey.shade300),
+          borderRadius: BorderRadius.all(Radius.circular(16))),
+    );
+  }
+
+  return visibilityButton;
 }
