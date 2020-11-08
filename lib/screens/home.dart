@@ -69,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(
       SnackBar(
+        duration: Duration(milliseconds: 1200),
         backgroundColor: Colors.blueGrey.shade800,
         content: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -720,8 +721,8 @@ void showConfirmationDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(mainConfirmationText),
-        content: Text(' '),
+        title: Text(mainConfirmationText, style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
+        content: Container(height: 0),
         actions: <Widget>[
           FlatButton(
             child: Text(buttontextProceed.toUpperCase(), style: TextStyle(color: buttonProceedColor, fontWeight: FontWeight.w500, letterSpacing: 1)),
