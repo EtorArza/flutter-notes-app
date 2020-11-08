@@ -720,7 +720,7 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(mainConfirmationText),
-          content: Text(''),
+          content: Text(' '),
           actions: <Widget>[
             FlatButton(
               child:
