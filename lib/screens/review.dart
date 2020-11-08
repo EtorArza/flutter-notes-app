@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notes/components/cards.dart';
@@ -9,6 +9,7 @@ import 'package:outline_material_icons/outline_material_icons.dart';
 import '../components/cards.dart';
 import 'package:notes/services/database.dart';
 import 'home.dart';
+import 'package:notes/screens/edit.dart';
 
 class ReviewScreen extends StatefulWidget {
   final Function() triggerRefetch;
@@ -55,6 +56,11 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
     );
   }
 
+  void gotoEditNoteFromReview() {
+    Navigator.push(
+        context, CupertinoPageRoute(builder: (context) => EditNotePage(triggerRefetch: this.widget.triggerRefetch, existingNote: currentNote)));
+  }
+
   @override
   Widget build(BuildContext context) {
     if (currentNote == null) {
@@ -63,7 +69,9 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
 
     NoteCardComponent noteCard = NoteCardComponent(
       noteData: currentNote,
-      onHoldAction: (currentNote) {},
+      onHoldAction: (currentNote) {
+        gotoEditNoteFromReview();
+      },
       onTapAction: expandNoteCard,
       isVisible: this.widget.homePageState.visibilityIndex,
       refreshView: loadMostDueNoteFromDB,
