@@ -149,14 +149,10 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
 
                   Divider(height: 24.0),
                   Container(
-                    margin: EdgeInsets.only(),
-                    child: this.widget.isVisible == 0 || this.widget.isVisible == 2 || this.widget.noteData.isExpanded
-                        ? Text(
-                            '${this.widget.noteData.meaningContent.trim().split('\n').first.length <= 40 ? this.widget.noteData.meaningContent.trim().split('\n').first : this.widget.noteData.meaningContent.trim().split('\n').first.substring(0, 40) + '...'}',
-                            style: TextStyle(fontSize: 16, color: Colors.grey.shade50),
-                          )
-                        : Container(),
-                  ),
+                      margin: EdgeInsets.only(),
+                      child: this.widget.isVisible == 0 || this.widget.isVisible == 2 || this.widget.noteData.isExpanded
+                          ? FormattedText(nLines: 1, completeString: this.widget.noteData.meaningContent)
+                          : Container()),
                   showLowerButtons ? buttonRow : Container(),
                   // Container(
                   //   margin: EdgeInsets.only(top: 14),
