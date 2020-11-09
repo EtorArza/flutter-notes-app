@@ -82,8 +82,10 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
 
     return Scaffold(
       body: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
           Container(
             height: 25,
           ),
@@ -96,7 +98,7 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
             child: Container(padding: const EdgeInsets.only(top: 24, left: 24, right: 24), child: Icon(OMIcons.arrowBack)),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16, top: 0, right: 24),
+            padding: const EdgeInsets.only(left: 16, top: 8, right: 24),
             child: buildHeaderWidget(context),
           ),
           Row(children: [
@@ -104,11 +106,21 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
               width: MediaQuery.of(context).size.width * 0.8,
               child: this.widget.homePageState.buildHeaderWidget(context),
             ),
-            Expanded(child: Container()),
+            //Expanded(child: Container()),
             buildButtonRowReview(),
           ]),
           Container(height: 8),
-          noteCard,
+          Spacer(),
+          Expanded(
+            //height: MediaQuery.of(context).size.height - 140,
+            child: ListView(
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+              // crossAxisAlignment: CrossAxisAlignment.start,
+              // mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[noteCard],
+            ),
+          )
         ],
       ),
     );
