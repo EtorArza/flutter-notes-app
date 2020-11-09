@@ -110,11 +110,11 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
             buildButtonRowReview(),
           ]),
           Container(height: 8),
-          Spacer(),
           Expanded(
             //height: MediaQuery.of(context).size.height - 140,
             child: ListView(
               shrinkWrap: true,
+              reverse: true, // this should be the parameter changed in settings
               physics: BouncingScrollPhysics(),
               // crossAxisAlignment: CrossAxisAlignment.start,
               // mainAxisAlignment: MainAxisAlignment.end,
