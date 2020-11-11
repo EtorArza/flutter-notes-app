@@ -114,7 +114,9 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
             //height: MediaQuery.of(context).size.height - 140,
             child: ListView(
               shrinkWrap: true,
-              reverse: true, // this should be the parameter changed in settings
+              reverse: this.widget.homePageState.widget.settings.cardPositionInReview == 'top'
+                  ? false
+                  : true, // this should be the parameter changed in settings
               physics: BouncingScrollPhysics(),
               // crossAxisAlignment: CrossAxisAlignment.start,
               // mainAxisAlignment: MainAxisAlignment.end,

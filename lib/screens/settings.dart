@@ -6,10 +6,13 @@ import 'package:flutter/widgets.dart';
 import 'package:notes/services/sharedPref.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'home.dart';
 
 class SettingsPage extends StatefulWidget {
   Function(Brightness brightness) changeTheme;
-  SettingsPage({Key key, Function(Brightness brightness) changeTheme}) : super(key: key) {
+  final Settings settings;
+
+  SettingsPage({Key key, Function(Brightness brightness) changeTheme, this.settings}) : super(key: key) {
     this.changeTheme = changeTheme;
   }
   @override
@@ -47,7 +50,23 @@ class _SettingsPageState extends State<SettingsPage> {
                 padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
                 child: buildHeaderWidget(context),
               ),
-              settingTwoChoice('App theme', 'Light', 'Dark', handleThemeSelection, selectedTheme),
+              settingTwoChoice('App theme', 'Light', 'Dark', 'Light', 'Dark', handleThemeSelection, selectedTheme == 1 ? 'Light' : 'Dark'),
+              this.widget.settings.settingsLoaded
+                  ? settingTwoChoice(
+                      'Card position',
+                      'top',
+                      'bottom',
+                      'Top',
+                      'Bottom',
+                      (res) {
+                        setState(() {
+                          this.widget.settings.cardPositionInReview = res;
+                        });
+                        this.widget.settings.saveSettings();
+                      },
+                      this.widget.settings.cardPositionInReview,
+                    )
+                  : Container(),
               buildCardWidget(Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
@@ -134,23 +153,24 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void handleThemeSelection(int value) {
+  void handleThemeSelection(var value) {
     setState(() {
-      selectedTheme = value;
+      selectedTheme = value == 'Light' ? 1 : 0;
     });
     if (value == 1) {
       widget.changeTheme(Brightness.light);
     } else {
       widget.changeTheme(Brightness.dark);
     }
-    setThemeinSharedPref(value);
+    setThemeinSharedPref(value == 'Light' ? 1 : 0);
   }
 
   void openGitHub() {
     launch('https://www.github.com/roshanrahman');
   }
 
-  Widget settingTwoChoice(String settingName, String settingOption1String, String settingOption2String, Function onChanged, int groupValue) {
+  Widget settingTwoChoice(String settingName, String settingOption1String, String settingOption2String, String option1Explain, String option2Explain,
+      Function onChanged, var groupValue) {
     return buildCardWidget(Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -161,12 +181,12 @@ class _SettingsPageState extends State<SettingsPage> {
         Row(
           children: <Widget>[
             Radio(
-              value: 1,
+              value: settingOption1String,
               groupValue: groupValue,
               onChanged: onChanged,
             ),
             Text(
-              settingOption1String,
+              option1Explain,
               style: TextStyle(fontSize: 18),
             )
           ],
@@ -174,17 +194,42 @@ class _SettingsPageState extends State<SettingsPage> {
         Row(
           children: <Widget>[
             Radio(
-              value: 2,
+              value: settingOption2String,
               groupValue: groupValue,
               onChanged: onChanged,
             ),
             Text(
-              settingOption2String,
+              option2Explain,
               style: TextStyle(fontSize: 18),
             )
           ],
         ),
       ],
     ));
+  }
+}
+
+class Settings {
+  String cardPositionInReview = 'top';
+  bool settingsLoaded = false;
+
+  Settings() {
+    loadSettings();
+  }
+
+  void loadSettings() async {
+    settingsLoaded = false;
+    Future.wait([
+      // functions to get settings from persistent memory
+      getCardPositionInReviewInSharedPref(),
+    ]).then((listLoadedSettings) {
+      // fields in which the settings are stored
+      cardPositionInReview = listLoadedSettings[0] == 'top' ? 'top' : 'bottom';
+      settingsLoaded = true;
+    });
+  }
+
+  void saveSettings() async {
+    setCardPositionInReviewInSharedPref(cardPositionInReview);
   }
 }
