@@ -2,10 +2,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<String> getThemeFromSharedPref() async {
   SharedPreferences sharedPref = await SharedPreferences.getInstance();
-  return sharedPref.getString('theme');
+  return sharedPref.getInt('theme') == 1 ? 'light' : 'dark';
 }
 
-void setThemeinSharedPref(String val) async {
+void setThemeinSharedPref(int val) async {
   SharedPreferences sharedPref = await SharedPreferences.getInstance();
-  sharedPref.setString('theme', val);
+  sharedPref.setInt('theme', val);
 }
