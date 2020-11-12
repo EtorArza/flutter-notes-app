@@ -1,11 +1,21 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../data/models.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:share/share.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 const String collectionListName = 'ehahdugvbypgtuttjrvexksuehgpqmn';
 
 const String stringToReplaceLeftBracket = 'k5utzq5n5z3z';
 const String stringToReplaceRightBracket = 'k2vuh93u937i';
+
+const String extensionForNoteCard = '.notecard';
+const String extensionForCollection = '.collection';
+
+const String fieldDelimiter = 'WhtSfXqwEBD9GfG4U87*3*J5uxPbtG';
 
 class NotesDatabaseService {
   String path;
@@ -227,4 +237,61 @@ String fromTableNameToCollectionName(String tableName) {
   res = res.replaceAll(stringToReplaceRightBracket, ']');
   print("$tableName -> $res");
   return res;
+}
+
+Future<bool> importNoteCard() async {
+  FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: [".card"], type: FileType.custom);
+
+  if (result != null) {
+    String filePath = result.files.first.path;
+    NotesModel readNote = fromStringToNotesModel(await File(filePath).readAsString());
+    NotesDatabaseService.db.addNoteInDB(readNote);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void shareNoteCard(NotesModel noteCard) async {
+  String filename = 'shared_card_' + DateTime.now().toIso8601String() + '.card';
+
+  String stringNoteCard = fromNoteCardToString(noteCard);
+  print(stringNoteCard);
+  final file = await getLocalFile(filename);
+
+  file.writeAsString(stringNoteCard);
+
+  Share.shareFiles([file.path], text: 'Shared card');
+}
+
+NotesModel fromStringToNotesModel(String stringNoteCard) {
+  List<String> listOfFields = stringNoteCard.split(fieldDelimiter);
+  NotesModel res = NotesModel(
+    originalContent: listOfFields[0],
+    meaningContent: listOfFields[1],
+    date: DateTime.parse(listOfFields[2]),
+    dueDate: DateTime.parse(listOfFields[3]),
+    isExpanded: false,
+    isImportant: false,
+  );
+  return res;
+}
+
+String fromNoteCardToString(NotesModel noteCard) {
+  String res = '';
+  res += noteCard.originalContent + fieldDelimiter;
+  res += noteCard.meaningContent + fieldDelimiter;
+  res += noteCard.date.toIso8601String() + fieldDelimiter;
+  res += noteCard.dueDate.toIso8601String();
+  return res;
+}
+
+Future<String> getLocalPath() async {
+  final directory = await getApplicationSupportDirectory();
+  return directory.path;
+}
+
+Future<File> getLocalFile(String filename) async {
+  final path = await getLocalPath();
+  return File('$path/$filename');
 }

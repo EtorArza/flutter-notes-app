@@ -136,6 +136,18 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                     );
                   }),
+                  Spacer(),
+                  IconButton(
+                    tooltip: 'Open collection',
+                    icon: Icon(Icons.folder_open),
+                    onPressed: () {
+                      importNoteCard().then((value) {
+                        if (value) {
+                          setNotesFromDB();
+                        }
+                      });
+                    },
+                  ),
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () {

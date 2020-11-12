@@ -109,7 +109,7 @@ class _ViewNotePageState extends State<ViewNotePage> {
                       ),
                       IconButton(
                         icon: Icon(OMIcons.share),
-                        onPressed: handleShare,
+                        onPressed: () => shareNoteCard(this.widget.currentNote),
                       ),
                       IconButton(
                         icon: Icon(OMIcons.edit),
