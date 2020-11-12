@@ -14,12 +14,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeData theme = appThemeDark;
   Settings settings;
   @override
   void initState() {
     super.initState();
-    updateThemeFromSharedPref();
     settings = Settings();
   }
 
@@ -27,29 +25,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: theme,
-      home: MyHomePage(title: 'Home', changeTheme: setTheme, settings: settings),
+      theme: appThemeDark,
+      home: MyHomePage(title: 'Home', settings: settings),
     );
-  }
-
-  setTheme(Brightness brightness) {
-    if (brightness == Brightness.dark) {
-      setState(() {
-        theme = appThemeDark;
-      });
-    } else {
-      setState(() {
-        theme = appThemeLight;
-      });
-    }
-  }
-
-  void updateThemeFromSharedPref() async {
-    String themeText = await getThemeFromSharedPref();
-    if (themeText == 'light') {
-      setTheme(Brightness.light);
-    } else {
-      setTheme(Brightness.dark);
-    }
   }
 }

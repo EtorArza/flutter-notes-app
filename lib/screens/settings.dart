@@ -9,12 +9,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'home.dart';
 
 class SettingsPage extends StatefulWidget {
-  Function(Brightness brightness) changeTheme;
   final Settings settings;
 
-  SettingsPage({Key key, Function(Brightness brightness) changeTheme, this.settings}) : super(key: key) {
-    this.changeTheme = changeTheme;
-  }
+  SettingsPage({Key key, this.settings}) : super(key: key) {}
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
@@ -23,14 +20,6 @@ class _SettingsPageState extends State<SettingsPage> {
   int selectedTheme;
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      if (Theme.of(context).brightness == Brightness.light) {
-        selectedTheme = 1; // bright
-      } else {
-        selectedTheme = 2; // dark
-      }
-    });
-
     return Scaffold(
       body: ListView(
         physics: BouncingScrollPhysics(),
@@ -50,23 +39,20 @@ class _SettingsPageState extends State<SettingsPage> {
                 padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
                 child: buildHeaderWidget(context),
               ),
-              settingTwoChoice('App theme', 'Light', 'Dark', 'Light', 'Dark', handleThemeSelection, selectedTheme == 1 ? 'Light' : 'Dark'),
-              this.widget.settings.settingsLoaded
-                  ? settingTwoChoice(
-                      'Card position',
-                      'top',
-                      'bottom',
-                      'Top',
-                      'Bottom',
-                      (res) {
-                        setState(() {
-                          this.widget.settings.cardPositionInReview = res;
-                        });
-                        this.widget.settings.saveSettings();
-                      },
-                      this.widget.settings.cardPositionInReview,
-                    )
-                  : Container(),
+              settingTwoChoice(
+                'Card position in review',
+                'top',
+                'bottom',
+                'Top',
+                'Bottom',
+                (res) {
+                  setState(() {
+                    this.widget.settings.cardPositionInReview = res;
+                  });
+                  this.widget.settings.saveSettings();
+                },
+                this.widget.settings.settingsLoaded ? this.widget.settings.cardPositionInReview : null,
+              ),
               buildCardWidget(Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
@@ -151,18 +137,6 @@ class _SettingsPageState extends State<SettingsPage> {
         style: TextStyle(fontFamily: 'ZillaSlab', fontWeight: FontWeight.w700, fontSize: 36, color: Theme.of(context).primaryColor),
       ),
     );
-  }
-
-  void handleThemeSelection(var value) {
-    setState(() {
-      selectedTheme = value == 'Light' ? 1 : 0;
-    });
-    if (value == 1) {
-      widget.changeTheme(Brightness.light);
-    } else {
-      widget.changeTheme(Brightness.dark);
-    }
-    setThemeinSharedPref(value == 'Light' ? 1 : 0);
   }
 
   void openGitHub() {

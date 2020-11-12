@@ -17,11 +17,7 @@ import '../data/theme.dart';
 import '../screens/review.dart';
 
 class MyHomePage extends StatefulWidget {
-  Function(Brightness brightness) changeTheme;
-
-  MyHomePage({Key key, this.title, this.settings, Function(Brightness brightness) changeTheme}) : super(key: key) {
-    this.changeTheme = changeTheme;
-  }
+  MyHomePage({Key key, this.title, this.settings}) : super(key: key) {}
 
   final String title;
   final Settings settings;
@@ -143,8 +139,7 @@ class MyHomePageState extends State<MyHomePage> {
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
-                      Navigator.push(context,
-                          CupertinoPageRoute(builder: (context) => SettingsPage(changeTheme: widget.changeTheme, settings: this.widget.settings)));
+                      Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(settings: this.widget.settings)));
                     },
                     child: Container(
                       padding: EdgeInsets.all(16),
