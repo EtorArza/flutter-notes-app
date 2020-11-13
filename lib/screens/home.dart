@@ -103,15 +103,17 @@ class MyHomePageState extends State<MyHomePage> {
     //print("build_home: " + DateTime.now().toIso8601String());
     return Scaffold(
       key: _scaffoldKey,
-      drawer: getLibraryWidget(context),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Theme.of(context).primaryColor,
-        onPressed: () {
-          gotoEditNote();
-        },
-        label: Text('Add card'.toUpperCase()),
-        icon: Icon(Icons.add),
-      ),
+      drawer: !isMultiselectOn ? getLibraryWidget(context) : null,
+      floatingActionButton: !isMultiselectOn
+          ? FloatingActionButton.extended(
+              backgroundColor: Theme.of(context).primaryColor,
+              onPressed: () {
+                gotoEditNote();
+              },
+              label: Text('Add card'.toUpperCase()),
+              icon: Icon(Icons.add),
+            )
+          : null,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(new FocusNode());
@@ -139,73 +141,104 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   Widget buildHeaderWidget() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        new Builder(builder: (context) {
-          return new GestureDetector(
+    Widget res;
+
+    // is not multiselect
+    if (!isMultiselectOn) {
+      res = Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          new Builder(builder: (context) {
+            return new GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                Scaffold.of(context).openDrawer();
+              },
+              child: Container(
+                padding: EdgeInsets.all(16),
+                alignment: Alignment.centerRight,
+                child: Icon(
+                  OMIcons.viewHeadline,
+                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade600 : Colors.grey.shade300,
+                ),
+              ),
+            );
+          }),
+          Spacer(),
+          IconButton(
+            tooltip: 'Import',
+            icon: Icon(Icons.folder_open),
+            onPressed: () {
+              importNoteCard().then((value) {
+                if (value) {
+                  setNotesFromDB();
+                }
+              });
+            },
+          ),
+          IconButton(
+              tooltip: 'Select',
+              icon: Icon(Icons.check_box_outline_blank),
+              onPressed: () {
+                setState(() {
+                  isMultiselectOn = !isMultiselectOn;
+                });
+              }),
+          GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
-              Scaffold.of(context).openDrawer();
+              Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(settings: this.widget.settings)));
             },
             child: Container(
               padding: EdgeInsets.all(16),
               alignment: Alignment.centerRight,
               child: Icon(
-                OMIcons.viewHeadline,
+                OMIcons.settings,
                 color: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade600 : Colors.grey.shade300,
               ),
             ),
-          );
-        }),
-        Spacer(),
-        IconButton(
-          tooltip: 'Import',
-          icon: Icon(Icons.folder_open),
-          onPressed: () {
-            importNoteCard().then((value) {
-              if (value) {
-                setNotesFromDB();
-              }
-            });
-          },
-        ),
-        IconButton(
-            tooltip: 'Select',
-            icon: Icon(isMultiselectOn ? Icons.check_box : Icons.check_box_outline_blank),
-            onPressed: () {
-              setState(() {
-                isMultiselectOn = !isMultiselectOn;
-                print(isMultiselectOn);
-              });
-              if (!isMultiselectOn) {
-                print(selectedNotes);
-                while (selectedNotes.length > 0) {
-                  selectNoteCard(selectedNotes.first);
+          ),
+        ],
+      );
+
+      // is multiselect
+    } else {
+      res = Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Container(),
+          Spacer(),
+          Container(),
+          IconButton(
+              tooltip: 'Select',
+              icon: Icon(Icons.check_box),
+              onPressed: () {
+                setState(() {
+                  isMultiselectOn = !isMultiselectOn;
+                });
+                if (!isMultiselectOn) {
+                  while (selectedNotes.length > 0) {
+                    selectNoteCard(selectedNotes.first);
+                  }
+                  for (var item in selectedNotes) {
+                    selectNoteCard(item);
+                  }
                 }
-                for (var item in selectedNotes) {
-                  selectNoteCard(item);
-                }
-                print(selectedNotes);
-              }
-              print(isMultiselectOn);
-            }),
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(settings: this.widget.settings)));
-          },
-          child: Container(
+              }),
+          Container(
             padding: EdgeInsets.all(16),
             alignment: Alignment.centerRight,
             child: Icon(
               OMIcons.settings,
-              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade600 : Colors.grey.shade300,
+              color: Colors.transparent,
             ),
           ),
-        ),
-      ],
-    );
+          Container(),
+        ],
+      );
+    }
+    print(res);
+    return res;
   }
 
   Widget buildButtonRow(BuildContext paramContext, int nCards) {
