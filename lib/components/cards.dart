@@ -331,8 +331,8 @@ class FormattedText extends StatelessWidget {
       }
     }
 
-    print(text.split(sep));
-    print(text.split(sep)[0] == '');
+    // print(text.split(sep));
+    // print(text.split(sep)[0] == '');
     return res;
   }
 }

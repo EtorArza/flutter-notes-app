@@ -8,6 +8,7 @@ class NotesModel {
   bool isExpanded;
   DateTime date;
   DateTime dueDate;
+  bool isSelected = false;
 
   NotesModel({
     this.id,
@@ -27,6 +28,7 @@ class NotesModel {
     this.date = DateTime.parse(map['date']);
     this.dueDate = DateTime.parse(map['dueDate']);
     this.isExpanded = false;
+    this.isSelected = false;
   }
 
   Map<String, dynamic> toMap() {
@@ -48,9 +50,14 @@ class NotesModel {
     this.date = DateTime.now().add(Duration(hours: Random().nextInt(100)));
     this.dueDate = DateTime.now().add(Duration(hours: Random().nextInt(100)));
     this.isExpanded = false;
+    this.isSelected = false;
   }
 
   void toggleExpand() {
     this.isExpanded = !this.isExpanded;
+  }
+
+  void toggleSelected() {
+    this.isExpanded = !this.isSelected;
   }
 }

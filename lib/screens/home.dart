@@ -28,6 +28,7 @@ class MyHomePage extends StatefulWidget {
 
 class MyHomePageState extends State<MyHomePage> {
   bool isFlagOn = false;
+  bool isMultiselectOn = false;
   int visibilityIndex = 1;
   bool headerShouldHide = false;
   List<NotesModel> notesList = [];
@@ -138,13 +139,23 @@ class MyHomePageState extends State<MyHomePage> {
                   }),
                   Spacer(),
                   IconButton(
-                    tooltip: 'Open collection',
+                    tooltip: 'Import',
                     icon: Icon(Icons.folder_open),
                     onPressed: () {
                       importNoteCard().then((value) {
                         if (value) {
                           setNotesFromDB();
                         }
+                      });
+                    },
+                  ),
+                  IconButton(
+                    tooltip: 'Select',
+                    icon: Icon(isMultiselectOn ? Icons.check_box : Icons.check_box_outline_blank),
+                    onPressed: () {
+                      setState(() {
+                        isMultiselectOn = !isMultiselectOn;
+                        print(isMultiselectOn);
                       });
                     },
                   ),
@@ -164,14 +175,14 @@ class MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-              buildButtonRow(context, this.notesList.length),
-              buildImportantIndicatorText(),
-              Container(height: 12),
-              buildHeaderWidget(context),
+              !isMultiselectOn ? buildButtonRow(context, this.notesList.length) : Container(),
+              !isMultiselectOn ? buildImportantIndicatorText() : Container(),
+              !isMultiselectOn ? Container(height: 12) : Container(),
+              !isMultiselectOn ? buildHeaderWidget(context) : Container(),
               Container(height: 12),
               ...buildNoteComponentsList(),
               notesList.length == 0 ? GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()) : Container(),
-              Container(height: 100)
+              Container(height: 65)
             ],
           ),
           margin: EdgeInsets.only(top: 2),
@@ -325,47 +336,28 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   List<Widget> buildNoteComponentsList() {
+    print('buildin cards with isMultiselectOn = ' + isMultiselectOn.toString());
     List<Widget> noteComponentsList = [];
     notesList.sort((a, b) {
       return a.dueDate.compareTo(b.dueDate);
     });
-    if (searchController.text.isNotEmpty) {
-      notesList.forEach((note) {
-        if (note.originalContent.toLowerCase().contains(searchController.text.toLowerCase()) ||
-            note.meaningContent.toLowerCase().contains(searchController.text.toLowerCase()))
-          noteComponentsList.add(NoteCardComponent(
-            noteData: note,
-            onHoldAction: openNoteToRead,
-            onTapAction: expandNoteCard,
-            isVisible: visibilityIndex,
-          ));
-      });
-      return noteComponentsList;
-    }
-    if (isFlagOn) {
-      notesList.forEach((note) {
-        if (note.isImportant)
-          noteComponentsList.add(Container(
-              child: NoteCardComponent(
-            noteData: note,
-            onHoldAction: openNoteToRead,
-            onTapAction: expandNoteCard,
-            isVisible: visibilityIndex,
-            refreshView: refreshHome,
-          )));
-      });
-    } else {
-      notesList.forEach((note) {
+
+    notesList.forEach((note) {
+      bool discardedBySearch = searchController.text.isNotEmpty &&
+          !note.originalContent.toLowerCase().contains(searchController.text.toLowerCase()) &&
+          !note.meaningContent.toLowerCase().contains(searchController.text.toLowerCase());
+      if ((!isFlagOn || note.isImportant) && (!discardedBySearch)) {
         noteComponentsList.add(Container(
             child: NoteCardComponent(
           noteData: note,
-          onHoldAction: openNoteToRead,
-          onTapAction: expandNoteCard,
+          onHoldAction: !isMultiselectOn ? openNoteToRead : (NotesModel note) {},
+          onTapAction: !isMultiselectOn ? expandNoteCard : selectNoteCard,
           isVisible: visibilityIndex,
           refreshView: refreshHome,
         )));
-      });
-    }
+      }
+    });
+
     return noteComponentsList;
   }
 
@@ -410,6 +402,12 @@ class MyHomePageState extends State<MyHomePage> {
   expandNoteCard(NotesModel noteData) async {
     setState(() {
       noteData.toggleExpand();
+    });
+  }
+
+  selectNoteCard(NotesModel noteData) async {
+    setState(() {
+      noteData.toggleSelected();
     });
   }
 
