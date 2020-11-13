@@ -58,6 +58,6 @@ class NotesModel {
   }
 
   void toggleSelected() {
-    this.isExpanded = !this.isSelected;
+    this.isSelected = !this.isSelected;
   }
 }

@@ -110,11 +110,12 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
         ));
 
     return Container(
-        margin: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 8.0),
+        margin: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 6.0),
         //height: 90,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           boxShadow: [buildBoxShadow(color, context)],
+          border: Border.all(width: 2, color: this.widget.noteData.isSelected ? Colors.white : Colors.transparent),
         ),
         child: Material(
           borderRadius: BorderRadius.circular(16),
@@ -123,7 +124,9 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: () {
+              print(this.widget.noteData.isExpanded);
               this.widget.onTapAction(this.widget.noteData);
+              print(this.widget.noteData.isExpanded);
             },
             onLongPress: () {
               this.widget.onHoldAction(this.widget.noteData);

@@ -104,7 +104,7 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
           Row(children: [
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
-              child: this.widget.homePageState.buildHeaderWidget(context),
+              child: this.widget.homePageState.buildNameWidget(context),
             ),
             //Expanded(child: Container()),
             buildButtonRowReview(),

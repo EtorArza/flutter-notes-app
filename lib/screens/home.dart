@@ -29,6 +29,8 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
   bool isFlagOn = false;
   bool isMultiselectOn = false;
+  Set selectedNotes = Set();
+
   int visibilityIndex = 1;
   bool headerShouldHide = false;
   List<NotesModel> notesList = [];
@@ -118,67 +120,11 @@ class MyHomePageState extends State<MyHomePage> {
           child: ListView(
             physics: BouncingScrollPhysics(),
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  new Builder(builder: (context) {
-                    return new GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(16),
-                        alignment: Alignment.centerRight,
-                        child: Icon(
-                          OMIcons.viewHeadline,
-                          color: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade600 : Colors.grey.shade300,
-                        ),
-                      ),
-                    );
-                  }),
-                  Spacer(),
-                  IconButton(
-                    tooltip: 'Import',
-                    icon: Icon(Icons.folder_open),
-                    onPressed: () {
-                      importNoteCard().then((value) {
-                        if (value) {
-                          setNotesFromDB();
-                        }
-                      });
-                    },
-                  ),
-                  IconButton(
-                    tooltip: 'Select',
-                    icon: Icon(isMultiselectOn ? Icons.check_box : Icons.check_box_outline_blank),
-                    onPressed: () {
-                      setState(() {
-                        isMultiselectOn = !isMultiselectOn;
-                        print(isMultiselectOn);
-                      });
-                    },
-                  ),
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(settings: this.widget.settings)));
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(16),
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        OMIcons.settings,
-                        color: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade600 : Colors.grey.shade300,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              buildHeaderWidget(),
               !isMultiselectOn ? buildButtonRow(context, this.notesList.length) : Container(),
               !isMultiselectOn ? buildImportantIndicatorText() : Container(),
               !isMultiselectOn ? Container(height: 12) : Container(),
-              !isMultiselectOn ? buildHeaderWidget(context) : Container(),
+              !isMultiselectOn ? buildNameWidget(context) : Container(),
               Container(height: 12),
               ...buildNoteComponentsList(),
               notesList.length == 0 ? GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()) : Container(),
@@ -189,6 +135,76 @@ class MyHomePageState extends State<MyHomePage> {
           padding: EdgeInsets.only(left: 15, right: 15),
         ),
       ),
+    );
+  }
+
+  Widget buildHeaderWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        new Builder(builder: (context) {
+          return new GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              Scaffold.of(context).openDrawer();
+            },
+            child: Container(
+              padding: EdgeInsets.all(16),
+              alignment: Alignment.centerRight,
+              child: Icon(
+                OMIcons.viewHeadline,
+                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade600 : Colors.grey.shade300,
+              ),
+            ),
+          );
+        }),
+        Spacer(),
+        IconButton(
+          tooltip: 'Import',
+          icon: Icon(Icons.folder_open),
+          onPressed: () {
+            importNoteCard().then((value) {
+              if (value) {
+                setNotesFromDB();
+              }
+            });
+          },
+        ),
+        IconButton(
+            tooltip: 'Select',
+            icon: Icon(isMultiselectOn ? Icons.check_box : Icons.check_box_outline_blank),
+            onPressed: () {
+              setState(() {
+                isMultiselectOn = !isMultiselectOn;
+                print(isMultiselectOn);
+              });
+              if (!isMultiselectOn) {
+                print(selectedNotes);
+                while (selectedNotes.length > 0) {
+                  selectNoteCard(selectedNotes.first);
+                }
+                for (var item in selectedNotes) {
+                  selectNoteCard(item);
+                }
+                print(selectedNotes);
+              }
+              print(isMultiselectOn);
+            }),
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(settings: this.widget.settings)));
+          },
+          child: Container(
+            padding: EdgeInsets.all(16),
+            alignment: Alignment.centerRight,
+            child: Icon(
+              OMIcons.settings,
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade600 : Colors.grey.shade300,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -302,7 +318,7 @@ class MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Widget buildHeaderWidget(BuildContext context) {
+  Widget buildNameWidget(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 20),
       child: Text(
@@ -351,7 +367,11 @@ class MyHomePageState extends State<MyHomePage> {
             child: NoteCardComponent(
           noteData: note,
           onHoldAction: !isMultiselectOn ? openNoteToRead : (NotesModel note) {},
-          onTapAction: !isMultiselectOn ? expandNoteCard : selectNoteCard,
+          onTapAction: !isMultiselectOn
+              ? expandNoteCard
+              : (NotesModel note) {
+                  selectNoteCard(note);
+                },
           isVisible: visibilityIndex,
           refreshView: refreshHome,
         )));
@@ -406,6 +426,11 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   selectNoteCard(NotesModel noteData) async {
+    if (noteData.isSelected) {
+      selectedNotes.remove(noteData);
+    } else {
+      selectedNotes.add(noteData);
+    }
     setState(() {
       noteData.toggleSelected();
     });
