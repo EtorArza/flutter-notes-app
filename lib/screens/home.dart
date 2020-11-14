@@ -51,7 +51,7 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   setNotesFromDB() async {
-    print("Entered setNotes");
+    //print("Entered setNotes");
     var fetchedNotes = await NotesDatabaseService.db.getNotesFromCollection();
     var fetchedListOfCollectionNames = await NotesDatabaseService.db.listOfCollectionNames();
     var fetchedOpenName = await NotesDatabaseService.db.whichCollectionIsOpen();
@@ -122,7 +122,7 @@ class MyHomePageState extends State<MyHomePage> {
           child: ListView(
             physics: BouncingScrollPhysics(),
             children: <Widget>[
-              buildHeaderWidget(),
+              buildHeaderWidget(context),
               !isMultiselectOn ? buildButtonRow(context, this.notesList.length) : Container(),
               !isMultiselectOn ? buildImportantIndicatorText() : Container(),
               !isMultiselectOn ? Container(height: 12) : Container(),
@@ -140,7 +140,7 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget buildHeaderWidget() {
+  Widget buildHeaderWidget(context) {
     Widget res;
 
     // is not multiselect
@@ -208,7 +208,36 @@ class MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           Container(),
           Spacer(),
-          Container(),
+          IconButton(
+              icon: Icon(Icons.reply_all),
+              onPressed: selectedNotes.length == 0
+                  ? null
+                  : () async {
+                      var destinationCollectionName = await chooseStringAlertDialog(context, listOfCollectionNames);
+
+                      if (destinationCollectionName == null) {
+                        return;
+                      }
+
+                      String openCollectionName = nameOfOpenCollection;
+
+                      for (var note in selectedNotes) {
+                        await NotesDatabaseService.db.deleteNoteInDB(note);
+                      }
+                      await NotesDatabaseService.db.markCollectionAsOpen(destinationCollectionName);
+
+                      for (var note in selectedNotes) {
+                        NotesDatabaseService.db.addNoteInDB(note);
+                      }
+                      setState(() {
+                        isMultiselectOn = !isMultiselectOn;
+                      });
+                      while (selectedNotes.length > 0) {
+                        selectNoteCard(selectedNotes.first);
+                      }
+                      await NotesDatabaseService.db.markCollectionAsOpen(openCollectionName);
+                      setNotesFromDB();
+                    }),
           IconButton(
               tooltip: 'Select',
               icon: Icon(Icons.check_box),
@@ -219,9 +248,6 @@ class MyHomePageState extends State<MyHomePage> {
                 if (!isMultiselectOn) {
                   while (selectedNotes.length > 0) {
                     selectNoteCard(selectedNotes.first);
-                  }
-                  for (var item in selectedNotes) {
-                    selectNoteCard(item);
                   }
                 }
               }),
@@ -237,7 +263,6 @@ class MyHomePageState extends State<MyHomePage> {
         ],
       );
     }
-    print(res);
     return res;
   }
 
@@ -385,7 +410,6 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   List<Widget> buildNoteComponentsList() {
-    print('buildin cards with isMultiselectOn = ' + isMultiselectOn.toString());
     List<Widget> noteComponentsList = [];
     notesList.sort((a, b) {
       return a.dueDate.compareTo(b.dueDate);
@@ -436,7 +460,6 @@ class MyHomePageState extends State<MyHomePage> {
 
   void refetchNotesFromDB() async {
     await setNotesFromDB();
-    print("Refetched notes");
   }
 
   openNoteToRead(NotesModel noteData) async {
@@ -572,7 +595,6 @@ class MyHomePageState extends State<MyHomePage> {
                 } else if (buttonName == 'OK') {
                   await NotesDatabaseService.db.createNewCollection(inputText == '' ? 'New Collection' : inputText);
                   await refetchNotesFromDB();
-                  await print('After refetch:' + this.listOfCollectionNames.toString());
                 } else {
                   print('Error, unrecognized button.');
                 }
@@ -715,7 +737,6 @@ class MyHomePageState extends State<MyHomePage> {
         );
       },
     ).then((exit) {
-      print("Exiting -> " + exit.toString());
       if (exit == null) {
         exit = ['Back', ''];
       }
@@ -760,4 +781,39 @@ void showConfirmationDialog(
       );
     },
   );
+}
+
+Future<String> chooseStringAlertDialog(BuildContext context, List<String> listOfCHoices) async {
+  String res = await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      // return object of type Dialog
+      return AlertDialog(
+        title: new Text(
+          "Collection name",
+          style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+        ),
+        content: Container(
+          height: 300,
+          width: 300,
+          child: ListView(
+            children: listOfCHoices.map(
+              (element) {
+                return ListTile(
+                  title: Text(
+                    element,
+                    style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+                  ),
+                  onTap: () async {
+                    Navigator.of(context).pop(element);
+                  },
+                );
+              },
+            ).toList(),
+          ),
+        ),
+      );
+    },
+  );
+  return res;
 }
