@@ -101,40 +101,49 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     //print("build_home: " + DateTime.now().toIso8601String());
-    return Scaffold(
-      key: _scaffoldKey,
-      drawer: !isMultiselectOn ? getLibraryWidget(context) : null,
-      floatingActionButton: !isMultiselectOn
-          ? FloatingActionButton.extended(
-              backgroundColor: Theme.of(context).primaryColor,
-              onPressed: () {
-                gotoEditNote();
-              },
-              label: Text('Add card'.toUpperCase()),
-              icon: Icon(Icons.add),
-            )
-          : null,
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
-        child: Container(
-          child: ListView(
-            physics: BouncingScrollPhysics(),
-            children: <Widget>[
-              buildHeaderWidget(context),
-              !isMultiselectOn ? buildButtonRow(context, this.notesList.length) : Container(),
-              !isMultiselectOn ? buildImportantIndicatorText() : Container(),
-              !isMultiselectOn ? Container(height: 12) : Container(),
-              !isMultiselectOn ? buildNameWidget(context) : Container(),
-              Container(height: 12),
-              ...buildNoteComponentsList(),
-              notesList.length == 0 ? GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()) : Container(),
-              Container(height: 65)
-            ],
+    return WillPopScope(
+      onWillPop: () async {
+        if (isMultiselectOn) {
+          toggleIsMultiselectOn();
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        drawer: !isMultiselectOn ? getLibraryWidget(context) : null,
+        floatingActionButton: !isMultiselectOn
+            ? FloatingActionButton.extended(
+                backgroundColor: Theme.of(context).primaryColor,
+                onPressed: () {
+                  gotoEditNote();
+                },
+                label: Text('Add card'.toUpperCase()),
+                icon: Icon(Icons.add),
+              )
+            : null,
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          child: Container(
+            child: ListView(
+              physics: BouncingScrollPhysics(),
+              children: <Widget>[
+                buildHeaderWidget(context),
+                !isMultiselectOn ? buildButtonRow(context, this.notesList.length) : Container(),
+                !isMultiselectOn ? buildImportantIndicatorText() : Container(),
+                !isMultiselectOn ? Container(height: 12) : Container(),
+                !isMultiselectOn ? buildNameWidget(context) : Container(),
+                Container(height: 12),
+                ...buildNoteComponentsList(),
+                notesList.length == 0 ? GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()) : Container(),
+                Container(height: 65)
+              ],
+            ),
+            margin: EdgeInsets.only(top: 2),
+            padding: EdgeInsets.only(left: 15, right: 15),
           ),
-          margin: EdgeInsets.only(top: 2),
-          padding: EdgeInsets.only(left: 15, right: 15),
         ),
       ),
     );
@@ -180,9 +189,7 @@ class MyHomePageState extends State<MyHomePage> {
               tooltip: 'Select',
               icon: Icon(Icons.check_box_outline_blank),
               onPressed: () {
-                setState(() {
-                  isMultiselectOn = !isMultiselectOn;
-                });
+                toggleIsMultiselectOn();
               }),
           GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -229,28 +236,19 @@ class MyHomePageState extends State<MyHomePage> {
                       for (var note in selectedNotes) {
                         NotesDatabaseService.db.addNoteInDB(note);
                       }
-                      setState(() {
-                        isMultiselectOn = !isMultiselectOn;
-                      });
-                      while (selectedNotes.length > 0) {
-                        selectNoteCard(selectedNotes.first);
-                      }
+
+                      int nOfCardsMoved = selectedNotes.length;
+                      toggleIsMultiselectOn();
                       await NotesDatabaseService.db.markCollectionAsOpen(openCollectionName);
                       setNotesFromDB();
+                      showInSnackBar(
+                          'Moved ' + nOfCardsMoved.toString() + ' card' + (nOfCardsMoved == 1 ? '' : 's') + ' to ' + destinationCollectionName);
                     }),
           IconButton(
-              tooltip: 'Select',
-              icon: Icon(Icons.check_box),
-              onPressed: () {
-                setState(() {
-                  isMultiselectOn = !isMultiselectOn;
-                });
-                if (!isMultiselectOn) {
-                  while (selectedNotes.length > 0) {
-                    selectNoteCard(selectedNotes.first);
-                  }
-                }
-              }),
+            tooltip: 'Select',
+            icon: Icon(Icons.check_box),
+            onPressed: toggleIsMultiselectOn,
+          ),
           Container(
             padding: EdgeInsets.all(16),
             alignment: Alignment.centerRight,
@@ -498,6 +496,15 @@ class MyHomePageState extends State<MyHomePage> {
       searchController.clear();
       isSearchEmpty = true;
     });
+  }
+
+  void toggleIsMultiselectOn() {
+    setState(() {
+      isMultiselectOn = !isMultiselectOn;
+    });
+    while (selectedNotes.length > 0) {
+      selectNoteCard(selectedNotes.first);
+    }
   }
 
   static const String tempCollectionName = 'temp_collection_namerjw9843h34fdwflk04';
