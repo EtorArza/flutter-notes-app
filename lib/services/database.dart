@@ -16,6 +16,7 @@ const String extensionForNoteCard = '.notecard';
 const String extensionForCollection = '.collection';
 
 const String fieldDelimiter = 'WhtSfXqwEBD9GfG4U87*3*J5uxPbtG';
+const String fieldDelimiter2 = 'vhtSfXqwEBD9GfD4U87*3*J5uxPbt3F';
 
 class NotesDatabaseService {
   String path;
@@ -240,13 +241,24 @@ String fromTableNameToCollectionName(String tableName) {
 }
 
 Future<bool> importNoteCard() async {
-  FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: [".card"], type: FileType.custom);
+  FilePickerResult result =
+      await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: [".card", ".collection"], type: FileType.custom);
 
   if (result != null) {
     String filePath = result.files.first.path;
-    NotesModel readNote = fromStringToNotesModel(await File(filePath).readAsString());
-    NotesDatabaseService.db.addNoteInDB(readNote);
-    return true;
+    if (result.files.first.path.split('.').last == 'card') {
+      NotesModel readNote = fromStringToNotesModel(await File(filePath).readAsString());
+      NotesDatabaseService.db.addNoteInDB(readNote);
+      return true;
+    } else if (result.files.first.path.split('.').last == 'collection') {
+      List<NotesModel> listReadNotes = fromStringToListOfNotesModel(await File(filePath).readAsString());
+      for (var readNote in listReadNotes) {
+        NotesDatabaseService.db.addNoteInDB(readNote);
+      }
+      return true;
+    } else {
+      print("ERROR: only .card or .collection files supported.");
+    }
   } else {
     return false;
   }
@@ -259,9 +271,30 @@ void shareNoteCard(NotesModel noteCard) async {
   print(stringNoteCard);
   final file = await getLocalFile(filename);
 
-  file.writeAsString(stringNoteCard);
+  await file.writeAsString(stringNoteCard);
 
   Share.shareFiles([file.path], text: 'Shared card');
+}
+
+void shareListOfNoteCards(List<NotesModel> listOfNoteCards) async {
+  if (listOfNoteCards.length == 0) {
+    print("ERROR: Cannot share empty list of notes.");
+    exit(1);
+  }
+  String filename = 'shared_collection_' + DateTime.now().toIso8601String() + '.collection';
+
+  //String stringNoteCard = fromNoteCardToString(noteCard);
+
+  List<String> listOfNoteCardStrings = listOfNoteCards.map((noteCard) => fromNoteCardToString(noteCard)).toList();
+  print(listOfNoteCardStrings.toString());
+
+  final file = await getLocalFile(filename);
+
+  String res = listOfNoteCardStrings.join(fieldDelimiter2);
+
+  await file.writeAsString(res);
+
+  Share.shareFiles([file.path], text: 'Shared collection');
 }
 
 NotesModel fromStringToNotesModel(String stringNoteCard) {
@@ -274,6 +307,18 @@ NotesModel fromStringToNotesModel(String stringNoteCard) {
     isExpanded: false,
     isImportant: false,
   );
+  return res;
+}
+
+List<NotesModel> fromStringToListOfNotesModel(String stringCollection) {
+  List<String> listOfCardStrings = stringCollection.split(fieldDelimiter2);
+
+  List<NotesModel> res = [];
+
+  for (var item in listOfCardStrings) {
+    res.add(fromStringToNotesModel(item));
+  }
+
   return res;
 }
 
@@ -294,4 +339,12 @@ Future<String> getLocalPath() async {
 Future<File> getLocalFile(String filename) async {
   final path = await getLocalPath();
   return File('$path/$filename');
+}
+
+Future<void> _deleteCacheDir() async {
+  final cacheDir = await getTemporaryDirectory();
+
+  if (cacheDir.existsSync()) {
+    cacheDir.deleteSync(recursive: true);
+  }
 }

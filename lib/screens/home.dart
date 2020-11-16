@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
   bool isFlagOn = false;
   bool isMultiselectOn = false;
-  Set selectedNotes = Set();
+  Set<NotesModel> selectedNotes = Set();
 
   int visibilityIndex = 1;
   bool headerShouldHide = false;
@@ -213,7 +213,15 @@ class MyHomePageState extends State<MyHomePage> {
       res = Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Container(),
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: selectedNotes.length == 0
+                ? null
+                : () {
+                    shareListOfNoteCards(selectedNotes.toList());
+                    toggleIsMultiselectOn();
+                  },
+          ),
           Spacer(),
           IconButton(
               icon: Icon(Icons.reply_all),
