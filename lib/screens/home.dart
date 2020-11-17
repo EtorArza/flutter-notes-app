@@ -100,6 +100,8 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print('build home');
+    print('First note is selected: ' + notesList.first.isSelected.toString());
     //print("build_home: " + DateTime.now().toIso8601String());
     return WillPopScope(
       onWillPop: () async {
@@ -221,6 +223,24 @@ class MyHomePageState extends State<MyHomePage> {
                     shareListOfNoteCards(selectedNotes.toList());
                     toggleIsMultiselectOn();
                   },
+          ),
+          IconButton(
+            icon: Icon(Icons.select_all),
+            onPressed: () {
+              if (selectedNotes.length < notesList.length) {
+                for (var i = 0; i < notesList.length; i++) {
+                  notesList[i].isSelected = true;
+                }
+                selectedNotes = notesList.toSet();
+                setState(() {});
+              } else {
+                for (var i = 0; i < notesList.length; i++) {
+                  notesList[i].isSelected = false;
+                }
+                selectedNotes = Set();
+                setState(() {});
+              }
+            },
           ),
           Spacer(),
           IconButton(
