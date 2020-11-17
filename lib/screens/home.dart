@@ -70,7 +70,7 @@ class MyHomePageState extends State<MyHomePage> {
   void showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(
       SnackBar(
-        duration: Duration(milliseconds: 1200),
+        duration: Duration(milliseconds: 1800),
         backgroundColor: Colors.blueGrey.shade800,
         content: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -100,8 +100,6 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print('build home');
-    print('First note is selected: ' + notesList.first.isSelected.toString());
     //print("build_home: " + DateTime.now().toIso8601String());
     return WillPopScope(
       onWillPop: () async {
@@ -226,6 +224,21 @@ class MyHomePageState extends State<MyHomePage> {
       res = Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
+          // delete selected
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: selectedNotes.length == 0
+                ? null
+                : () async {
+                    for (var note in selectedNotes) {
+                      await NotesDatabaseService.db.deleteNoteInDB(note);
+                    }
+                    toggleIsMultiselectOn();
+                    setNotesFromDB();
+                  },
+          ),
+
+          // share selected
           IconButton(
             icon: Icon(Icons.share),
             onPressed: selectedNotes.length == 0
@@ -235,6 +248,8 @@ class MyHomePageState extends State<MyHomePage> {
                     toggleIsMultiselectOn();
                   },
           ),
+
+          // select all
           IconButton(
             icon: Icon(Icons.select_all),
             onPressed: () {
@@ -254,6 +269,8 @@ class MyHomePageState extends State<MyHomePage> {
             },
           ),
           Spacer(),
+
+          // move selected
           IconButton(
               icon: Icon(Icons.reply_all),
               onPressed: selectedNotes.length == 0
@@ -283,6 +300,7 @@ class MyHomePageState extends State<MyHomePage> {
                       showInSnackBar(
                           'Moved ' + nOfCardsMoved.toString() + ' card' + (nOfCardsMoved == 1 ? '' : 's') + ' to ' + destinationCollectionName);
                     }),
+          // toggle MultiselectOn
           IconButton(
             tooltip: 'Select',
             icon: Icon(Icons.check_box),
