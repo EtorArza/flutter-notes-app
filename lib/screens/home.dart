@@ -129,23 +129,27 @@ class MyHomePageState extends State<MyHomePage> {
           onTap: () {
             FocusScope.of(context).requestFocus(new FocusNode());
           },
-          child: Container(
-            child: ListView(
-              physics: BouncingScrollPhysics(),
-              children: <Widget>[
-                buildHeaderWidget(context),
-                !isMultiselectOn ? buildButtonRow(context, this.notesList.length) : Container(),
-                !isMultiselectOn ? buildImportantIndicatorText() : Container(),
-                !isMultiselectOn ? Container(height: 12) : Container(),
-                !isMultiselectOn ? buildNameWidget(context) : Container(),
-                Container(height: 12),
-                ...buildNoteComponentsList(),
-                notesList.length == 0 ? GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()) : Container(),
-                Container(height: 65)
-              ],
-            ),
-            margin: EdgeInsets.only(top: 2),
-            padding: EdgeInsets.only(left: 15, right: 15),
+          child: Column(
+            children: [
+              Container(height: 30),
+              buildHeaderWidget(context),
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.only(top: 7),
+                  physics: BouncingScrollPhysics(),
+                  children: <Widget>[
+                    !isMultiselectOn ? buildButtonRow(context, this.notesList.length) : Container(),
+                    !isMultiselectOn ? buildImportantIndicatorText() : Container(),
+                    !isMultiselectOn ? Container(height: 12) : Container(),
+                    !isMultiselectOn ? buildNameWidget(context) : Container(),
+                    !isMultiselectOn ? Container(height: 12) : Container(),
+                    ...buildNoteComponentsList(),
+                    notesList.length == 0 ? GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()) : Container(),
+                    Container(height: 65)
+                  ],
+                ),
+              )
+            ],
           ),
         ),
       ),
@@ -167,7 +171,7 @@ class MyHomePageState extends State<MyHomePage> {
                 Scaffold.of(context).openDrawer();
               },
               child: Container(
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 alignment: Alignment.centerRight,
                 child: Icon(
                   OMIcons.viewHeadline,
@@ -211,7 +215,7 @@ class MyHomePageState extends State<MyHomePage> {
               Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(settings: this.widget.settings)));
             },
             child: Container(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.symmetric(horizontal: 16),
               alignment: Alignment.centerRight,
               child: Icon(
                 OMIcons.settings,
@@ -321,7 +325,7 @@ class MyHomePageState extends State<MyHomePage> {
             onPressed: toggleIsMultiselectOn,
           ),
           Container(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             alignment: Alignment.centerRight,
             child: Icon(
               OMIcons.settings,

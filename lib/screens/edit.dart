@@ -224,8 +224,8 @@ class _EditNotePageState extends State<EditNotePage> {
           builder: (BuildContext context) {
             return AlertDialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              title: Text('Delete Note'),
-              content: Text('This note will be deleted permanently'),
+              title: Text('Delete Card'),
+              content: Text('This card will be deleted permanently'),
               actions: <Widget>[
                 FlatButton(
                   child: Text('DELETE', style: prefix0.TextStyle(color: Colors.red.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
