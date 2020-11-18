@@ -17,6 +17,7 @@ const String extensionForCollection = '.collection';
 
 const String fieldDelimiter = 'WhtSfXqwEBD9GfG4U87*3*J5uxPbtG';
 const String fieldDelimiter2 = 'vhtSfXqwEBD9GfD4U87*3*J5uxPbt3F';
+const String fieldDelimiter3 = 'xhtSfXqwEBD9Gfr4U87*3*J5uxPbt3M';
 
 class NotesDatabaseService {
   String path;
@@ -164,11 +165,11 @@ class NotesDatabaseService {
   }
 
   Future<List<NotesModel>> getNotesFromCollection() async {
-    String tablenName = await whichTableIsOpen();
-    print('Table ' + tablenName + 'is open in getNotesFromCollection.');
+    String tableName = await whichTableIsOpen();
+    print('Table ' + tableName + 'is open in getNotesFromCollection.');
     final db = await database;
     List<NotesModel> notesList = [];
-    List<Map> maps = await db.rawQuery('SELECT _id, originalContent, meaningContent, isImportant, date, dueDate FROM [$tablenName] LIMIT 5000');
+    List<Map> maps = await db.rawQuery('SELECT _id, originalContent, meaningContent, isImportant, date, dueDate FROM [$tableName] LIMIT 5000');
     if (maps.length > 0) {
       maps.forEach((map) {
         notesList.add(NotesModel.fromMap(map));
@@ -201,15 +202,15 @@ class NotesDatabaseService {
   }
 
   Future<NotesModel> addNoteInDB(NotesModel newNote) async {
-    String tablenName = await whichTableIsOpen();
+    String tableName = await whichTableIsOpen();
     final db = await database;
     int id = await db.transaction((transaction) {
       transaction.rawInsert('INSERT into [' +
-          tablenName +
+          tableName +
           '] (originalContent, meaningContent, isImportant, date, dueDate) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.isImportant == true ? 1 : 0}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}");');
     });
     newNote.id = id;
-    print('Note added into ' + tablenName + ': ${newNote.originalContent} ${newNote.meaningContent}');
+    print('Note added into ' + tableName + ': ${newNote.originalContent} ${newNote.meaningContent}');
     return newNote;
   }
 
@@ -238,6 +239,24 @@ class NotesDatabaseService {
     }).toList();
 
     return Future.wait(listOfFutures);
+  }
+
+  Future<void> backupEntireDB() async {
+    List<String> allCollectionNames = await listOfCollectionNames();
+    String stringToBeSaved = '';
+    final db = await database;
+    for (var collectionName in allCollectionNames) {
+      stringToBeSaved += collectionName;
+      List<NotesModel> notesList = [];
+      String tableName = fromCollectionNameToTableName(collectionName);
+      List<Map> maps = await db.rawQuery('SELECT _id, originalContent, meaningContent, isImportant, date, dueDate FROM [$tableName]');
+      if (maps.length > 0) {
+        maps.forEach((map) {
+          notesList.add(NotesModel.fromMap(map));
+        });
+      }
+      return notesList;
+    }
   }
 }
 
@@ -308,16 +327,11 @@ void shareListOfNoteCards(List<NotesModel> listOfNoteCards) async {
     print("ERROR: Cannot share empty list of notes.");
     exit(1);
   }
+
   String filename = 'shared_collection_' + DateTime.now().toIso8601String() + '.collection';
-
-  //String stringNoteCard = fromNoteCardToString(noteCard);
-
-  List<String> listOfNoteCardStrings = listOfNoteCards.map((noteCard) => fromNoteCardToString(noteCard)).toList();
-  print(listOfNoteCardStrings.toString());
-
   final file = await getLocalFile(filename);
-
-  String res = listOfNoteCardStrings.join(fieldDelimiter2);
+  String res = await fromListOfNotesModelToString(listOfNoteCards);
+  //String stringNoteCard = fromNoteCardToString(noteCard);
 
   await file.writeAsString(res);
 
@@ -355,6 +369,12 @@ String fromNoteCardToString(NotesModel noteCard) {
   res += noteCard.meaningContent + fieldDelimiter;
   res += noteCard.date.toIso8601String() + fieldDelimiter;
   res += noteCard.dueDate.toIso8601String();
+  return res;
+}
+
+String fromListOfNotesModelToString(List<NotesModel> listOfNoteCards) {
+  List<String> listOfNoteCardStrings = listOfNoteCards.map((noteCard) => fromNoteCardToString(noteCard)).toList();
+  String res = listOfNoteCardStrings.join(fieldDelimiter2);
   return res;
 }
 
