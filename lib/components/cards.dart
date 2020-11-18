@@ -9,6 +9,18 @@ import '../services/database.dart';
 
 List<Color> colorList = [Colors.blue, Colors.green, Colors.indigo, Colors.red, Colors.cyan, Colors.teal, Colors.amber.shade900, Colors.deepOrange];
 
+double dueCircleSize = 10.0;
+Widget getDueCircle(BuildContext context) {
+  return Align(
+    alignment: Alignment.centerRight,
+    child: Icon(
+      Icons.brightness_1,
+      color: Theme.of(context).accentColor,
+      size: dueCircleSize,
+    ),
+  );
+}
+
 class NoteCardComponent extends StatefulWidget {
   NoteCardComponent({
     Key key,
@@ -67,15 +79,6 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
   Widget getNonExpandedCard(int nRows, BuildContext context, bool showLowerButtons) {
     bool isDue = this.widget.noteData.dueDate.difference(DateTime.now()).inSeconds <= 0;
     Color color = colorList.elementAt(this.widget.noteData.meaningContent.length % colorList.length);
-    double circleSize = 10.0;
-    Widget accentCircle = Align(
-      alignment: Alignment.topRight,
-      child: Icon(
-        Icons.brightness_1,
-        color: Theme.of(context).accentColor,
-        size: circleSize,
-      ),
-    );
 
     Widget buttonRow = Padding(
         padding: EdgeInsets.only(top: 20),
@@ -134,14 +137,14 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
             splashColor: color.withAlpha(20),
             highlightColor: color.withAlpha(10),
             child: Container(
-              padding: EdgeInsets.fromLTRB(16, 16.0 - circleSize, 16, 16),
+              padding: EdgeInsets.fromLTRB(16, 16.0 - dueCircleSize, 16, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   isDue
-                      ? accentCircle
+                      ? getDueCircle(context)
                       : Container(
-                          height: circleSize,
+                          height: dueCircleSize,
                         ),
                   Container(
                     margin: EdgeInsets.only(),

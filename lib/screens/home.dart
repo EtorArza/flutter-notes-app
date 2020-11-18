@@ -35,6 +35,7 @@ class MyHomePageState extends State<MyHomePage> {
   bool headerShouldHide = false;
   List<NotesModel> notesList = [];
   List<String> listOfCollectionNames = [];
+  List<bool> listOfCollectionsAreTheyDue = [];
   String nameOfOpenCollection;
   TextEditingController searchController = TextEditingController();
 
@@ -54,12 +55,14 @@ class MyHomePageState extends State<MyHomePage> {
     //print("Entered setNotes");
     var fetchedNotes = await NotesDatabaseService.db.getNotesFromCollection();
     var fetchedListOfCollectionNames = await NotesDatabaseService.db.listOfCollectionNames();
+    var fetchedListOfCollectionsAreTheyDue = await NotesDatabaseService.db.listOfCollectionsAreTheyDue(fetchedListOfCollectionNames);
     var fetchedOpenName = await NotesDatabaseService.db.whichCollectionIsOpen();
 
     setState(() {
       notesList = fetchedNotes;
       listOfCollectionNames = fetchedListOfCollectionNames;
       nameOfOpenCollection = fetchedOpenName;
+      listOfCollectionsAreTheyDue = fetchedListOfCollectionsAreTheyDue;
     });
   }
 
@@ -283,7 +286,7 @@ class MyHomePageState extends State<MyHomePage> {
 
           // move selected
           IconButton(
-              icon: Icon(Icons.reply_all),
+              icon: Icon(Icons.reply),
               onPressed: selectedNotes.length == 0
                   ? null
                   : () async {
@@ -579,26 +582,36 @@ class MyHomePageState extends State<MyHomePage> {
 
   List<Widget> getAllItemsInDrawer(BuildContext context) {
     List<Widget> res = [];
-    for (String item in this.listOfCollectionNames) {
-      if (item == tempCollectionName) {
+    for (var i = 0; i < listOfCollectionNames.length; i++) {
+//    for (String item in this.listOfCollectionNames) {
+      if (this.listOfCollectionNames[i] == tempCollectionName) {
         continue;
       }
       res.add(
         ListTile(
-          title: Text(
-            item,
-            style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+          title: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                this.listOfCollectionNames[i],
+                style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+              ),
+              Container(
+                width: 8,
+              ),
+              this.listOfCollectionsAreTheyDue[i] ? getDueCircle(context) : Container(),
+            ],
           ),
           onTap: () async {
             // Update the state of the app.
             // ...
-            await NotesDatabaseService.db.markCollectionAsOpen(item);
+            await NotesDatabaseService.db.markCollectionAsOpen(this.listOfCollectionNames[i]);
 
             refetchNotesFromDB();
             Navigator.pop(context);
           },
           onLongPress: () {
-            showCollectionOptionsAlertDialog(context, item, refetchNotesFromDB, listOfCollectionNames.length);
+            showCollectionOptionsAlertDialog(context, this.listOfCollectionNames[i], refetchNotesFromDB, listOfCollectionNames.length);
           },
         ),
       );

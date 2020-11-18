@@ -212,6 +212,33 @@ class NotesDatabaseService {
     print('Note added into ' + tablenName + ': ${newNote.originalContent} ${newNote.meaningContent}');
     return newNote;
   }
+
+  Future<bool> isCollectionDue(String collectionName) async {
+    String tableName = fromCollectionNameToTableName(collectionName);
+    final db = await database;
+    NotesModel notesList;
+    List<Map> maps = await db.query('[' + tableName + ']',
+        columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
+
+    if (maps.length == 0) {
+      return false;
+    }
+
+    notesList = NotesModel.fromMap(maps.first);
+    return notesList.dueDate.difference(DateTime.now()).inSeconds <= 0;
+  }
+
+  Future<List<bool>> listOfCollectionsAreTheyDue(List<String> fetchedListOfCollectionNames) async {
+    if (fetchedListOfCollectionNames.length == 0) {
+      return [];
+    }
+
+    final listOfFutures = fetchedListOfCollectionNames.map((element) {
+      return isCollectionDue(element);
+    }).toList();
+
+    return Future.wait(listOfFutures);
+  }
 }
 
 // String fromCollectionNameToTableName(String collectionName) {
