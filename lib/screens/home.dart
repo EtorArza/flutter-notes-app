@@ -230,9 +230,10 @@ class MyHomePageState extends State<MyHomePage> {
             onPressed: selectedNotes.length == 0
                 ? null
                 : () {
+                    int nCardsDelete = selectedNotes.length;
                     showConfirmationDialog(
                       context,
-                      'Delete ' + selectedNotes.length.toString() + ' card' + (selectedNotes.length == 1 ? '' : 's') + '?',
+                      'Delete ' + nCardsDelete.toString() + ' card' + (nCardsDelete == 1 ? '' : 's') + '?',
                       'DELETE',
                       Colors.red[300],
                       'CANCEL',
@@ -242,6 +243,7 @@ class MyHomePageState extends State<MyHomePage> {
                         }
                         toggleIsMultiselectOn();
                         setNotesFromDB();
+                        showInSnackBar('Deleted ' + nCardsDelete.toString() + ' card' + (nCardsDelete == 1 ? '.' : 's.'));
                       },
                     );
                   },
@@ -307,7 +309,7 @@ class MyHomePageState extends State<MyHomePage> {
                       await NotesDatabaseService.db.markCollectionAsOpen(openCollectionName);
                       setNotesFromDB();
                       showInSnackBar(
-                          'Moved ' + nOfCardsMoved.toString() + ' card' + (nOfCardsMoved == 1 ? '' : 's') + ' to ' + destinationCollectionName);
+                          'Moved ' + nOfCardsMoved.toString() + ' card' + (nOfCardsMoved == 1 ? '' : 's') + ' to ' + destinationCollectionName + '.');
                     }),
           // toggle MultiselectOn
           IconButton(
