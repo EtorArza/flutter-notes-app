@@ -229,12 +229,21 @@ class MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.delete),
             onPressed: selectedNotes.length == 0
                 ? null
-                : () async {
-                    for (var note in selectedNotes) {
-                      await NotesDatabaseService.db.deleteNoteInDB(note);
-                    }
-                    toggleIsMultiselectOn();
-                    setNotesFromDB();
+                : () {
+                    showConfirmationDialog(
+                      context,
+                      'Delete ' + selectedNotes.length.toString() + ' card' + (selectedNotes.length == 1 ? '' : 's') + '?',
+                      'DELETE',
+                      Colors.red[300],
+                      'CANCEL',
+                      () async {
+                        for (var note in selectedNotes) {
+                          await NotesDatabaseService.db.deleteNoteInDB(note);
+                        }
+                        toggleIsMultiselectOn();
+                        setNotesFromDB();
+                      },
+                    );
                   },
           ),
 
