@@ -186,7 +186,7 @@ class MyHomePageState extends State<MyHomePage> {
             tooltip: 'Create random',
             icon: Icon(Icons.confirmation_number),
             onPressed: () {
-              for (var i = 0; i < 100; i++) {
+              for (var i = 0; i < 1000; i++) {
                 NotesDatabaseService.db.addNoteInDB(NotesModel.random());
               }
               setNotesFromDB();
@@ -211,8 +211,9 @@ class MyHomePageState extends State<MyHomePage> {
               }),
           GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () {
-              Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(settings: this.widget.settings)));
+            onTap: () async {
+              await Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(settings: this.widget.settings)));
+              setNotesFromDB();
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16),

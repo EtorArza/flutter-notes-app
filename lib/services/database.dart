@@ -18,6 +18,7 @@ const String extensionForCollection = '.collection';
 const String fieldDelimiter = 'WhtSfXqwEBD9GfG4U87*3*J5uxPbtG';
 const String fieldDelimiter2 = 'vhtSfXqwEBD9GfD4U87*3*J5uxPbt3F';
 const String fieldDelimiter3 = 'xhtSfXqwEBD9Gfr4U87*3*J5uxPbt3M';
+const String defaultColectionName = 'New Collection';
 
 class NotesDatabaseService {
   String path;
@@ -41,7 +42,7 @@ class NotesDatabaseService {
     print("Opening database at path $path");
 
     return await openDatabase(path, version: 1, onCreate: (Database db, int version) async {
-      String newTableName = fromCollectionNameToTableName("NewCollection");
+      String newTableName = fromCollectionNameToTableName(defaultColectionName);
       await db.execute('CREATE TABLE ' + collectionListName + ' (_id INTEGER PRIMARY KEY, tableName TEXT, isOpen INTEGER);');
       await db.execute(
           'CREATE TABLE [$newTableName] (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
@@ -65,12 +66,10 @@ class NotesDatabaseService {
   }
 
   markCollectionAsOpen(String collectionName) async {
-    print('markCollectionAsOpen(' + collectionName + ')');
     String tableName = fromCollectionNameToTableName(collectionName);
     final db = await database;
     await db.update(collectionListName, <String, int>{'isOpen': 0}, where: 'isOpen = ?', whereArgs: [1]);
     await db.update(collectionListName, <String, int>{'isOpen': 1}, where: 'tableName = ?', whereArgs: [tableName]);
-    print(await whichTableIsOpen() + ' is open in markCollectionAsOpen() after update');
     return;
   }
 
@@ -87,7 +86,6 @@ class NotesDatabaseService {
 
     List<String> tableNames = await listOfTableNames();
     tableNames = tableNames.map((item) => item.toUpperCase()).toList();
-    print(tableNames);
     int alreadyExistCounter = 2;
     String candidateTableName = tableName;
 
@@ -96,19 +94,16 @@ class NotesDatabaseService {
       alreadyExistCounter += 1;
     }
 
-    print('Creating collection -> ' + candidateTableName);
     await db.execute('CREATE TABLE [' +
         candidateTableName +
         '] (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
     int id = await db.transaction((transaction) {
       transaction.rawInsert('INSERT into ' + collectionListName + '(tableName, isOpen) VALUES ("$candidateTableName", "0");');
     });
-    print('Table ' + candidateTableName + 'added, transaction id: ' + id.toString());
     return;
   }
 
   renameCollection(String oldCollectionName, String newCollectionName) async {
-    print("Renaming $oldCollectionName to $newCollectionName");
     String oldTableName = fromCollectionNameToTableName(oldCollectionName);
     String newTableName = fromCollectionNameToTableName(newCollectionName);
     if (oldTableName == newTableName) {
@@ -127,9 +122,7 @@ class NotesDatabaseService {
 
     final db = await database;
     await db.execute('ALTER TABLE [$oldTableName] RENAME TO [$candidateTableName];');
-    print(await listOfTableNames());
     await db.update(collectionListName, <String, String>{'tableName': '$candidateTableName'}, where: 'tableName = ?', whereArgs: [oldTableName]);
-    print(await listOfTableNames());
     //await db.update(collectionListName, <String, int>{'isOpen': 1}, where: 'tableName = ?', whereArgs: [tableName]);
 
     return;
@@ -139,7 +132,6 @@ class NotesDatabaseService {
     final db = await database;
     String tableName = fromCollectionNameToTableName(collectionName);
     int numberOfCOllections = await getNumberOfCollections();
-    print('Deleting  ' + collectionName);
     db.execute('DROP TABLE [' + tableName + ']');
     await db.rawDelete('DELETE FROM ' + collectionListName + ' WHERE tableName = ?', [tableName]);
   }
@@ -166,7 +158,6 @@ class NotesDatabaseService {
 
   Future<List<NotesModel>> getNotesFromCollection() async {
     String tableName = await whichTableIsOpen();
-    print('Table ' + tableName + 'is open in getNotesFromCollection.');
     final db = await database;
     List<NotesModel> notesList = [];
     List<Map> maps = await db.rawQuery('SELECT _id, originalContent, meaningContent, isImportant, date, dueDate FROM [$tableName] LIMIT 5000');
@@ -198,7 +189,6 @@ class NotesDatabaseService {
     String tableName = await whichTableIsOpen();
     final db = await database;
     await db.delete('[' + tableName + ']', where: '_id = ?', whereArgs: [noteToDelete.id]);
-    print('Note deleted');
   }
 
   Future<NotesModel> addNoteInDB(NotesModel newNote) async {
@@ -210,7 +200,6 @@ class NotesDatabaseService {
           '] (originalContent, meaningContent, isImportant, date, dueDate) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.isImportant == true ? 1 : 0}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}");');
     });
     newNote.id = id;
-    print('Note added into ' + tableName + ': ${newNote.originalContent} ${newNote.meaningContent}');
     return newNote;
   }
 
@@ -246,7 +235,6 @@ class NotesDatabaseService {
     String stringToBeSaved = '';
     final db = await database;
     for (var collectionName in allCollectionNames) {
-      stringToBeSaved += collectionName;
       List<NotesModel> notesList = [];
       String tableName = fromCollectionNameToTableName(collectionName);
       List<Map> maps = await db.rawQuery('SELECT _id, originalContent, meaningContent, isImportant, date, dueDate FROM [$tableName]');
@@ -255,7 +243,55 @@ class NotesDatabaseService {
           notesList.add(NotesModel.fromMap(map));
         });
       }
-      return notesList;
+      stringToBeSaved += collectionName + fieldDelimiter3;
+      stringToBeSaved += fromListOfNotesModelToString(notesList) + fieldDelimiter3;
+    }
+    String filename = 'backup_' + DateTime.now().toIso8601String() + '.AppNameDB';
+    final file = await getLocalFile(filename);
+
+    await file.writeAsString(stringToBeSaved);
+
+    Share.shareFiles([file.path], text: 'AppName backup ' + DateTime.now().toIso8601String());
+  }
+
+  Future<void> restoreBackup() async {
+    FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: ["AppNameDB"], type: FileType.custom);
+
+    // reset the database
+    String path = await getDatabasesPath();
+    path = join(path, 'notes.db');
+
+    // TODO: properly handle delete previous DB and check for file integrity before backup
+    // await deleteDatabase(path);
+    // _database = null;
+    final db = await database;
+
+    int nCollections = await getNumberOfCollections();
+
+    if (result != null) {
+      List<String> listOfCurrentCollections = await listOfCollectionNames();
+
+      for (var collectionName in listOfCurrentCollections) {
+        await deleteCollection(collectionName);
+      }
+
+      String filePath = result.files.first.path;
+      if (result.files.first.path.split('.').last == 'AppNameDB') {
+        String readString = await File(filePath).readAsString();
+
+        List<String> listOfCollectionStringsAndNames = readString.split(fieldDelimiter3);
+        for (var i = 0; i < listOfCollectionStringsAndNames.length - 1; i += 2) {
+          String collectionName = listOfCollectionStringsAndNames[i];
+          String collectionStringListCards = listOfCollectionStringsAndNames[i + 1];
+          List<NotesModel> listReadNotes = fromStringToListOfNotesModel(collectionStringListCards);
+          await createNewCollection(collectionName);
+          await markCollectionAsOpen(collectionName);
+          for (var readNote in listReadNotes) {
+            await NotesDatabaseService.db.addNoteInDB(readNote);
+          }
+        }
+      }
+      markCollectionAsOpen((await NotesDatabaseService.db.listOfCollectionNames()).first);
     }
   }
 }
@@ -273,7 +309,6 @@ String fromCollectionNameToTableName(String collectionName) {
 
   res = res.replaceAll('[', stringToReplaceLeftBracket);
   res = res.replaceAll(']', stringToReplaceRightBracket);
-  print("$collectionName -> $res");
   return res;
 }
 
@@ -282,7 +317,6 @@ String fromTableNameToCollectionName(String tableName) {
 
   res = res.replaceAll(stringToReplaceLeftBracket, '[');
   res = res.replaceAll(stringToReplaceRightBracket, ']');
-  print("$tableName -> $res");
   return res;
 }
 
@@ -314,7 +348,6 @@ void shareNoteCard(NotesModel noteCard) async {
   String filename = 'shared_card_' + DateTime.now().toIso8601String() + '.card';
 
   String stringNoteCard = fromNoteCardToString(noteCard);
-  print(stringNoteCard);
   final file = await getLocalFile(filename);
 
   await file.writeAsString(stringNoteCard);
@@ -356,6 +389,11 @@ List<NotesModel> fromStringToListOfNotesModel(String stringCollection) {
 
   List<NotesModel> res = [];
 
+  if (listOfCardStrings.length == 1) {
+    if (listOfCardStrings[0] == '') {
+      return [];
+    }
+  }
   for (var item in listOfCardStrings) {
     res.add(fromStringToNotesModel(item));
   }

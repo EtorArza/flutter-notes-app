@@ -62,7 +62,7 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
 
   void refetchNotesFromDB() async {
     //await setNotesFromDB();
-    print("Refetched notes");
+    //print("Refetched notes");
   }
 
   void updateDueDateCard(Duration timeFromNow) async {
@@ -127,9 +127,9 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: () {
-              print(this.widget.noteData.isExpanded);
+              //print(this.widget.noteData.isExpanded);
               this.widget.onTapAction(this.widget.noteData);
-              print(this.widget.noteData.isExpanded);
+              //print(this.widget.noteData.isExpanded);
             },
             onLongPress: () {
               this.widget.onHoldAction(this.widget.noteData);

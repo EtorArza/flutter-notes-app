@@ -176,7 +176,7 @@ class _EditNotePageState extends State<EditNotePage> {
     setState(() {
       currentNote.originalContent = originalContentController.text;
       currentNote.meaningContent = meaningContentController.text;
-      print('Hey there ${currentNote.originalContent} , ${currentNote.meaningContent}');
+      //print('Hey there ${currentNote.originalContent} , ${currentNote.meaningContent}');
     });
     if (isNoteNew) {
       var latestNote = await NotesDatabaseService.db.addNoteInDB(currentNote);
