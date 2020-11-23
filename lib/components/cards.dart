@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -87,13 +88,13 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
           children: <Widget>[
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(days: -10));
+                updateDueDateCard(Duration(seconds: -(1 + Random().nextInt(1000))));
               },
               child: ButtonBelowCard(icon: Icons.repeat),
             ),
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(days: 1));
+                updateDueDateCard(Duration(hours: 12));
               },
               child: ButtonBelowCard(icon: Icons.repeat_one),
             ),

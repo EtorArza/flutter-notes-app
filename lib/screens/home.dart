@@ -26,12 +26,13 @@ class MyHomePage extends StatefulWidget {
   MyHomePageState createState() => MyHomePageState();
 }
 
-class MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool isFlagOn = false;
   bool isMultiselectOn = false;
   Set<NotesModel> selectedNotes = Set();
 
-  int visibilityIndex = 1;
+  int visibilityIndex = 2;
+  DateTime timeLastUpdate = DateTime.now();
   bool headerShouldHide = false;
   List<NotesModel> notesList = [];
   List<String> listOfCollectionNames = [];
@@ -44,11 +45,57 @@ class MyHomePageState extends State<MyHomePage> {
   bool isSearchEmpty = true;
 
   @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     NotesDatabaseService.db.init();
     setNotesFromDB();
-    visibilityIndex = 1;
+    visibilityIndex = 2;
+
+    int updateEveryThisManySeconds = 200;
+
+    new Timer.periodic(Duration(seconds: updateEveryThisManySeconds), (Timer t) {
+      //if (!isMultiselectOn && DateTime.now().difference(timeLastUpdate).inSeconds > updateAfterThisManySeconds) {}
+      // timeLastUpdate = DateTime.now();
+      if (!isMultiselectOn) {
+        setNotesFromDB();
+      }
+      ;
+      //print((DateTime.now().difference(timeLastUpdate).inSeconds).toString() + ' periodic function call ' + DateTime.now().toIso8601String());
+    });
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        if (!isMultiselectOn) {
+          setNotesFromDB();
+        }
+        print('resumed.');
+        break;
+      case AppLifecycleState.inactive:
+        //
+        break;
+      case AppLifecycleState.paused:
+        if (isMultiselectOn) {
+          toggleIsMultiselectOn();
+        }
+        print('paused.');
+        break;
+      case AppLifecycleState.detached:
+        if (isMultiselectOn) {
+          toggleIsMultiselectOn();
+        }
+        print('detached.');
+        break;
+    }
   }
 
   setNotesFromDB() async {

@@ -41,7 +41,7 @@ class _EditNotePageState extends State<EditNotePage> {
         originalContent: '',
         meaningContent: '',
         date: DateTime.now(),
-        dueDate: DateTime.now(),
+        dueDate: DateTime.now().add(Duration(days: -1000)),
         isImportant: false,
         isExpanded: false,
       );
