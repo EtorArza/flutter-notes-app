@@ -84,11 +84,28 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
     Widget buttonRow = Padding(
         padding: EdgeInsets.only(top: 20),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             InkWell(
-              onTap: () {
-                updateDueDateCard(Duration(seconds: -(1 + Random().nextInt(1000))));
+              onTap: () async {
+                int nextDueMiliseconds = await NotesDatabaseService.db.getNumberOfSecondsDueOfSecondNote();
+
+                // next card is due a long time ago
+                if (nextDueMiliseconds < -30) {
+                  nextDueMiliseconds = 0 - (1 + Random().nextInt(15)); // set due this after all long time due
+                }
+                // next card is due short time ago
+                else if (nextDueMiliseconds <= 0) {
+                  if (nextDueMiliseconds != 0) {
+                    nextDueMiliseconds = -(Random().nextInt(nextDueMiliseconds.abs())); //
+                  }
+                }
+                // next card is NOT due (nextDueSeconds > -4)
+                else {
+                  nextDueMiliseconds = 0 - (1 + Random().nextInt(15));
+                }
+
+                updateDueDateCard(Duration(milliseconds: nextDueMiliseconds));
               },
               child: ButtonBelowCard(icon: Icons.repeat),
             ),
@@ -96,19 +113,25 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
               onTap: () {
                 updateDueDateCard(Duration(hours: 12));
               },
-              child: ButtonBelowCard(icon: Icons.repeat_one),
+              child: ButtonBelowCard(icon: '1d'),
             ),
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(days: 5));
+                updateDueDateCard(Duration(days: 7));
               },
-              child: ButtonBelowCard(icon: Icons.replay_5),
+              child: ButtonBelowCard(icon: '7d'),
             ),
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(days: 30));
+                updateDueDateCard(Duration(days: 16));
               },
-              child: ButtonBelowCard(icon: Icons.replay_30),
+              child: ButtonBelowCard(icon: '16d'),
+            ),
+            InkWell(
+              onTap: () {
+                updateDueDateCard(Duration(days: 35));
+              },
+              child: ButtonBelowCard(icon: '35d'),
             ),
           ],
         ));
@@ -209,18 +232,26 @@ class ButtonBelowCard extends StatelessWidget {
   }) : super(key: key);
 
   final double opacity = 0;
-  final IconData icon;
+  final icon;
 
   @override
   Widget build(BuildContext context) {
     Color accentColor = appThemeDark.accentColor;
     Widget res = Container(
       height: 50,
-      width: 70,
-      child: Icon(
-        icon,
-        color: Colors.grey.shade300,
-      ),
+      width: 65,
+      child: icon is IconData
+          ? Icon(
+              icon,
+              color: Colors.grey.shade300,
+            )
+          : Align(
+              alignment: Alignment.center,
+              child: Text(
+                icon,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 22, color: Colors.grey.shade300, fontFamily: 'ZillaSlab'),
+              )),
       decoration: BoxDecoration(
           color: Colors.transparent, border: Border.all(width: 1.0, color: Colors.grey.shade300), borderRadius: BorderRadius.all(Radius.circular(6))),
     );

@@ -180,6 +180,22 @@ class NotesDatabaseService {
     return notesList;
   }
 
+  Future<int> getNumberOfSecondsDueOfSecondNote() async {
+    String tableName = await whichTableIsOpen();
+    final db = await database;
+    NotesModel notesList;
+    List<Map> maps = await db.query('[' + tableName + ']',
+        columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
+
+    DateTime res;
+    if (maps.length == 1) {
+      res = DateTime.now();
+    } else {
+      res = NotesModel.fromMap(maps[1]).dueDate;
+    }
+    return res.difference(DateTime.now()).inMilliseconds;
+  }
+
   updateNoteInDB(NotesModel updatedNote) async {
     String tableName = await whichTableIsOpen();
     final db = await database;
