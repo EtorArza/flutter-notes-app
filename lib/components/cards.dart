@@ -70,6 +70,7 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
     DateTime now = DateTime.now();
 
     this.widget.noteData.dueDate = now.add(timeFromNow);
+    this.widget.noteData.date = DateTime.now();
     await NotesDatabaseService.db.updateNoteInDB(this.widget.noteData);
     setState(() {
       this.widget.noteData.toggleExpand();
@@ -79,6 +80,8 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
 
   Widget getNonExpandedCard(int nRows, BuildContext context, bool showLowerButtons) {
     bool isDue = this.widget.noteData.dueDate.difference(DateTime.now()).inSeconds <= 0;
+    int nDaysSinceLastUpdate = -this.widget.noteData.date.difference(DateTime.now()).inDays;
+
     Color color = colorList.elementAt(this.widget.noteData.meaningContent.length % colorList.length);
 
     Widget buttonRow = Padding(
@@ -165,11 +168,20 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  isDue
-                      ? getDueCircle(context)
-                      : Container(
-                          height: dueCircleSize,
-                        ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        nDaysSinceLastUpdate.toString() + 'd ',
+                        style: TextStyle(color: Color.fromARGB(min(30 + nDaysSinceLastUpdate * 8, 255), 255, 255, 255)),
+                      ),
+                      isDue
+                          ? getDueCircle(context)
+                          : Container(
+                              height: dueCircleSize,
+                            ),
+                    ],
+                  ),
                   Container(
                     margin: EdgeInsets.only(),
                     child: this.widget.isVisible == 0 || this.widget.isVisible == 1 || this.widget.noteData.isExpanded
@@ -329,8 +341,25 @@ class FormattedText extends StatelessWidget {
 
   List<TextSpan> buildListOfTextSpan(String text, BuildContext context) {
     const String sep = ":";
-    const List<String> highlightColorNames = ["white", "red", "green", "blue", "pink", "yellow", "orange", "purple"];
+    const List<String> highlightColorNames = [
+      "regular",
+      "default",
+      "standard",
+      "white",
+      "red",
+      "green",
+      "blue",
+      "pink",
+      "yellow",
+      "orange",
+      "purple"
+    ];
+    const List<String> fontModeNames = ["regular", "default", "standard", "normal", "italic", "bold"];
+
     const List<Color> highlightColors = [
+      Color.fromARGB(255, 255, 255, 255), // regular (white)
+      Color.fromARGB(255, 255, 255, 255), // default (white)
+      Color.fromARGB(255, 255, 255, 255), // standard (white)
       Color.fromARGB(255, 255, 255, 255), // white
       Color.fromARGB(255, 255, 51, 92), // red
       Color.fromARGB(255, 0, 255, 128), // green
@@ -346,26 +375,46 @@ class FormattedText extends StatelessWidget {
       return element == "white";
     })];
 
-    bool colorChanged = true;
+    FontWeight currentFontWeight = FontWeight.normal;
+    FontStyle currentFontStyle = FontStyle.normal;
+
+    bool styleChanged = true;
     List<String> splittedText = text.split(sep);
 
     for (var i = 0; i < splittedText.length; ++i) {
       final textPiece = splittedText[i];
-      if (highlightColorNames.contains(textPiece) && i != 0 && i != splittedText.length - 1) {
-        colorChanged = true;
-        currentColor = highlightColors[highlightColorNames.indexWhere((element) {
-          return element == textPiece;
-        })];
+      if ((highlightColorNames.contains(textPiece) || fontModeNames.contains(textPiece)) && i != 0 && i != splittedText.length - 1) {
+        styleChanged = true;
+        if (highlightColorNames.contains(textPiece)) {
+          currentColor = highlightColors[highlightColorNames.indexWhere((element) {
+            return element == textPiece;
+          })];
+        }
+
+        if (fontModeNames.contains(textPiece)) {
+          if (textPiece == 'normal' || textPiece == 'standard' || textPiece == 'regular' || textPiece == 'normal') {
+            currentFontWeight = FontWeight.normal;
+            currentFontStyle = FontStyle.normal;
+          } else if (textPiece == 'bold') {
+            currentFontWeight = FontWeight.bold;
+            currentFontStyle = FontStyle.normal;
+          } else if (textPiece == "italic") {
+            currentFontWeight = FontWeight.normal;
+            currentFontStyle = FontStyle.italic;
+          }
+        }
       } else {
         res.add(TextSpan(
           style: TextStyle(
             color: currentColor,
             fontFamily: DefaultTextStyle.of(context).style.fontFamily,
             fontSize: 16.0,
+            fontWeight: currentFontWeight,
+            fontStyle: currentFontStyle,
           ),
-          text: colorChanged ? textPiece : ":" + textPiece,
+          text: styleChanged ? textPiece : ":" + textPiece,
         ));
-        colorChanged = false;
+        styleChanged = false;
       }
     }
 
