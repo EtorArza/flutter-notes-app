@@ -125,6 +125,30 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
                     child: Text(
+                      'Etor Arza',
+                      style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24),
+                    ),
+                  )),
+                  Container(
+                    alignment: Alignment.center,
+                    child: OutlineButton.icon(
+                      icon: Icon(OMIcons.link),
+                      label: Text('GITHUB', style: TextStyle(fontWeight: FontWeight.w500, letterSpacing: 1, color: Colors.grey.shade500)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      onPressed: openGitHub,
+                    ),
+                  ),
+                  Container(
+                    height: 30,
+                  ),
+                  Center(
+                    child: Text('Developed by'.toUpperCase(),
+                        style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500, letterSpacing: 1)),
+                  ),
+                  Center(
+                      child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                    child: Text(
                       'Roshan',
                       style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24),
                     ),
