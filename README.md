@@ -1,32 +1,23 @@
-# Draft - Notes app
+# Memorize with cards and spaced repetitions
 
-An elegant notes taking app written in Flutter that uses sqflite for storage.
+A Flutter app to memorize with spaced repetitions.
 
 ## Features
-1. *Animated UI*: A beautiful, minimalist user interface with subtle animations.
-2. *Dark mode*: Light and dark theme variants.
-3. *Mark notes as important*: Mark notes as important and filter them.
-4. *Search*: Search your notes.
-5. *Edit note*: Edit note that you saved previously
-6. *Share*: Share note using any app that can share text.
+1. *Review with spaced repetitions*: Periodically revisit learned concepts with the spaced learning technique [1] to maximize recall while minimizing time studied.
+2. *Backup*: Backup all your cards to keep them safe and restore them later.
+3. *Sharing*: Share one or more cards with family and friends.
+4: *Formatting text*: Change the color and style of the text to highlight words or letters. For example, I use red blue and green to highlight the gender of German nouns.
 
-## Dependencies
-- outline_material_icons: ^0.1.0
-- sqflite: ^1.1.5
-- intl: ^0.15.8
-- url_launcher: ^5.0.3
-- shared_preferences: ^0.5.3+1
-- share: ^0.6.1+1
 
-## Run the project
-- With Flutter installed, clone project and run `flutter run --release` in that directory, 
-or
-- Download the built APK from [here](https://github.com/roshanrahman/flutter-notes-app/raw/master/github_assets/draft.apk)
+
+
+## Credits
+This app was written by Etor Arza, by forking [Roshan's 'Draft' app](https://github.com/roshanrahman/flutter-notes-app).
+
 
 ## Screenshots
 <img src="github_assets/edit.gif" height="800">
 <img src="github_assets/dark.gif" height="800">
 
-Feedback is welcome! Contact me for any info.
 
-
+[1] Smolen, P., Zhang, Y., & Byrne, J. H. (2016). The right time to learn: mechanisms and optimization of spaced learning. Nature reviews. Neuroscience, 17(2), 77–88. https://doi.org/10.1038/nrn.2015.18
