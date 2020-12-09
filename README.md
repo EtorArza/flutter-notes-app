@@ -6,7 +6,7 @@ A Flutter app to memorize with spaced repetitions.
 1. *Review with spaced repetitions*: Periodically revisit learned concepts with the spaced learning technique [1] to maximize recall while minimizing time studied.
 2. *Backup*: Backup all your cards to keep them safe and restore them later.
 3. *Sharing*: Share one or more cards with family and friends.
-4: *Formatting text*: Change the color and style of the text to highlight words or letters. For example, I use red blue and green to highlight the gender of German nouns.
+4. *Formatting text*: Change the color and style of the text to highlight words or letters. For example, I use red blue and green to highlight the gender of German nouns.
 
 
 
