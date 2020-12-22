@@ -33,9 +33,18 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
 
+
+flutter_icons: # run 'flutter pub run flutter_launcher_icons:main' to update icon
+  android: true
+  ios: true
+  image_path: "images/logo.png"
+
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.8.0"
 
 
 # For information on the generic Dart part of this file, see the

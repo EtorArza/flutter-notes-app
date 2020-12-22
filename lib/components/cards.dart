@@ -392,7 +392,7 @@ class FormattedText extends StatelessWidget {
         }
 
         if (fontModeNames.contains(textPiece)) {
-          if (textPiece == 'normal' || textPiece == 'standard' || textPiece == 'regular' || textPiece == 'normal') {
+          if (textPiece == 'normal' || textPiece == 'standard' || textPiece == 'regular' || textPiece == 'default') {
             currentFontWeight = FontWeight.normal;
             currentFontStyle = FontStyle.normal;
           } else if (textPiece == 'bold') {
