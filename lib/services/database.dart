@@ -327,6 +327,7 @@ class NotesDatabaseService {
             }
           }
         }
+        settingsStatePage.setBackupProgress(1.0);
         settingsStatePage.closeProgressBar();
       }
       markCollectionAsOpen((await NotesDatabaseService.db.listOfCollectionNames()).first);

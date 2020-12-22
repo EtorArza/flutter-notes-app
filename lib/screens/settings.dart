@@ -51,8 +51,10 @@ class SettingsPageState extends State<SettingsPage> {
   }
 
   void closeProgressBar() {
-    setState(() {
-      _showBackupProgress = false;
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        _showBackupProgress = false;
+      });
     });
   }
 
@@ -105,7 +107,7 @@ class SettingsPageState extends State<SettingsPage> {
                                 Text('Backup all collections',
                                     style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
                                 Spacer(),
-                                IconButton(icon: Icon(Icons.save), onPressed: NotesDatabaseService.db.backupEntireDB),
+                                iconButtonWithFrame(Icons.save, NotesDatabaseService.db.backupEntireDB),
                               ],
                             )),
                             buildCardWidget(Column(children: [
@@ -115,45 +117,46 @@ class SettingsPageState extends State<SettingsPage> {
                                   Text('Restore backup',
                                       style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
                                   Spacer(),
-                                  IconButton(
-                                      icon: Icon(Icons.settings_backup_restore),
-                                      onPressed: () async {
-                                        showDialog(
-                                          barrierDismissible: true,
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text(
-                                                  'Are you sure you want to restore a backup? All current data will be replaced and forever lost.',
-                                                  style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
-                                              content: Container(height: 0),
-                                              actions: <Widget>[
-                                                FlatButton(
-                                                  child: Text('restore backup'.toUpperCase(),
-                                                      style: TextStyle(color: Colors.red[300], fontWeight: FontWeight.w500, letterSpacing: 1)),
-                                                  onPressed: () async {
-                                                    allowExitSettings = false;
+                                  iconButtonWithFrame(
+                                    Icons.settings_backup_restore,
+                                    () async {
+                                      showDialog(
+                                        barrierDismissible: true,
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text(
+                                                'Are you sure you want to restore a backup? All current data will be replaced and forever lost.',
+                                                style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
+                                            content: Container(height: 0),
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                child: Text('restore backup'.toUpperCase(),
+                                                    style: TextStyle(color: Colors.red[300], fontWeight: FontWeight.w500, letterSpacing: 1)),
+                                                onPressed: () async {
+                                                  allowExitSettings = false;
+                                                  Navigator.of(context).pop();
+                                                  await NotesDatabaseService.db.restoreBackup(this, context);
+                                                  allowExitSettings = true;
+                                                },
+                                              ),
+                                              FlatButton(
+                                                child: Text('cancel'.toUpperCase(),
+                                                    style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+                                                onPressed: () {
+                                                  if (!allowExitSettings) {
+                                                    return;
+                                                  } else {
                                                     Navigator.of(context).pop();
-                                                    await NotesDatabaseService.db.restoreBackup(this, context);
-                                                    allowExitSettings = true;
-                                                  },
-                                                ),
-                                                FlatButton(
-                                                  child: Text('cancel'.toUpperCase(),
-                                                      style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
-                                                  onPressed: () {
-                                                    if (!allowExitSettings) {
-                                                      return;
-                                                    } else {
-                                                      Navigator.of(context).pop();
-                                                    }
-                                                  },
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      }),
+                                                  }
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
                                 ],
                               ),
                             ])),
@@ -340,4 +343,24 @@ class Settings {
   void saveSettings() async {
     setCardPositionInReviewInSharedPref(cardPositionInReview);
   }
+}
+
+Widget iconButtonWithFrame(IconData icon, Function onTap) {
+  return GestureDetector(
+    onTap: onTap,
+    child: AnimatedContainer(
+      duration: Duration(milliseconds: 160),
+      height: 50,
+      width: 50,
+      curve: Curves.slowMiddle,
+      child: Icon(icon, color: Colors.grey.shade300),
+      decoration: BoxDecoration(
+          color: Colors.transparent,
+          border: Border.all(
+            width: 1,
+            color: Colors.grey.shade300,
+          ),
+          borderRadius: BorderRadius.all(Radius.circular(16))),
+    ),
+  );
 }
