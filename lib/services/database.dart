@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:share/share.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:flutter/material.dart';
+import '../screens/settings.dart';
 
 const String collectionListName = 'ehahdugvbypgtuttjrvexksuehgpqmn';
 
@@ -271,7 +272,7 @@ class NotesDatabaseService {
     Share.shareFiles([file.path], text: 'AppName backup ' + DateTime.now().toIso8601String());
   }
 
-  Future<void> restoreBackup(BuildContext context) async {
+  Future<void> restoreBackup(SettingsPageState settingsStatePage, BuildContext context) async {
     FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: ["AppNameDB"], type: FileType.custom);
 
     // reset the database
@@ -290,6 +291,8 @@ class NotesDatabaseService {
 
       List<String> listOfCurrentCollections = await listOfCollectionNames();
 
+      settingsStatePage.showProgressBar();
+
       for (var collectionName in listOfCurrentCollections) {
         await deleteCollection(collectionName);
       }
@@ -302,55 +305,29 @@ class NotesDatabaseService {
 
         Widget linearProgress = LinearProgressIndicator(value: 0.0);
         bool popProgress = false;
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext dialogContext) {
-            return WillPopScope(
-              onWillPop: () async {
-                return popProgress;
-              },
-              child: AlertDialog(
-                title: Text('Restoring backup...', style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
-                content: linearProgress,
-                actions: <Widget>[],
-              ),
-            );
-          },
-        );
 
         for (var i = 0; i < listOfCollectionStringsAndNames.length - 1; i += 2) {
-          linearProgress = LinearProgressIndicator(value: i.toDouble() / listOfCollectionStringsAndNames.length.toDouble());
-          showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (BuildContext dialogContext) {
-              return WillPopScope(
-                onWillPop: () async {
-                  return popProgress;
-                },
-                child: AlertDialog(
-                  title: Text('Restoring backup...', style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
-                  content: linearProgress,
-                  actions: <Widget>[],
-                ),
-              );
-            },
-          );
-          popProgress = false;
+          settingsStatePage.setBackupProgress(i.toDouble() / listOfCollectionStringsAndNames.length.toDouble());
 
           String collectionName = listOfCollectionStringsAndNames[i];
           String collectionStringListCards = listOfCollectionStringsAndNames[i + 1];
           List<NotesModel> listReadNotes = fromStringToListOfNotesModel(collectionStringListCards);
           await createNewCollection(collectionName);
           await markCollectionAsOpen(collectionName);
+
+          double currentProgress = i.toDouble() / listOfCollectionStringsAndNames.length.toDouble();
+          int noteIndex = 1;
+          int nNotes = listReadNotes.length;
           for (var readNote in listReadNotes) {
+            noteIndex++;
             await NotesDatabaseService.db.addNoteInDB(readNote);
+            if (noteIndex % 50 == 0) {
+              currentProgress += 1.toDouble() / listOfCollectionStringsAndNames.length.toDouble() / nNotes.toDouble() * 50.toDouble();
+              settingsStatePage.setBackupProgress(currentProgress);
+            }
           }
-          Navigator.pop(context);
-          popProgress = true;
         }
-        Navigator.pop(context);
+        settingsStatePage.closeProgressBar();
       }
       markCollectionAsOpen((await NotesDatabaseService.db.listOfCollectionNames()).first);
 

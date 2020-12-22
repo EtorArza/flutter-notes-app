@@ -29,6 +29,8 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool isFlagOn = false;
   bool isMultiselectOn = false;
+  bool isSettingsOpen = false;
+
   Set<NotesModel> selectedNotes = Set();
 
   int visibilityIndex = 2;
@@ -75,7 +77,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
-        if (!isMultiselectOn) {
+        if (!isMultiselectOn && !isSettingsOpen) {
           setNotesFromDB();
         }
         print('resumed.');
@@ -84,13 +86,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         //
         break;
       case AppLifecycleState.paused:
-        if (isMultiselectOn) {
+        if (isMultiselectOn && !isSettingsOpen) {
           toggleIsMultiselectOn();
         }
         print('paused.');
         break;
       case AppLifecycleState.detached:
-        if (isMultiselectOn) {
+        if (isMultiselectOn && !isSettingsOpen) {
           toggleIsMultiselectOn();
         }
         print('detached.');
@@ -259,7 +261,9 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () async {
+              this.isSettingsOpen = true;
               await Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(settings: this.widget.settings)));
+              this.isSettingsOpen = false;
               setNotesFromDB();
             },
             child: Container(
