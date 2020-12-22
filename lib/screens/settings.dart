@@ -21,12 +21,13 @@ class SettingsPageState extends State<SettingsPage> {
   int selectedTheme;
   bool allowExitSettings = true;
   bool _showBackupProgress = false;
+  bool _backupJustDone = false;
   double _backupProgress = 0.0;
 
   void setBackupProgress(double progress) {
     print("progress: " + progress.toString());
     setState(() {
-      _backupProgress = progress;
+      _backupProgress = progress * 0.8;
     });
   }
 
@@ -38,22 +39,62 @@ class SettingsPageState extends State<SettingsPage> {
 
   Widget _getProgressBar() {
     return Padding(
-        padding: EdgeInsets.all(36.0),
+        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 36),
         child: Column(
           children: [
             Text('Restoring backup...', style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
             Container(height: 16),
-            LinearProgressIndicator(
-              value: _backupProgress,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.done),
+                  onPressed: () {},
+                  color: Color.fromARGB(0, 0, 0, 0),
+                ),
+                Container(
+                  color: Color.fromARGB(255, 0, 0, 0),
+                  width: MediaQuery.of(context).size.width * 0.9 - 100,
+                  child: LinearProgressIndicator(
+                    value: _backupProgress,
+                  ),
+                ),
+                _backupJustDone
+                    ? IconButton(
+                        icon: Icon(Icons.done),
+                        onPressed: () {},
+                      )
+                    : IconButton(
+                        icon: Icon(Icons.done),
+                        onPressed: () {},
+                        color: Color.fromARGB(0, 0, 0, 0),
+                      ),
+              ],
             ),
           ],
         ));
   }
 
   void closeProgressBar() {
-    Future.delayed(Duration(seconds: 2), () {
+    const int nSteps = 20;
+    const int nMilSecondsLastPartProgress = 1000;
+    for (int i = 0; i <= nSteps; i++) {
+      Future.delayed(Duration(milliseconds: nMilSecondsLastPartProgress * i ~/ nSteps), () {
+        setState(() {
+          _backupProgress = 0.8 + 0.2 * i.toDouble() / nSteps.toDouble();
+        });
+      });
+    }
+    Future.delayed(Duration(milliseconds: nMilSecondsLastPartProgress), () {
+      setState(() {
+        _backupJustDone = true;
+      });
+    });
+
+    Future.delayed(Duration(milliseconds: 2000 + nMilSecondsLastPartProgress), () {
       setState(() {
         _showBackupProgress = false;
+        _backupJustDone = false;
       });
     });
   }
