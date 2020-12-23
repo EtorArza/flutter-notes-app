@@ -37,6 +37,8 @@ class SettingsPageState extends State<SettingsPage> {
     });
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKeySettings = new GlobalKey<ScaffoldState>();
+
   Widget _getProgressBar() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 36),
@@ -111,6 +113,37 @@ class SettingsPageState extends State<SettingsPage> {
     });
   }
 
+  void showInSnackBarSettings(String value) {
+    _scaffoldKeySettings.currentState.showSnackBar(
+      SnackBar(
+        duration: Duration(milliseconds: 6800),
+        backgroundColor: Colors.blueGrey.shade800,
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            //Icon widget of your choice HERE,
+            Text(value, style: TextStyle(color: Colors.white)),
+            // GestureDetector(
+            //   onTap: () {
+            //     gotoEditNote();
+            //   },
+            //   child: Container(
+            //       padding: EdgeInsets.symmetric(vertical: 3, horizontal: 9),
+            //       decoration: BoxDecoration(
+            //         color: Colors.white,
+            //         borderRadius: BorderRadius.all(Radius.circular(100)),
+            //       ),
+            //       child: Row(children: <Widget>[
+            //         Icon(Icons.add, color: Colors.black),
+            //         Text('Add card'.toUpperCase(), style: TextStyle(color: Colors.black)),
+            //       ])),
+            // ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -118,6 +151,7 @@ class SettingsPageState extends State<SettingsPage> {
           return allowExitSettings;
         },
         child: Scaffold(
+          key: _scaffoldKeySettings,
           body: ListView(
             physics: BouncingScrollPhysics(),
             children: <Widget>[

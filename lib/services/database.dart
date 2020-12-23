@@ -264,16 +264,16 @@ class NotesDatabaseService {
       stringToBeSaved += collectionName + fieldDelimiter3;
       stringToBeSaved += fromListOfNotesModelToString(notesList) + fieldDelimiter3;
     }
-    String filename = 'backup_' + DateTime.now().toIso8601String() + '.AppNameDB';
+    String filename = 'backup_' + DateTime.now().toIso8601String() + '.FrekDB';
     final file = await getLocalFile(filename);
 
     await file.writeAsString(stringToBeSaved);
 
-    Share.shareFiles([file.path], text: 'AppName backup ' + DateTime.now().toIso8601String());
+    Share.shareFiles([file.path], text: 'Frek backup ' + DateTime.now().toIso8601String());
   }
 
   Future<void> restoreBackup(SettingsPageState settingsStatePage, BuildContext context) async {
-    FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: ["AppNameDB"], type: FileType.custom);
+    FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: ["FrekDB"], type: FileType.custom);
 
     // reset the database
     String path = await getDatabasesPath();
@@ -291,17 +291,23 @@ class NotesDatabaseService {
 
       List<String> listOfCurrentCollections = await listOfCollectionNames();
 
-      settingsStatePage.showProgressBar();
-
-      for (var collectionName in listOfCurrentCollections) {
-        await deleteCollection(collectionName);
-      }
-
       String filePath = result.files.first.path;
-      if (result.files.first.path.split('.').last == 'AppNameDB') {
+
+      if (result.files.first.path.split('.').last == 'FrekDB' ||
+          (result.files.first.path.split('.').length >= 2 &&
+              result.files.first.path.split('.').last == 'bin' &&
+              result.files.first.path.split('.').reversed.toList()[1] == 'FrekDB')) {
+        settingsStatePage.showProgressBar();
+
+        for (var collectionName in listOfCurrentCollections) {
+          await deleteCollection(collectionName);
+        }
+
         String readString = await File(filePath).readAsString();
 
         List<String> listOfCollectionStringsAndNames = readString.split(fieldDelimiter3);
+
+        print(listOfCollectionStringsAndNames);
 
         Widget linearProgress = LinearProgressIndicator(value: 0.0);
         bool popProgress = false;
@@ -329,6 +335,8 @@ class NotesDatabaseService {
         }
         settingsStatePage.setBackupProgress(1.0);
         settingsStatePage.closeProgressBar();
+      } else {
+        settingsStatePage.showInSnackBarSettings("Wrong file format, only '.FrekDB' files supported.");
       }
       markCollectionAsOpen((await NotesDatabaseService.db.listOfCollectionNames()).first);
 
