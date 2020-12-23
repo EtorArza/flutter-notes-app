@@ -39,13 +39,18 @@ class SettingsPageState extends State<SettingsPage> {
 
   Widget _getProgressBar() {
     return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 36),
+      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 36),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.9,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text('Restoring backup...', style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
             Container(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 IconButton(
                   icon: Icon(Icons.done),
@@ -72,12 +77,15 @@ class SettingsPageState extends State<SettingsPage> {
               ],
             ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 
   void closeProgressBar() {
     const int nSteps = 20;
     const int nMilSecondsLastPartProgress = 1000;
+    const int nMiliSecondsDoneInScreen = 750;
     for (int i = 0; i <= nSteps; i++) {
       Future.delayed(Duration(milliseconds: nMilSecondsLastPartProgress * i ~/ nSteps), () {
         setState(() {
@@ -91,11 +99,15 @@ class SettingsPageState extends State<SettingsPage> {
       });
     });
 
-    Future.delayed(Duration(milliseconds: 2000 + nMilSecondsLastPartProgress), () {
-      setState(() {
-        _showBackupProgress = false;
-        _backupJustDone = false;
-      });
+    Future.delayed(Duration(milliseconds: nMiliSecondsDoneInScreen + nMilSecondsLastPartProgress), () {
+      Navigator.pop(context);
+    });
+
+    Future.delayed(Duration(milliseconds: nMiliSecondsDoneInScreen + nMilSecondsLastPartProgress + 500), () {
+      // setState(() {
+      //   _showBackupProgress = false;
+      //   _backupJustDone = false;
+      // });
     });
   }
 
