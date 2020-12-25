@@ -22,6 +22,7 @@ class SettingsPageState extends State<SettingsPage> {
   bool allowExitSettings = true;
   bool _showBackupProgress = false;
   bool _backupJustDone = false;
+  bool _corruptedFileErrorDuringBackup = false;
   double _backupProgress = 0.0;
 
   void setBackupProgress(double progress) {
@@ -66,10 +67,11 @@ class SettingsPageState extends State<SettingsPage> {
                     value: _backupProgress,
                   ),
                 ),
-                _backupJustDone
+                _backupJustDone || _corruptedFileErrorDuringBackup
                     ? IconButton(
-                        icon: Icon(Icons.done),
+                        icon: Icon(_corruptedFileErrorDuringBackup ? Icons.error_outline : Icons.done),
                         onPressed: () {},
+                        color: _corruptedFileErrorDuringBackup ? Colors.yellow[800] : Colors.green[400],
                       )
                     : IconButton(
                         icon: Icon(Icons.done),
@@ -110,6 +112,30 @@ class SettingsPageState extends State<SettingsPage> {
       //   _showBackupProgress = false;
       //   _backupJustDone = false;
       // });
+    });
+  }
+
+  void closeProgressBarOnCorruptedFile() {
+    const int nSteps = 60;
+    const int nMilSecondsLastPartProgress = 250;
+    const int nMiliSecondsDoneInScreen = 4750;
+    double currentProgress = _backupProgress;
+
+    for (int i = 0; i <= nSteps; i++) {
+      Future.delayed(Duration(milliseconds: nMilSecondsLastPartProgress * i ~/ nSteps), () {
+        setState(() {
+          _backupProgress = currentProgress * (1.0 - i.toDouble() / nSteps.toDouble());
+        });
+      });
+    }
+    Future.delayed(Duration(milliseconds: nMilSecondsLastPartProgress), () {
+      setState(() {
+        _corruptedFileErrorDuringBackup = true;
+      });
+    });
+
+    Future.delayed(Duration(milliseconds: nMiliSecondsDoneInScreen + nMilSecondsLastPartProgress), () {
+      Navigator.pop(context);
     });
   }
 

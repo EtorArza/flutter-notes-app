@@ -333,16 +333,16 @@ class NotesDatabaseService {
               }
             }
           }
+          settingsStatePage.setBackupProgress(1.0);
+          settingsStatePage.closeProgressBar();
         } catch (e) {
           settingsStatePage.showInSnackBarSettings("Couldn't restore backup, file corrupted.");
           await db.close();
           _database = null;
           await File(copyOfPrevDBPath).copy(pathOfDB);
           db = await database;
-          settingsStatePage.closeProgressBar();
+          settingsStatePage.closeProgressBarOnCorruptedFile();
         }
-        settingsStatePage.setBackupProgress(1.0);
-        settingsStatePage.closeProgressBar();
       } else {
         settingsStatePage.showInSnackBarSettings("Wrong file format, only '.FrekDB' files supported.");
       }
