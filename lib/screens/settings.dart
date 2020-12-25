@@ -7,7 +7,9 @@ import 'package:notes/services/database.dart';
 import 'package:notes/services/sharedPref.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../components/cards.dart';
 import 'home.dart';
+import 'dart:math';
 
 class SettingsPage extends StatefulWidget {
   final Settings settings;
@@ -214,6 +216,23 @@ class SettingsPageState extends State<SettingsPage> {
                               },
                               this.widget.settings.settingsLoaded ? this.widget.settings.cardPositionInReview : null,
                             ),
+                            buildCardWidget(Column(
+                              children: [
+                                Text('Repetition intervals', style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24)),
+                                Container(
+                                  height: 20,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
+                                    changeNDaysRepeatWidget(0),
+                                    changeNDaysRepeatWidget(1),
+                                    changeNDaysRepeatWidget(2),
+                                    changeNDaysRepeatWidget(3)
+                                  ],
+                                )
+                              ],
+                            )),
                             buildCardWidget(Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
@@ -273,6 +292,28 @@ class SettingsPageState extends State<SettingsPage> {
                                 ],
                               ),
                             ])),
+                            buildCardWidget(Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text('Restore default settings',
+                                    style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
+                                Spacer(),
+                                iconButtonWithFrame(Icons.list_alt, () {
+                                  showConfirmationDialog(
+                                    context,
+                                    "Restore default settings? This will irreversibly replace your current settings.",
+                                    "restore",
+                                    Colors.amber,
+                                    "cancel",
+                                    () async {
+                                      await deleteAllPrefs();
+                                      await this.widget.settings.loadSettings();
+                                      setState(() {});
+                                    },
+                                  );
+                                }),
+                              ],
+                            )),
                             buildCardWidget(Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: <Widget>[
@@ -396,7 +437,7 @@ class SettingsPageState extends State<SettingsPage> {
   Widget settingTwoChoice(String settingName, String settingOption1String, String settingOption2String, String option1Explain, String option2Explain,
       Function onChanged, var groupValue) {
     return buildCardWidget(Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Text(settingName, style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24)),
         Container(
@@ -431,30 +472,62 @@ class SettingsPageState extends State<SettingsPage> {
       ],
     ));
   }
+
+  Widget changeNDaysRepeatWidget(int indexOfButton) {
+    return Column(
+      children: [
+        IconButton(
+            icon: Icon(Icons.add),
+            onPressed: this.widget.settings.nDaysRepeat[indexOfButton] > 690
+                ? null
+                : () {
+                    setState(() {
+                      this.widget.settings.nDaysRepeat[indexOfButton] += this.widget.settings.nDaysRepeat[indexOfButton] >= 99 ? 7 : 1;
+                    });
+                    this.widget.settings.saveSettings();
+                  }),
+        ButtonBelowCard(icon: fromNDaysToButtonText(this.widget.settings.nDaysRepeat[indexOfButton])),
+        IconButton(
+            icon: Icon(Icons.remove),
+            onPressed: this.widget.settings.nDaysRepeat[indexOfButton] == 1
+                ? null
+                : () {
+                    setState(() {
+                      this.widget.settings.nDaysRepeat[indexOfButton] -= this.widget.settings.nDaysRepeat[indexOfButton] > 99 ? 7 : 1;
+                    });
+                    this.widget.settings.saveSettings();
+                  }),
+      ],
+    );
+  }
 }
 
 class Settings {
-  String cardPositionInReview = 'top';
-  bool settingsLoaded = false;
+  static const String _defaultCardPositionInReview = 'top';
+  static const List<int> _defaultNDaysRepeat = [1, 7, 16, 35];
 
+  String cardPositionInReview = _defaultCardPositionInReview;
+  List<int> nDaysRepeat = _defaultNDaysRepeat;
+
+  bool settingsLoaded = false;
   Settings() {
     loadSettings();
   }
 
-  void loadSettings() async {
+  Future<void> loadSettings() async {
     settingsLoaded = false;
-    Future.wait([
-      // functions to get settings from persistent memory
-      getCardPositionInReviewInSharedPref(),
-    ]).then((listLoadedSettings) {
-      // fields in which the settings are stored
-      cardPositionInReview = listLoadedSettings[0] == 'top' ? 'top' : 'bottom';
-      settingsLoaded = true;
-    });
+
+    // load values from sharedprefs, use
+    cardPositionInReview = await getCardPositionInReviewInSharedPref() ?? _defaultCardPositionInReview;
+    nDaysRepeat = await getnDaysRepeatInSharedPref() ?? [..._defaultNDaysRepeat];
+
+    settingsLoaded = true;
+    return;
   }
 
   void saveSettings() async {
     setCardPositionInReviewInSharedPref(cardPositionInReview);
+    setnDaysRepeatInSharedPref(nDaysRepeat);
   }
 }
 

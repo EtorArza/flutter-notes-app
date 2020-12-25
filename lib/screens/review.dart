@@ -75,6 +75,7 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
       onTapAction: expandNoteCard,
       isVisible: this.widget.homePageState.visibilityIndex,
       refreshView: loadMostDueNoteFromDB,
+      settings: this.widget.homePageState.widget.settings,
     );
 
     MediaQueryData queryData;

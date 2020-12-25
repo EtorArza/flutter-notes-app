@@ -511,12 +511,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     );
   }
 
-  Widget testListItem(Color color) {
-    return new NoteCardComponent(
-      noteData: NotesModel.random(),
-    );
-  }
-
   Widget buildImportantIndicatorText() {
     return AnimatedCrossFade(
       duration: Duration(milliseconds: 200),
@@ -556,6 +550,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 },
           isVisible: visibilityIndex,
           refreshView: refreshHome,
+          settings: this.widget.settings,
         )));
       }
     });
@@ -909,15 +904,15 @@ void showConfirmationDialog(
         content: Container(height: 0),
         actions: <Widget>[
           FlatButton(
-            child: Text(buttontextProceed.toUpperCase(), style: TextStyle(color: buttonProceedColor, fontWeight: FontWeight.w500, letterSpacing: 1)),
+            child: Text(buttontextCancel.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
             onPressed: () {
-              callInConfirm();
               Navigator.of(context).pop();
             },
           ),
           FlatButton(
-            child: Text(buttontextCancel.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+            child: Text(buttontextProceed.toUpperCase(), style: TextStyle(color: buttonProceedColor, fontWeight: FontWeight.w500, letterSpacing: 1)),
             onPressed: () {
+              callInConfirm();
               Navigator.of(context).pop();
             },
           ),

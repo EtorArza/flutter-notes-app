@@ -7,6 +7,7 @@ import '../data/models.dart';
 import '../data/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import '../services/database.dart';
+import '../screens/settings.dart';
 
 List<Color> colorList = [Colors.blue, Colors.green, Colors.indigo, Colors.red, Colors.cyan, Colors.teal, Colors.amber.shade900, Colors.deepOrange];
 
@@ -30,6 +31,7 @@ class NoteCardComponent extends StatefulWidget {
     this.onTapAction,
     this.isVisible,
     this.refreshView,
+    this.settings,
   }) : super(key: key);
 
   final NotesModel noteData;
@@ -37,6 +39,7 @@ class NoteCardComponent extends StatefulWidget {
   final Function(NotesModel noteData) onTapAction;
   final int isVisible;
   final Function() refreshView;
+  final Settings settings;
 
   @override
   _NoteCardComponentState createState() => _NoteCardComponentState();
@@ -114,27 +117,27 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
             ),
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(hours: 12));
+                updateDueDateCard(Duration(hours: 12, days: this.widget.settings.nDaysRepeat[0] - 1));
               },
-              child: ButtonBelowCard(icon: '1d'),
+              child: ButtonBelowCard(icon: fromNDaysToButtonText(this.widget.settings.nDaysRepeat[0])),
             ),
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(days: 7));
+                updateDueDateCard(Duration(days: this.widget.settings.nDaysRepeat[1]));
               },
-              child: ButtonBelowCard(icon: '7d'),
+              child: ButtonBelowCard(icon: fromNDaysToButtonText(this.widget.settings.nDaysRepeat[1])),
             ),
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(days: 16));
+                updateDueDateCard(Duration(days: this.widget.settings.nDaysRepeat[2]));
               },
-              child: ButtonBelowCard(icon: '16d'),
+              child: ButtonBelowCard(icon: fromNDaysToButtonText(this.widget.settings.nDaysRepeat[2])),
             ),
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(days: 35));
+                updateDueDateCard(Duration(days: this.widget.settings.nDaysRepeat[3]));
               },
-              child: ButtonBelowCard(icon: '35d'),
+              child: ButtonBelowCard(icon: fromNDaysToButtonText(this.widget.settings.nDaysRepeat[3])),
             ),
           ],
         ));
@@ -422,4 +425,8 @@ class FormattedText extends StatelessWidget {
     // print(text.split(sep)[0] == '');
     return res;
   }
+}
+
+String fromNDaysToButtonText(int nDays) {
+  return nDays < 100 ? nDays.toString() + 'd' : (nDays ~/ 7).toString() + 'w';
 }
