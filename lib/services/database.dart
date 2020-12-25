@@ -276,19 +276,16 @@ class NotesDatabaseService {
     FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: ["FrekDB"], type: FileType.custom);
 
     // reset the database
-    String path = await getDatabasesPath();
-    path = join(path, 'notes.db');
+    String filePath = await getDatabasesPath();
+    String pathOfDB = join(filePath, 'notes.db');
+    String copyOfPrevDBPath = join(filePath, 'prevNotes.db');
 
     // TODO: properly handle delete previous DB and check for file integrity before backup
     // await deleteDatabase(path);
     // _database = null;
-    final db = await database;
-
-    int nCollections = await getNumberOfCollections();
+    var db = await database;
 
     if (result != null) {
-      bool isBackupBeingRestored = true;
-
       List<String> listOfCurrentCollections = await listOfCollectionNames();
 
       String filePath = result.files.first.path;
@@ -299,39 +296,50 @@ class NotesDatabaseService {
               result.files.first.path.split('.').reversed.toList()[1] == 'FrekDB')) {
         settingsStatePage.showProgressBar();
 
+        await db.close();
+        _database = null;
+        await File(pathOfDB).copy(copyOfPrevDBPath); // copy current DB in case restore fails
+        db = await database;
+
         for (var collectionName in listOfCurrentCollections) {
           await deleteCollection(collectionName);
         }
 
         String readString = await File(filePath).readAsString();
 
-        List<String> listOfCollectionStringsAndNames = readString.split(fieldDelimiter3);
+        try {
+          List<String> listOfCollectionStringsAndNames = readString.split(fieldDelimiter3);
 
-        print(listOfCollectionStringsAndNames);
+          print(listOfCollectionStringsAndNames);
 
-        Widget linearProgress = LinearProgressIndicator(value: 0.0);
-        bool popProgress = false;
+          for (var i = 0; i < listOfCollectionStringsAndNames.length - 1; i += 2) {
+            settingsStatePage.setBackupProgress(i.toDouble() / listOfCollectionStringsAndNames.length.toDouble());
 
-        for (var i = 0; i < listOfCollectionStringsAndNames.length - 1; i += 2) {
-          settingsStatePage.setBackupProgress(i.toDouble() / listOfCollectionStringsAndNames.length.toDouble());
+            String collectionName = listOfCollectionStringsAndNames[i];
+            String collectionStringListCards = listOfCollectionStringsAndNames[i + 1];
+            List<NotesModel> listReadNotes = fromStringToListOfNotesModel(collectionStringListCards);
+            await createNewCollection(collectionName);
+            await markCollectionAsOpen(collectionName);
 
-          String collectionName = listOfCollectionStringsAndNames[i];
-          String collectionStringListCards = listOfCollectionStringsAndNames[i + 1];
-          List<NotesModel> listReadNotes = fromStringToListOfNotesModel(collectionStringListCards);
-          await createNewCollection(collectionName);
-          await markCollectionAsOpen(collectionName);
-
-          double currentProgress = i.toDouble() / listOfCollectionStringsAndNames.length.toDouble();
-          int noteIndex = 1;
-          int nNotes = listReadNotes.length;
-          for (var readNote in listReadNotes) {
-            noteIndex++;
-            await NotesDatabaseService.db.addNoteInDB(readNote);
-            if (noteIndex % 50 == 0) {
-              currentProgress += 1.toDouble() / listOfCollectionStringsAndNames.length.toDouble() / nNotes.toDouble() * 50.toDouble();
-              settingsStatePage.setBackupProgress(currentProgress);
+            double currentProgress = i.toDouble() / listOfCollectionStringsAndNames.length.toDouble();
+            int noteIndex = 1;
+            int nNotes = listReadNotes.length;
+            for (var readNote in listReadNotes) {
+              noteIndex++;
+              await NotesDatabaseService.db.addNoteInDB(readNote);
+              if (noteIndex % 50 == 0) {
+                currentProgress += 1.toDouble() / listOfCollectionStringsAndNames.length.toDouble() / nNotes.toDouble() * 50.toDouble();
+                settingsStatePage.setBackupProgress(currentProgress);
+              }
             }
           }
+        } catch (e) {
+          settingsStatePage.showInSnackBarSettings("Couldn't restore backup, file corrupted.");
+          await db.close();
+          _database = null;
+          await File(copyOfPrevDBPath).copy(pathOfDB);
+          db = await database;
+          settingsStatePage.closeProgressBar();
         }
         settingsStatePage.setBackupProgress(1.0);
         settingsStatePage.closeProgressBar();
@@ -339,8 +347,6 @@ class NotesDatabaseService {
         settingsStatePage.showInSnackBarSettings("Wrong file format, only '.FrekDB' files supported.");
       }
       markCollectionAsOpen((await NotesDatabaseService.db.listOfCollectionNames()).first);
-
-      isBackupBeingRestored = false;
     }
   }
 }
