@@ -34,9 +34,6 @@ class NotesModel {
   Map<String, dynamic> toMap() {
     var dueDate = this.dueDate;
 
-    print("Is learned: " + this.isLearned.toString());
-    print("due date before:" + this.dueDate.toIso8601String());
-
     if (this.isLearned) {
       dueDate = this.date.add(Duration(days: 300 * 365));
     }
@@ -45,7 +42,6 @@ class NotesModel {
     if (!this.isLearned && this.dueDate.isAfter(DateTime.now().add(Duration(days: 100 * 365)))) {
       dueDate = DateTime.now();
     }
-    print("due date after:" + this.dueDate.toIso8601String());
 
     return <String, dynamic>{
       '_id': this.id,

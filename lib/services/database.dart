@@ -14,8 +14,8 @@ const String collectionListName = 'ehahdugvbypgtuttjrvexksuehgpqmn';
 const String stringToReplaceLeftBracket = 'k5utzq5n5z3z';
 const String stringToReplaceRightBracket = 'k2vuh93u937i';
 
-const String extensionForNoteCard = '.notecard';
-const String extensionForCollection = '.collection';
+const String extensionForNoteCard = '.FrekCard';
+const String extensionForCollection = '.FrekCollection';
 
 const String fieldDelimiter = 'WhtSfXqwEBD9GfG4U87*3*J5uxPbtG';
 const String fieldDelimiter2 = 'vhtSfXqwEBD9GfD4U87*3*J5uxPbt3F';
@@ -269,7 +269,9 @@ class NotesDatabaseService {
 
     await file.writeAsString(stringToBeSaved);
 
-    Share.shareFiles([file.path], text: 'Frek backup ' + DateTime.now().toIso8601String());
+    await Share.shareFiles([file.path], text: 'Frek backup ' + DateTime.now().toIso8601String());
+
+    await deleteCacheDir();
   }
 
   Future<void> restoreBackup(SettingsPageState settingsStatePage, BuildContext context) async {
@@ -309,8 +311,6 @@ class NotesDatabaseService {
 
         try {
           List<String> listOfCollectionStringsAndNames = readString.split(fieldDelimiter3);
-
-          print(listOfCollectionStringsAndNames);
 
           for (var i = 0; i < listOfCollectionStringsAndNames.length - 1; i += 2) {
             settingsStatePage.setBackupProgress(i.toDouble() / listOfCollectionStringsAndNames.length.toDouble());
@@ -378,22 +378,28 @@ String fromTableNameToCollectionName(String tableName) {
 
 Future<bool> importNoteCard() async {
   FilePickerResult result =
-      await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: [".card", ".collection"], type: FileType.custom);
+      await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: [".FrekCard", ".FrekCollection"], type: FileType.custom);
 
   if (result != null) {
     String filePath = result.files.first.path;
-    if (result.files.first.path.split('.').last == 'card') {
+    if (result.files.first.path.split('.').last == 'FrekCard' ||
+        (result.files.first.path.split('.').length >= 2 &&
+            result.files.first.path.split('.').last == 'bin' &&
+            result.files.first.path.split('.').reversed.toList()[1] == 'FrekCard')) {
       NotesModel readNote = fromStringToNotesModel(await File(filePath).readAsString());
       NotesDatabaseService.db.addNoteInDB(readNote);
       return true;
-    } else if (result.files.first.path.split('.').last == 'collection') {
+    } else if ((result.files.first.path.split('.').last == 'FrekCollection' ||
+        (result.files.first.path.split('.').length >= 2 &&
+            result.files.first.path.split('.').last == 'bin' &&
+            result.files.first.path.split('.').reversed.toList()[1] == 'FrekCollection'))) {
       List<NotesModel> listReadNotes = fromStringToListOfNotesModel(await File(filePath).readAsString());
       for (var readNote in listReadNotes) {
         NotesDatabaseService.db.addNoteInDB(readNote);
       }
       return true;
     } else {
-      print("ERROR: only .card or .collection files supported.");
+      print("ERROR: only " + extensionForNoteCard + " or " + extensionForCollection + " files supported.");
     }
   } else {
     return false;
@@ -401,7 +407,7 @@ Future<bool> importNoteCard() async {
 }
 
 void shareNoteCard(NotesModel noteCard) async {
-  String filename = 'shared_card_' + DateTime.now().toIso8601String() + '.card';
+  String filename = 'shared_card_' + DateTime.now().toIso8601String() + extensionForNoteCard;
 
   String stringNoteCard = fromNoteCardToString(noteCard);
   final file = await getLocalFile(filename);
@@ -417,7 +423,7 @@ void shareListOfNoteCards(List<NotesModel> listOfNoteCards) async {
     exit(1);
   }
 
-  String filename = 'shared_collection_' + DateTime.now().toIso8601String() + '.collection';
+  String filename = 'shared_collection_' + DateTime.now().toIso8601String() + extensionForCollection;
   final file = await getLocalFile(filename);
   String res = await fromListOfNotesModelToString(listOfNoteCards);
   //String stringNoteCard = fromNoteCardToString(noteCard);
