@@ -231,16 +231,16 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           }),
           Spacer(),
           // only for debug
-          IconButton(
-            tooltip: 'Create random',
-            icon: Icon(Icons.confirmation_number),
-            onPressed: () {
-              for (var i = 0; i < 1000; i++) {
-                NotesDatabaseService.db.addNoteInDB(NotesModel.random());
-              }
-              setNotesFromDB();
-            },
-          ),
+          // IconButton(
+          //   tooltip: 'Create random',
+          //   icon: Icon(Icons.confirmation_number),
+          //   onPressed: () {
+          //     for (var i = 0; i < 1000; i++) {
+          //       NotesDatabaseService.db.addNoteInDB(NotesModel.random());
+          //     }
+          //     setNotesFromDB();
+          //   },
+          // ),
           IconButton(
             tooltip: 'Import',
             icon: Icon(Icons.folder_open),
