@@ -153,7 +153,7 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
         child: Material(
           borderRadius: BorderRadius.circular(16),
           clipBehavior: Clip.antiAlias,
-          color: Theme.of(context).dialogBackgroundColor,
+          color: this.widget.noteData.isLearned ? Colors.grey[300].withAlpha(70) : Theme.of(context).dialogBackgroundColor,
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: () {
@@ -198,7 +198,7 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
                       child: this.widget.isVisible == 0 || this.widget.isVisible == 2 || this.widget.noteData.isExpanded
                           ? FormattedText(nLines: 1, completeString: this.widget.noteData.meaningContent)
                           : Container()),
-                  showLowerButtons ? buttonRow : Container(),
+                  !showLowerButtons || this.widget.noteData.isLearned ? Container() : buttonRow,
                   // Container(
                   //   margin: EdgeInsets.only(top: 14),
                   //   alignment: Alignment.centerRight,
@@ -229,13 +229,7 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
   }
 
   BoxShadow buildBoxShadow(Color color, BuildContext context) {
-    if (Theme.of(context).brightness == Brightness.dark) {
-      return BoxShadow(
-          color: this.widget.noteData.isLearned == true ? Colors.black.withAlpha(100) : Colors.black.withAlpha(10),
-          blurRadius: 8,
-          offset: Offset(0, 8));
-    }
-    return BoxShadow(color: this.widget.noteData.isLearned == true ? color.withAlpha(60) : color.withAlpha(25), blurRadius: 8, offset: Offset(0, 8));
+    return BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 8, offset: Offset(0, 8));
   }
 } // class NoteComponentCard
 
@@ -363,7 +357,7 @@ class FormattedText extends StatelessWidget {
       Color.fromARGB(255, 255, 255, 255), // default (white)
       Color.fromARGB(255, 255, 255, 255), // standard (white)
       Color.fromARGB(255, 255, 255, 255), // white
-      Color.fromARGB(255, 255, 51, 92), // red
+      Color.fromARGB(255, 255, 90, 90), // red
       Color.fromARGB(255, 0, 255, 128), // green
       Color.fromARGB(255, 0, 196, 255), // blue
       Color.fromARGB(255, 255, 128, 249), // pink

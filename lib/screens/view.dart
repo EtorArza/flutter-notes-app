@@ -98,7 +98,8 @@ class _ViewNotePageState extends State<ViewNotePage> {
                       ),
                       Spacer(),
                       IconButton(
-                        icon: Icon(widget.currentNote.isLearned ? Icons.flag : Icons.outlined_flag),
+                        icon: Icon(Icons.done),
+                        color: this.widget.currentNote.isLearned ? Colors.greenAccent[400] : Colors.grey,
                         onPressed: () {
                           markLearnedAsDirty();
                         },

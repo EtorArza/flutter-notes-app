@@ -129,7 +129,8 @@ class _EditNotePageState extends State<EditNotePage> {
                       Spacer(),
                       IconButton(
                         tooltip: 'Mark note as learned',
-                        icon: Icon(currentNote.isLearned ? Icons.flag : Icons.outlined_flag),
+                        icon: Icon(Icons.done),
+                        color: currentNote.isLearned ? Colors.greenAccent[400] : Colors.grey,
                         onPressed: originalContentController.text.trim().isNotEmpty && meaningContentController.text.trim().isNotEmpty
                             ? markLearnedAsDirty
                             : null,

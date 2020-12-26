@@ -435,14 +435,14 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 width: 50,
                 curve: Curves.slowMiddle,
                 child: Icon(
-                  isFlagOn ? Icons.flag : OMIcons.flag,
-                  color: isFlagOn ? Colors.white : Colors.grey.shade300,
+                  Icons.done,
+                  color: isFlagOn ? Colors.greenAccent[400] : Colors.grey,
                 ),
                 decoration: BoxDecoration(
-                    color: isFlagOn ? Colors.blue : Colors.transparent,
+                    color: isFlagOn ? Colors.grey.shade700 : Colors.transparent,
                     border: Border.all(
                       width: isFlagOn ? 2 : 1,
-                      color: isFlagOn ? Colors.blue.shade700 : Colors.grey.shade300,
+                      color: isFlagOn ? Colors.grey.shade700 : Colors.grey.shade300,
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(16))),
               ),
@@ -515,10 +515,10 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     return AnimatedCrossFade(
       duration: Duration(milliseconds: 200),
       firstChild: Padding(
-        padding: const EdgeInsets.only(top: 8),
+        padding: const EdgeInsets.only(top: 16, left: 16),
         child: Text(
-          'Only showing notes marked learned'.toUpperCase(),
-          style: TextStyle(fontSize: 12, color: Colors.blue, fontWeight: FontWeight.w500),
+          'Only showing learned cards'.toUpperCase(),
+          style: TextStyle(fontSize: 12, color: Colors.greenAccent[400], fontWeight: FontWeight.w500),
         ),
       ),
       secondChild: Container(
