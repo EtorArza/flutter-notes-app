@@ -206,7 +206,7 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
                   //     children: <Widget>[
                   //       Icon(Icons.flag,
                   //           size: 16,
-                  //           color: noteData.isImportant
+                  //           color: noteData.isLearned
                   //               ? color
                   //               : Colors.transparent),
                   //       Spacer(),
@@ -231,12 +231,11 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
   BoxShadow buildBoxShadow(Color color, BuildContext context) {
     if (Theme.of(context).brightness == Brightness.dark) {
       return BoxShadow(
-          color: this.widget.noteData.isImportant == true ? Colors.black.withAlpha(100) : Colors.black.withAlpha(10),
+          color: this.widget.noteData.isLearned == true ? Colors.black.withAlpha(100) : Colors.black.withAlpha(10),
           blurRadius: 8,
           offset: Offset(0, 8));
     }
-    return BoxShadow(
-        color: this.widget.noteData.isImportant == true ? color.withAlpha(60) : color.withAlpha(25), blurRadius: 8, offset: Offset(0, 8));
+    return BoxShadow(color: this.widget.noteData.isLearned == true ? color.withAlpha(60) : color.withAlpha(25), blurRadius: 8, offset: Offset(0, 8));
   }
 } // class NoteComponentCard
 

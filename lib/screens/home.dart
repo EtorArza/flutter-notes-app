@@ -188,7 +188,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   physics: BouncingScrollPhysics(),
                   children: <Widget>[
                     !isMultiselectOn ? buildButtonRow(context, this.notesList.length) : Container(),
-                    !isMultiselectOn ? buildImportantIndicatorText() : Container(),
+                    !isMultiselectOn ? buildLearnedIndicatorText() : Container(),
                     !isMultiselectOn ? Container(height: 12) : Container(),
                     !isMultiselectOn ? buildNameWidget(context) : Container(),
                     !isMultiselectOn ? Container(height: 12) : Container(),
@@ -511,13 +511,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     );
   }
 
-  Widget buildImportantIndicatorText() {
+  Widget buildLearnedIndicatorText() {
     return AnimatedCrossFade(
       duration: Duration(milliseconds: 200),
       firstChild: Padding(
         padding: const EdgeInsets.only(top: 8),
         child: Text(
-          'Only showing notes marked important'.toUpperCase(),
+          'Only showing notes marked learned'.toUpperCase(),
           style: TextStyle(fontSize: 12, color: Colors.blue, fontWeight: FontWeight.w500),
         ),
       ),
@@ -538,7 +538,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       bool discardedBySearch = searchController.text.isNotEmpty &&
           !note.originalContent.toLowerCase().contains(searchController.text.toLowerCase()) &&
           !note.meaningContent.toLowerCase().contains(searchController.text.toLowerCase());
-      if ((!isFlagOn || note.isImportant) && (!discardedBySearch)) {
+      if ((!isFlagOn || note.isLearned) && (!discardedBySearch)) {
         noteComponentsList.add(Container(
             child: NoteCardComponent(
           noteData: note,

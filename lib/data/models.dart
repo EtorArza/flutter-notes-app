@@ -4,7 +4,7 @@ class NotesModel {
   int id;
   String originalContent;
   String meaningContent;
-  bool isImportant;
+  bool isLearned;
   bool isExpanded;
   DateTime date;
   DateTime dueDate;
@@ -14,7 +14,7 @@ class NotesModel {
     this.id,
     this.originalContent,
     this.meaningContent,
-    this.isImportant,
+    this.isLearned,
     this.date,
     this.dueDate,
     this.isExpanded,
@@ -24,7 +24,7 @@ class NotesModel {
     this.id = map['_id'];
     this.originalContent = map['originalContent'];
     this.meaningContent = map['meaningContent'];
-    this.isImportant = map['isImportant'] == 1 ? true : false;
+    this.isLearned = map['isLearned'] == 1 ? true : false;
     this.date = DateTime.parse(map['date']);
     this.dueDate = DateTime.parse(map['dueDate']);
     this.isExpanded = false;
@@ -36,7 +36,7 @@ class NotesModel {
       '_id': this.id,
       'originalContent': this.originalContent,
       'meaningContent': this.meaningContent,
-      'isImportant': this.isImportant == true ? 1 : 0,
+      'isLearned': this.isLearned == true ? 1 : 0,
       'date': this.date.toIso8601String(),
       'dueDate': this.dueDate.toIso8601String(),
     };
@@ -46,7 +46,7 @@ class NotesModel {
     this.id = Random(10).nextInt(1000) + 1;
     this.originalContent = 'Lorem Ipsum ' * (Random().nextInt(4) + 1);
     this.meaningContent = 'Lorem Ipsum ' * (Random().nextInt(4) + 1);
-    this.isImportant = Random().nextBool();
+    this.isLearned = Random().nextBool();
     this.date = DateTime.now().add(Duration(hours: Random().nextInt(100)));
     this.dueDate = DateTime.now().add(Duration(hours: Random().nextInt(100)));
     this.isExpanded = false;

@@ -47,7 +47,7 @@ class NotesDatabaseService {
       String newTableName = fromCollectionNameToTableName(defaultColectionName);
       await db.execute('CREATE TABLE ' + collectionListName + ' (_id INTEGER PRIMARY KEY, tableName TEXT, isOpen INTEGER);');
       await db.execute(
-          'CREATE TABLE [$newTableName] (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
+          'CREATE TABLE [$newTableName] (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isLearned INTEGER, date TEXT, dueDate TEXT);');
       await db.transaction((transaction) {
         transaction.rawInsert('INSERT into ' + collectionListName + '(tableName, isOpen) VALUES ("$newTableName", "1");');
       });
@@ -98,7 +98,7 @@ class NotesDatabaseService {
 
     await db.execute('CREATE TABLE [' +
         candidateTableName +
-        '] (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isImportant INTEGER, date TEXT, dueDate TEXT);');
+        '] (_id INTEGER PRIMARY KEY, originalContent TEXT, meaningContent TEXT, isLearned INTEGER, date TEXT, dueDate TEXT);');
     int id = await db.transaction((transaction) {
       transaction.rawInsert('INSERT into ' + collectionListName + '(tableName, isOpen) VALUES ("$candidateTableName", "0");');
     });
@@ -162,7 +162,7 @@ class NotesDatabaseService {
     String tableName = await whichTableIsOpen();
     final db = await database;
     List<NotesModel> notesList = [];
-    List<Map> maps = await db.rawQuery('SELECT _id, originalContent, meaningContent, isImportant, date, dueDate FROM [$tableName] LIMIT 5000');
+    List<Map> maps = await db.rawQuery('SELECT _id, originalContent, meaningContent, isLearned, date, dueDate FROM [$tableName] LIMIT 5000');
     if (maps.length > 0) {
       maps.forEach((map) {
         notesList.add(NotesModel.fromMap(map));
@@ -176,7 +176,7 @@ class NotesDatabaseService {
     final db = await database;
     NotesModel notesList;
     List<Map> maps = await db.query('[' + tableName + ']',
-        columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
+        columns: ['_id', 'originalContent', 'meaningContent', 'isLearned', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
     notesList = NotesModel.fromMap(maps.first);
     return notesList;
   }
@@ -186,7 +186,7 @@ class NotesDatabaseService {
     final db = await database;
     NotesModel notesList;
     List<Map> maps = await db.query('[' + tableName + ']',
-        columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
+        columns: ['_id', 'originalContent', 'meaningContent', 'isLearned', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
 
     DateTime res;
     if (maps.length == 1) {
@@ -215,7 +215,7 @@ class NotesDatabaseService {
     int id = await db.transaction((transaction) {
       transaction.rawInsert('INSERT into [' +
           tableName +
-          '] (originalContent, meaningContent, isImportant, date, dueDate) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.isImportant == true ? 1 : 0}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}");');
+          '] (originalContent, meaningContent, isLearned, date, dueDate) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.isLearned == true ? 1 : 0}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}");');
     });
     newNote.id = id;
     return newNote;
@@ -226,7 +226,7 @@ class NotesDatabaseService {
     final db = await database;
     NotesModel notesList;
     List<Map> maps = await db.query('[' + tableName + ']',
-        columns: ['_id', 'originalContent', 'meaningContent', 'isImportant', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
+        columns: ['_id', 'originalContent', 'meaningContent', 'isLearned', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
 
     if (maps.length == 0) {
       return false;
@@ -255,7 +255,7 @@ class NotesDatabaseService {
     for (var collectionName in allCollectionNames) {
       List<NotesModel> notesList = [];
       String tableName = fromCollectionNameToTableName(collectionName);
-      List<Map> maps = await db.rawQuery('SELECT _id, originalContent, meaningContent, isImportant, date, dueDate FROM [$tableName]');
+      List<Map> maps = await db.rawQuery('SELECT _id, originalContent, meaningContent, isLearned, date, dueDate FROM [$tableName]');
       if (maps.length > 0) {
         maps.forEach((map) {
           notesList.add(NotesModel.fromMap(map));
@@ -434,7 +434,7 @@ NotesModel fromStringToNotesModel(String stringNoteCard) {
     date: DateTime.parse(listOfFields[2]),
     dueDate: DateTime.parse(listOfFields[3]),
     isExpanded: false,
-    isImportant: false,
+    isLearned: false,
   );
   return res;
 }

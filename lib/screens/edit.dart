@@ -42,7 +42,7 @@ class _EditNotePageState extends State<EditNotePage> {
         meaningContent: '',
         date: DateTime.now(),
         dueDate: DateTime.now().add(Duration(days: -1000)),
-        isImportant: false,
+        isLearned: false,
         isExpanded: false,
       );
       isNoteNew = true;
@@ -128,10 +128,10 @@ class _EditNotePageState extends State<EditNotePage> {
                       ),
                       Spacer(),
                       IconButton(
-                        tooltip: 'Mark note as important',
-                        icon: Icon(currentNote.isImportant ? Icons.flag : Icons.outlined_flag),
+                        tooltip: 'Mark note as learned',
+                        icon: Icon(currentNote.isLearned ? Icons.flag : Icons.outlined_flag),
                         onPressed: originalContentController.text.trim().isNotEmpty && meaningContentController.text.trim().isNotEmpty
-                            ? markImportantAsDirty
+                            ? markLearnedAsDirty
                             : null,
                       ),
                       IconButton(
@@ -208,9 +208,9 @@ class _EditNotePageState extends State<EditNotePage> {
     });
   }
 
-  void markImportantAsDirty() {
+  void markLearnedAsDirty() {
     setState(() {
-      currentNote.isImportant = !currentNote.isImportant;
+      currentNote.isLearned = !currentNote.isLearned;
     });
     handleSave();
   }

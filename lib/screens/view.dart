@@ -98,9 +98,9 @@ class _ViewNotePageState extends State<ViewNotePage> {
                       ),
                       Spacer(),
                       IconButton(
-                        icon: Icon(widget.currentNote.isImportant ? Icons.flag : Icons.outlined_flag),
+                        icon: Icon(widget.currentNote.isLearned ? Icons.flag : Icons.outlined_flag),
                         onPressed: () {
-                          markImportantAsDirty();
+                          markLearnedAsDirty();
                         },
                       ),
                       IconButton(
@@ -129,9 +129,9 @@ class _ViewNotePageState extends State<ViewNotePage> {
     widget.triggerRefetch();
   }
 
-  void markImportantAsDirty() {
+  void markLearnedAsDirty() {
     setState(() {
-      widget.currentNote.isImportant = !widget.currentNote.isImportant;
+      widget.currentNote.isLearned = !widget.currentNote.isLearned;
     });
     handleSave();
   }
