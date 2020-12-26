@@ -689,12 +689,10 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             child: LayoutBuilder(builder: (context, constraints) {
               return getLibraryHeader(context, constraints.maxWidth * 0.85);
             }),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade900,
-            ),
             padding: EdgeInsets.zero,
             margin: EdgeInsets.zero,
           ),
+          Container(height: 24.0),
           ...getAllItemsInDrawer(context),
           ListTile(
             title: Container(
@@ -780,7 +778,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Total cards: ' + this.notesList.length.toString()),
-                Divider(height: 12.0),
+                Divider(height: 24.0),
                 Text('Cards waiting: ' + nCardsNotDueNotDone.toString(), style: TextStyle(color: Colors.grey[300])),
                 Text('Cards due: ' + nCardsDue.toString(), style: TextStyle(color: Colors.blue[200])),
                 Text('Cards done: ' + nCardsLearned.toString(), style: TextStyle(color: Colors.greenAccent)),

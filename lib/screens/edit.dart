@@ -8,6 +8,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/painting.dart' as prefix0;
 import 'package:flutter/widgets.dart';
 import 'package:notes/data/models.dart';
+import 'package:notes/screens/home.dart';
 import 'package:notes/services/database.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 
@@ -124,16 +125,14 @@ class _EditNotePageState extends State<EditNotePage> {
                     children: <Widget>[
                       IconButton(
                         icon: Icon(Icons.arrow_back),
-                        onPressed: handleBack,
+                        onPressed: () => handleBack(context),
                       ),
                       Spacer(),
                       IconButton(
                         tooltip: 'Mark note as learned',
                         icon: Icon(Icons.done),
                         color: currentNote.isLearned ? Colors.greenAccent[400] : Colors.grey,
-                        onPressed: originalContentController.text.trim().isNotEmpty && meaningContentController.text.trim().isNotEmpty
-                            ? markLearnedAsDirty
-                            : null,
+                        onPressed: markLearnedAsDirty,
                       ),
                       IconButton(
                         icon: Icon(Icons.delete_outline),
@@ -152,7 +151,7 @@ class _EditNotePageState extends State<EditNotePage> {
                               color: Theme.of(context).accentColor,
                               borderRadius: BorderRadius.only(topLeft: Radius.circular(100), bottomLeft: Radius.circular(100)),
                             ),
-                            child: Icon(Icons.done),
+                            child: Icon(Icons.save_alt_outlined),
                           ))
                     ],
                   ),
@@ -249,7 +248,11 @@ class _EditNotePageState extends State<EditNotePage> {
     }
   }
 
-  void handleBack() {
-    Navigator.pop(context);
+  void handleBack(BuildContext context) {
+    if (isDirty) {
+      showConfirmationDialog(context, 'Exit without saving?', 'Exit', Colors.red[300], 'Cancel', () => Navigator.pop(context));
+    } else {
+      Navigator.pop(context);
+    }
   }
 }
