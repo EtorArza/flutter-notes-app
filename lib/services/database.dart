@@ -298,7 +298,7 @@ class NotesDatabaseService {
 
         await db.close();
         _database = null;
-        await File(pathOfDB).copy(copyOfPrevDBPath); // copy current DB in case restore fails
+        File copyOfDBFIle = await File(pathOfDB).copy(copyOfPrevDBPath); // copy current DB in case restore fails
         db = await database;
 
         for (var collectionName in listOfCurrentCollections) {
@@ -343,6 +343,7 @@ class NotesDatabaseService {
           db = await database;
           settingsStatePage.closeProgressBarOnCorruptedFile();
         }
+        copyOfDBFIle.delete();
       } else {
         settingsStatePage.showInSnackBarSettings("Wrong file format, only '.FrekDB' files supported.");
       }
@@ -423,7 +424,8 @@ void shareListOfNoteCards(List<NotesModel> listOfNoteCards) async {
 
   await file.writeAsString(res);
 
-  Share.shareFiles([file.path], text: 'Shared collection');
+  await Share.shareFiles([file.path], text: 'Shared collection');
+  await deleteCacheDir();
 }
 
 NotesModel fromStringToNotesModel(String stringNoteCard) {
@@ -472,7 +474,7 @@ String fromListOfNotesModelToString(List<NotesModel> listOfNoteCards) {
 }
 
 Future<String> getLocalPath() async {
-  final directory = await getApplicationSupportDirectory();
+  final directory = await getTemporaryDirectory();
   return directory.path;
 }
 
@@ -481,7 +483,7 @@ Future<File> getLocalFile(String filename) async {
   return File('$path/$filename');
 }
 
-Future<void> _deleteCacheDir() async {
+Future<void> deleteCacheDir() async {
   final cacheDir = await getTemporaryDirectory();
 
   if (cacheDir.existsSync()) {
