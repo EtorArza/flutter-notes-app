@@ -41,6 +41,7 @@ class NotesModel {
       dueDate = this.date.add(Duration(days: 300 * 365));
     }
 
+    // change date back to now only if it was set as learned, an therefore, the due date is in 100 years.
     if (!this.isLearned && this.dueDate.isAfter(DateTime.now().add(Duration(days: 100 * 365)))) {
       dueDate = DateTime.now();
     }

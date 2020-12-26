@@ -165,7 +165,7 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
 
 Widget getVisibilityButton(int visibilityIndex) {
   Widget visibilityButton;
-  Color accentColor = appThemeDark.accentColor;
+  Color accentColor = Colors.grey[600];
   if (visibilityIndex == 0) {
     visibilityButton = AnimatedContainer(
       duration: Duration(milliseconds: 250),
@@ -176,8 +176,8 @@ Widget getVisibilityButton(int visibilityIndex) {
         Icons.visibility,
         color: Colors.white,
       ),
-      decoration: BoxDecoration(
-          color: accentColor, border: Border.all(width: 2, color: Colors.blue.shade700), borderRadius: BorderRadius.all(Radius.circular(16))),
+      decoration:
+          BoxDecoration(color: accentColor, border: Border.all(width: 2, color: accentColor), borderRadius: BorderRadius.all(Radius.circular(16))),
     );
   } else if (visibilityIndex == 1) {
     visibilityButton = Container(

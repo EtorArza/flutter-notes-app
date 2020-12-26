@@ -392,6 +392,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Widget buildButtonRow(BuildContext paramContext, int nCards) {
+    bool isFirstCardLearned = nCards == 0 ? false : this.notesList.first.isLearned;
     return Builder(builder: (BuildContext innerContext) {
       return Padding(
         padding: const EdgeInsets.only(left: 10, right: 10),
@@ -401,6 +402,8 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               onTap: () {
                 if (nCards == 0) {
                   showInSnackBar('Add a card first.');
+                } else if (isFirstCardLearned) {
+                  showInSnackBar('All cards learned, no cards left to review.');
                 } else {
                   gotoReview();
                 }
@@ -410,12 +413,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 height: 50,
                 width: 50,
                 curve: Curves.slowMiddle,
-                child: Icon(Icons.local_library, color: Colors.grey.shade300),
+                child:
+                    Icon(Icons.local_library, color: isFirstCardLearned || nCards == 0 ? Colors.grey.shade300.withAlpha(100) : Colors.grey.shade300),
                 decoration: BoxDecoration(
                     color: Colors.transparent,
                     border: Border.all(
                       width: 1,
-                      color: Colors.grey.shade300,
+                      color: isFirstCardLearned || nCards == 0 ? Colors.grey.shade300.withAlpha(100) : Colors.grey.shade300,
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(16))),
               ),
@@ -436,7 +440,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 curve: Curves.slowMiddle,
                 child: Icon(
                   Icons.done,
-                  color: isFlagOn ? Colors.greenAccent[400] : Colors.grey,
+                  color: isFlagOn ? Colors.greenAccent[400] : Colors.grey.shade300,
                 ),
                 decoration: BoxDecoration(
                     color: isFlagOn ? Colors.grey.shade700 : Colors.transparent,
@@ -640,6 +644,8 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       }
       res.add(
         ListTile(
+          selectedTileColor: Colors.grey[800],
+          selected: this.listOfCollectionNames[i] == this.nameOfOpenCollection,
           title: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -680,7 +686,9 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: FittedBox(fit: BoxFit.fitWidth, child: Image(image: AssetImage('images/libraryDrawer.jpg'))),
+            child: LayoutBuilder(builder: (context, constraints) {
+              return getLibraryHeader(context, constraints.maxWidth * 0.85);
+            }),
             decoration: BoxDecoration(
               color: Colors.grey.shade900,
             ),
@@ -742,6 +750,72 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           ),
         ],
       ),
+    );
+  }
+
+  Widget getLibraryHeader(BuildContext context, double libraryWidth) {
+    double barHeight = 20;
+    double totalBarWidth = libraryWidth - 30;
+
+    int nCardsNotDueNotDone = this.notesList.where((e) {
+      return !e.isLearned && e.dueDate.isAfter(DateTime.now());
+    }).length;
+    int nCardsDue = this.notesList.where((e) {
+      return e.dueDate.isBefore(DateTime.now());
+    }).length;
+    int nCardsLearned = this.notesList.where((e) {
+      return e.isLearned;
+    }).length;
+
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: this.notesList.length == 0
+          ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text(
+                'Empty collection',
+                style: TextStyle(fontSize: 20, color: Colors.grey[500]),
+              )
+            ])
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Total cards: ' + this.notesList.length.toString()),
+                Divider(height: 12.0),
+                Text('Cards waiting: ' + nCardsNotDueNotDone.toString(), style: TextStyle(color: Colors.grey[300])),
+                Text('Cards due: ' + nCardsDue.toString(), style: TextStyle(color: Colors.blue[200])),
+                Text('Cards done: ' + nCardsLearned.toString(), style: TextStyle(color: Colors.greenAccent)),
+                Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    nCardsNotDueNotDone == 0
+                        ? Container()
+                        : Container(
+                            // not due not learned
+                            width: totalBarWidth / this.notesList.length * nCardsNotDueNotDone,
+                            height: barHeight,
+                            decoration: BoxDecoration(color: Colors.grey[300]),
+                          ),
+                    nCardsDue == 0
+                        ? Container()
+                        : Container(
+                            // due, not learned
+                            width: totalBarWidth / this.notesList.length * nCardsDue,
+                            height: barHeight,
+                            decoration: BoxDecoration(color: Colors.blueAccent),
+                          ),
+                    nCardsLearned == 0
+                        ? Container()
+                        : Container(
+                            // learned
+                            width: totalBarWidth / this.notesList.length * nCardsLearned,
+                            height: barHeight,
+                            decoration: BoxDecoration(color: Colors.greenAccent),
+                          )
+                  ],
+                ),
+              ],
+            ),
     );
   }
 
