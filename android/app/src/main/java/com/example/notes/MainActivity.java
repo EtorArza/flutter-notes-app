@@ -1,4 +1,4 @@
-package com.example.notes;
+package com.etorarza.frek;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
