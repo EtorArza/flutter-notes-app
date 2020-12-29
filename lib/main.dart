@@ -13,10 +13,10 @@ void main() => runApp(MyApp());
 class MyApp extends StatefulWidget {
   // This widget is the root of your application.
   @override
-  _MyAppState createState() => _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
   Settings settings;
   StreamSubscription _intentDataStreamSubscription;
   static const platform = const MethodChannel('app.channel.shared.data');
@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Frek',
       theme: appThemeDark,
-      home: MyHomePage(title: 'Home', settings: settings, sharedText: dataShared),
+      home: MyHomePage(title: 'Home', settings: settings, myappstate: this),
     );
   }
 

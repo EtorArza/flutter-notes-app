@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
-
+import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -15,13 +15,14 @@ import 'package:outline_material_icons/outline_material_icons.dart';
 import '../components/cards.dart';
 import '../data/theme.dart';
 import '../screens/review.dart';
+import '../main.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title, this.settings, this.sharedText}) : super(key: key) {}
+  MyHomePage({Key key, this.title, this.settings, this.myappstate}) : super(key: key) {}
 
   final String title;
   final Settings settings;
-  final String sharedText;
+  final MyAppState myappstate;
   @override
   MyHomePageState createState() => MyHomePageState();
 }
@@ -32,7 +33,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool isSettingsOpen = false;
 
   Set<NotesModel> selectedNotes = Set();
-
   int visibilityIndex = 2;
   DateTime timeLastUpdate = DateTime.now();
   bool headerShouldHide = false;
@@ -67,7 +67,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       if (!isMultiselectOn) {
         setNotesFromDB();
       }
-      ;
       //print((DateTime.now().difference(timeLastUpdate).inSeconds).toString() + ' periodic function call ' + DateTime.now().toIso8601String());
     });
     WidgetsBinding.instance.addObserver(this);
@@ -80,6 +79,8 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         if (!isMultiselectOn && !isSettingsOpen) {
           setNotesFromDB();
         }
+        this.widget.myappstate.getSharedText();
+        setState(() {});
         print('resumed.');
         break;
       case AppLifecycleState.inactive:
@@ -183,7 +184,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               Container(height: 30),
               buildHeaderWidget(context),
               Text(
-                this.widget.sharedText,
+                this.widget.myappstate.dataShared ?? 'null',
                 style: TextStyle(fontSize: 25),
               ),
               Expanded(
@@ -235,16 +236,16 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           }),
           Spacer(),
           // only for debug
-          // IconButton(
-          //   tooltip: 'Create random',
-          //   icon: Icon(Icons.confirmation_number),
-          //   onPressed: () {
-          //     for (var i = 0; i < 1000; i++) {
-          //       NotesDatabaseService.db.addNoteInDB(NotesModel.random());
-          //     }
-          //     setNotesFromDB();
-          //   },
-          // ),
+          IconButton(
+            tooltip: 'Create random',
+            icon: Icon(Icons.confirmation_number),
+            onPressed: () {
+              for (var i = 0; i < 1000; i++) {
+                NotesDatabaseService.db.addNoteInDB(NotesModel.random());
+              }
+              setNotesFromDB();
+            },
+          ),
           IconButton(
             tooltip: 'Import',
             icon: Icon(Icons.folder_open),
