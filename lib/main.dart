@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:Frek/screens/settings.dart';
 import 'package:Frek/services/sharedPref.dart';
 import 'screens/home.dart';
@@ -18,8 +19,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Settings settings;
   StreamSubscription _intentDataStreamSubscription;
-  List<SharedMediaFile> _sharedFiles;
-  String _sharedText;
+  static const platform = const MethodChannel('app.channel.shared.data');
+  String dataShared = "No data";
 
   @override
   void initState() {
@@ -27,24 +28,7 @@ class _MyAppState extends State<MyApp> {
 
     super.initState();
     settings = Settings();
-
-    // For sharing or opening urls/text coming from outside the app while the app is in the memory
-    _intentDataStreamSubscription = ReceiveSharingIntent.getTextStream().listen((String value) {
-      setState(() {
-        _sharedText = value;
-        print("Shared: $_sharedText");
-      });
-    }, onError: (err) {
-      print("getLinkStream error: $err");
-    });
-
-    // For sharing or opening urls/text coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialText().then((String value) {
-      setState(() {
-        _sharedText = value;
-        print("Shared: $_sharedText");
-      });
-    });
+    getSharedText();
   }
 
   @override
@@ -55,10 +39,20 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    print("Data shared: " + dataShared);
     return MaterialApp(
       title: 'Frek',
       theme: appThemeDark,
-      home: MyHomePage(title: 'Home', settings: settings),
+      home: MyHomePage(title: 'Home', settings: settings, sharedText: dataShared),
     );
+  }
+
+  getSharedText() async {
+    var sharedData = await platform.invokeMethod("getSharedText");
+    if (sharedData != null) {
+      setState(() {
+        dataShared = sharedData;
+      });
+    }
   }
 }

@@ -17,11 +17,11 @@ import '../data/theme.dart';
 import '../screens/review.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title, this.settings}) : super(key: key) {}
+  MyHomePage({Key key, this.title, this.settings, this.sharedText}) : super(key: key) {}
 
   final String title;
   final Settings settings;
-
+  final String sharedText;
   @override
   MyHomePageState createState() => MyHomePageState();
 }
@@ -182,6 +182,10 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             children: [
               Container(height: 30),
               buildHeaderWidget(context),
+              Text(
+                this.widget.sharedText,
+                style: TextStyle(fontSize: 25),
+              ),
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.only(top: 7),
