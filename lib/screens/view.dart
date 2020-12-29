@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:notes/data/models.dart';
-import 'package:notes/screens/edit.dart';
-import 'package:notes/services/database.dart';
+import 'package:Frek/data/models.dart';
+import 'package:Frek/screens/edit.dart';
+import 'package:Frek/services/database.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:share/share.dart';
 

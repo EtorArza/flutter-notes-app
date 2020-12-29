@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/painting.dart' as prefix0;
 import 'package:flutter/widgets.dart';
-import 'package:notes/data/models.dart';
-import 'package:notes/screens/home.dart';
-import 'package:notes/services/database.dart';
+import 'package:Frek/data/models.dart';
+import 'package:Frek/screens/home.dart';
+import 'package:Frek/services/database.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 
 class EditNotePage extends StatefulWidget {

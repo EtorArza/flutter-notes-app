@@ -2,14 +2,14 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:notes/components/cards.dart';
+import 'package:Frek/components/cards.dart';
 import '../data/models.dart';
 import '../data/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import '../components/cards.dart';
-import 'package:notes/services/database.dart';
+import 'package:Frek/services/database.dart';
 import 'home.dart';
-import 'package:notes/screens/edit.dart';
+import 'package:Frek/screens/edit.dart';
 
 class ReviewScreen extends StatefulWidget {
   final Function() triggerRefetch;

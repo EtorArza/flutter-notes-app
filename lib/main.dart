@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:notes/screens/settings.dart';
-import 'package:notes/services/sharedPref.dart';
+import 'package:Frek/screens/settings.dart';
+import 'package:Frek/services/sharedPref.dart';
 import 'screens/home.dart';
 import 'data/theme.dart';
 import 'screens/settings.dart';
@@ -23,6 +23,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    print('Initializing state in main.');
+
     super.initState();
     settings = Settings();
 
