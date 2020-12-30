@@ -184,7 +184,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               Container(height: 30),
               buildHeaderWidget(context),
               Text(
-                this.widget.myappstate.dataShared ?? 'null',
+                this.widget.myappstate.sharedText ?? 'null',
                 style: TextStyle(fontSize: 25),
               ),
               Expanded(

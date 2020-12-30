@@ -20,7 +20,7 @@ class MyAppState extends State<MyApp> {
   Settings settings;
   StreamSubscription _intentDataStreamSubscription;
   static const platform = const MethodChannel('app.channel.shared.data');
-  String dataShared = "No data";
+  String sharedText = "";
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    print("Data shared: " + dataShared);
+    print("Data shared: " + sharedText);
     return MaterialApp(
       title: 'Frek',
       theme: appThemeDark,
@@ -51,7 +51,7 @@ class MyAppState extends State<MyApp> {
     var sharedData = await platform.invokeMethod("getSharedText");
     if (sharedData != null) {
       setState(() {
-        dataShared = sharedData;
+        sharedText = sharedData;
       });
     }
   }
