@@ -41,9 +41,25 @@ public class MainActivity extends FlutterActivity {
       path = uri.getPath();
     }
 
-
-
     if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_VIEW.equals(action)) {
+
+      String[] splittedPath = path.split("\\.");
+      if (splittedPath.length < 2) {
+        return "";
+      }
+
+      if (splittedPath[splittedPath.length - 1].equals("FrekDB")
+          || (splittedPath[splittedPath.length - 2].equals( "FrekDB") && splittedPath[splittedPath.length - 1].equals( "bin"))) {
+        res += "FrekDB.";
+      } else if (splittedPath[splittedPath.length - 1].equals( "FrekCard")
+          || (splittedPath[splittedPath.length - 2].equals( "FrekCard") && splittedPath[splittedPath.length - 1].equals( "bin"))) {
+        res += "FrekCard.";
+      } else if (splittedPath[splittedPath.length - 1].equals( "FrekCollection")
+          || (splittedPath[splittedPath.length - 2].equals( "FrekCollection") && splittedPath[splittedPath.length - 1].equals( "bin"))) {
+        res += "FrekCollection.";
+      } else {
+        return "";
+      }
 
       try {
         // https://stackoverflow.com/questions/31069556/android-read-text-file-from-uri
@@ -55,7 +71,7 @@ public class MainActivity extends FlutterActivity {
           total.append(line).append('\n');
         }
         String content = total.toString();
-        res = content;
+        res += content;
 
       } catch (Exception e) {
         res = "file_read_error:" + e.toString();
@@ -83,7 +99,5 @@ public class MainActivity extends FlutterActivity {
           }
         });
   }
-
-
 
 }

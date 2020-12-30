@@ -90,6 +90,34 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekDB\\.bin" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekDB\\.bin" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekDB\\.bin" />
+                <data android:pathPattern=".*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
             </intent-filter>
 
             <!--
@@ -134,6 +162,34 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekDB\\.bin" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekDB\\.bin" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekDB\\.bin" />
+                <data android:pathPattern=".*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
             </intent-filter>
 
 
