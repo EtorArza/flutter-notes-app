@@ -46,7 +46,7 @@ class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
       case "FrekCard":
         handleImportFrekCard();
         break;
-      case "FrekCollecion":
+      case "FrekCollection":
         handleImportFrekCollection();
         break;
 
@@ -77,8 +77,8 @@ class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
       case "FrekCard":
         res = buildImportFrekCard();
         break;
-      case "FrekCollecion":
-        res = buildImportFrekCollection();
+      case "FrekCollection":
+        res = buildImportFrekCollection(context);
         break;
 
       default:
