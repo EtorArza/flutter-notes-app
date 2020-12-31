@@ -19,9 +19,21 @@ public class MainActivity extends FlutterActivity {
   private String sharedText = null;
   private static final String CHANNEL = "app.channel.shared.data";
 
-  public String getStringFromIntentFile() {
-    String res = "";
+
+  private String getStringFromIntentOnResume(Intent intent)
+  {
+    return _getStringFromIntentFile(intent);
+  }
+
+
+  private String getStringFromIntentOnInitialize()
+  {
     Intent intent = getIntent();
+    return _getStringFromIntentFile(intent);
+  }
+
+  private String _getStringFromIntentFile(Intent intent) {
+    String res = "";
     String action = intent.getAction();
     String type = intent.getType();
     String data = intent.getDataString();
@@ -40,6 +52,11 @@ public class MainActivity extends FlutterActivity {
     if (uri != null) {
       path = uri.getPath();
     }
+
+    // debug
+    // if (true) {
+    //   return "path: "+ path + "   action:" + action + "  data:" + data;
+    // }
 
     if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_VIEW.equals(action)) {
 
@@ -84,8 +101,16 @@ public class MainActivity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    sharedText = getStringFromIntentFile();
+    sharedText = getStringFromIntentOnInitialize();
   }
+
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+      // Handle intent when app is resumed
+      super.onNewIntent(intent);
+      sharedText = getStringFromIntentOnResume(intent);
+    }
 
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {

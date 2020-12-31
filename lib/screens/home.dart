@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
+import 'package:Frek/screens/import.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,9 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   String nameOfOpenCollection;
   TextEditingController searchController = TextEditingController();
 
+  String importedFileExtension = null;
+  String importedFileContent = null;
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   bool isSearchEmpty = true;
@@ -70,17 +74,21 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       //print((DateTime.now().difference(timeLastUpdate).inSeconds).toString() + ' periodic function call ' + DateTime.now().toIso8601String());
     });
     WidgetsBinding.instance.addObserver(this);
+    handleImportedString();
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
       case AppLifecycleState.resumed:
         if (!isMultiselectOn && !isSettingsOpen) {
           setNotesFromDB();
         }
-        this.widget.myappstate.getSharedText();
-        setState(() {});
+        // print("Sharedtext before: ${this.widget.myappstate.sharedText}");
+        await this.widget.myappstate.getSharedText();
+        // print("Sharedtext after: ${this.widget.myappstate.sharedText}");
+        // setState(() {});
+        handleImportedString();
         print('resumed.');
         break;
       case AppLifecycleState.inactive:
@@ -98,6 +106,16 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         }
         print('detached.');
         break;
+    }
+  }
+
+  void handleImportedString() {
+    if (this.widget.myappstate.sharedText != "" && this.widget.myappstate.sharedText != null && this.widget.myappstate.sharedText != "null") {
+      importedFileExtension = this.widget.myappstate.sharedText.substring(0, this.widget.myappstate.sharedText.indexOf('.')).trim();
+      importedFileContent = this.widget.myappstate.sharedText.substring(this.widget.myappstate.sharedText.indexOf('.') + 1);
+      print("file_ext: $importedFileExtension");
+      print("file_cont: $importedFileContent");
+      gotoImport();
     }
   }
 
@@ -183,10 +201,10 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             children: [
               Container(height: 30),
               buildHeaderWidget(context),
-              Text(
-                this.widget.myappstate.sharedText ?? 'null',
-                style: TextStyle(fontSize: 25),
-              ),
+              // Text( // debug only
+              //   this.widget.myappstate.sharedText ?? 'null',
+              //   style: TextStyle(fontSize: 25),
+              // ),
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.only(top: 7),
@@ -585,6 +603,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   void gotoReview() async {
     Navigator.push(context, CupertinoPageRoute(builder: (context) => ReviewScreen(triggerRefetch: refetchNotesFromDB, homePageState: this)));
+  }
+
+  void gotoImport() {
+    Navigator.push(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => ImportScreen(triggerRefetch: refetchNotesFromDB, homePageState: this, importedType: this.importedFileExtension)));
   }
 
   void refetchNotesFromDB() async {

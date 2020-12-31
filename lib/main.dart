@@ -47,12 +47,13 @@ class MyAppState extends State<MyApp> {
     );
   }
 
-  getSharedText() async {
+  Future<void> getSharedText() async {
     var sharedData = await platform.invokeMethod("getSharedText");
     if (sharedData != null) {
       setState(() {
         sharedText = sharedData;
       });
     }
+    return;
   }
 }
