@@ -26,6 +26,7 @@ class EditNotePage extends StatefulWidget {
 class _EditNotePageState extends State<EditNotePage> {
   bool isDirty = false;
   bool isNoteNew = true;
+  bool _checkDateOfMostDueCard = false;
   FocusNode titleFocus = FocusNode();
   FocusNode originalContentFocus = FocusNode();
   FocusNode meaningContentFocus = FocusNode();
@@ -42,17 +43,22 @@ class _EditNotePageState extends State<EditNotePage> {
         originalContent: '',
         meaningContent: '',
         date: DateTime.now(),
-        dueDate: DateTime.now().add(Duration(days: -1000)),
+        dueDate: DateTime.now(),
         isLearned: false,
         isExpanded: false,
       );
       isNoteNew = true;
+      _setDueDateBeforeDateOfMostDueCard();
     } else {
       currentNote = widget.existingNote;
       isNoteNew = false;
     }
     originalContentController.text = currentNote.originalContent;
     meaningContentController.text = currentNote.meaningContent;
+  }
+
+  void _setDueDateBeforeDateOfMostDueCard() async {
+    currentNote.dueDate = (await NotesDatabaseService.db.getDateTimeOfFirstNote()).subtract(Duration(microseconds: 1));
   }
 
   @override

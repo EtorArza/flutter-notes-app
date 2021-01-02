@@ -32,6 +32,7 @@ class NoteCardComponent extends StatefulWidget {
     this.isVisible,
     this.refreshView,
     this.settings,
+    this.hideDueInfo = false,
   }) : super(key: key);
 
   final NotesModel noteData;
@@ -40,20 +41,13 @@ class NoteCardComponent extends StatefulWidget {
   final int isVisible;
   final Function() refreshView;
   final Settings settings;
+  final bool hideDueInfo;
 
   @override
   _NoteCardComponentState createState() => _NoteCardComponentState();
 }
 
 class _NoteCardComponentState extends State<NoteCardComponent> with SingleTickerProviderStateMixin {
-  bool hideDueInfo = false;
-
-  void toggleHideDueInfo() {
-    setState(() {
-      hideDueInfo = !hideDueInfo;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -179,8 +173,10 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  this.hideDueInfo
-                      ? Container()
+                  this.widget.hideDueInfo
+                      ? Container(
+                          height: 10,
+                        )
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

@@ -181,6 +181,22 @@ class NotesDatabaseService {
     return notesList;
   }
 
+  Future<DateTime> getDateTimeOfFirstNote() async {
+    String tableName = await whichTableIsOpen();
+    final db = await database;
+    NotesModel notesList;
+    List<Map> maps = await db.query('[' + tableName + ']',
+        columns: ['_id', 'originalContent', 'meaningContent', 'isLearned', 'date', 'dueDate'], limit: 1, orderBy: 'dueDate');
+
+    DateTime res;
+    if (maps.length == 0) {
+      res = DateTime.now();
+    } else {
+      res = NotesModel.fromMap(maps[0]).dueDate;
+    }
+    return res;
+  }
+
   Future<int> getNumberOfSecondsDueOfSecondNote() async {
     String tableName = await whichTableIsOpen();
     final db = await database;
@@ -218,6 +234,7 @@ class NotesDatabaseService {
           '] (originalContent, meaningContent, isLearned, date, dueDate) VALUES ("${newNote.originalContent}", "${newNote.meaningContent}", "${newNote.isLearned == true ? 1 : 0}", "${newNote.date.toIso8601String()}", "${newNote.dueDate.toIso8601String()}");');
     });
     newNote.id = id;
+    print(newNote.dueDate.toIso8601String());
     return newNote;
   }
 
