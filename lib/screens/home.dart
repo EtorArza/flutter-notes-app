@@ -564,8 +564,29 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     notesList.forEach((note) {
       bool discardedBySearch = searchController.text.isNotEmpty &&
-          !note.originalContent.toLowerCase().contains(searchController.text.toLowerCase()) &&
-          !note.meaningContent.toLowerCase().contains(searchController.text.toLowerCase());
+          !note.originalContent
+              .toLowerCase()
+              .replaceAll(
+                new RegExp(
+                  r'(?:\:regular\:|\:default\:|\:standard\:|\:white\:|\:green\:|\:blue\:|\:pink\:|\:yellow\:|\:orange\:|\:purple\:|\:italic\:|\:normal\:|\:bold\:)',
+                  unicode: false,
+                  multiLine: true,
+                  caseSensitive: true,
+                ),
+                '',
+              )
+              .contains(searchController.text.toLowerCase()) &&
+          !note.meaningContent
+              .toLowerCase()
+              .replaceAll(
+                  new RegExp(
+                    r'(?:\:regular\:|\:default\:|\:standard\:|\:white\:|\:green\:|\:blue\:|\:pink\:|\:yellow\:|\:orange\:|\:purple\:|\:italic\:|\:normal\:|\:bold\:)',
+                    unicode: false,
+                    multiLine: true,
+                    caseSensitive: true,
+                  ),
+                  '')
+              .contains(searchController.text.toLowerCase());
       if ((!isFlagOn || note.isLearned) && (!discardedBySearch)) {
         noteComponentsList.add(Container(
             child: NoteCardComponent(
