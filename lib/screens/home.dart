@@ -115,6 +115,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       importedFileContent = this.widget.myappstate.sharedText.substring(this.widget.myappstate.sharedText.indexOf('.') + 1);
       print("file_ext: $importedFileExtension");
       print("file_cont: $importedFileContent");
+      this.widget.myappstate.sharedText = "";
       gotoImport();
     }
   }
@@ -609,7 +610,12 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     Navigator.push(
         context,
         CupertinoPageRoute(
-            builder: (context) => ImportScreen(triggerRefetch: refetchNotesFromDB, homePageState: this, importedType: this.importedFileExtension)));
+            builder: (context) => ImportScreen(
+                  triggerRefetch: refetchNotesFromDB,
+                  homePageState: this,
+                  importedType: this.importedFileExtension,
+                  settings: this.widget.settings,
+                )));
   }
 
   void refetchNotesFromDB() async {

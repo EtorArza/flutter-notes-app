@@ -436,6 +436,7 @@ void shareListOfNoteCards(List<NotesModel> listOfNoteCards) async {
 
 NotesModel fromStringToNotesModel(String stringNoteCard) {
   List<String> listOfFields = stringNoteCard.split(fieldDelimiter);
+  print(listOfFields);
   NotesModel res = NotesModel(
     originalContent: listOfFields[0],
     meaningContent: listOfFields[1],

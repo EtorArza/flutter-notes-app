@@ -87,6 +87,10 @@ public class MainActivity extends FlutterActivity {
         for (String line; (line = r.readLine()) != null;) {
           total.append(line).append('\n');
         }
+        if( total.length() > 0 )
+        {
+          total.deleteCharAt(total.length() - 1);
+        }
         String content = total.toString();
         res += content;
 

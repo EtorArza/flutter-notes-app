@@ -46,6 +46,14 @@ class NoteCardComponent extends StatefulWidget {
 }
 
 class _NoteCardComponentState extends State<NoteCardComponent> with SingleTickerProviderStateMixin {
+  bool hideDueInfo = false;
+
+  void toggleHideDueInfo() {
+    setState(() {
+      hideDueInfo = !hideDueInfo;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -171,20 +179,22 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        nDaysSinceLastUpdate.toString() + 'd ',
-                        style: TextStyle(color: Color.fromARGB(min(30 + nDaysSinceLastUpdate * 8, 255), 255, 255, 255)),
-                      ),
-                      isDue
-                          ? getDueCircle(context)
-                          : Container(
-                              height: dueCircleSize,
+                  this.hideDueInfo
+                      ? Container()
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              nDaysSinceLastUpdate.toString() + 'd ',
+                              style: TextStyle(color: Color.fromARGB(min(30 + nDaysSinceLastUpdate * 8, 255), 255, 255, 255)),
                             ),
-                    ],
-                  ),
+                            isDue
+                                ? getDueCircle(context)
+                                : Container(
+                                    height: dueCircleSize,
+                                  ),
+                          ],
+                        ),
                   Container(
                     margin: EdgeInsets.only(),
                     child: this.widget.isVisible == 0 || this.widget.isVisible == 1 || this.widget.noteData.isExpanded
