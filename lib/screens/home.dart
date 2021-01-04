@@ -255,22 +255,22 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           }),
           Spacer(),
           // only for debug
-          IconButton(
-            tooltip: 'Create random',
-            icon: Icon(Icons.confirmation_number),
-            onPressed: () {
-              for (var i = 0; i < 1000; i++) {
-                NotesDatabaseService.db.addNoteInDB(NotesModel.random());
-              }
-              setNotesFromDB();
-            },
-          ),
+          // IconButton(
+          //   tooltip: 'Create random',
+          //   icon: Icon(Icons.confirmation_number),
+          //   onPressed: () {
+          //     for (var i = 0; i < 1000; i++) {
+          //       NotesDatabaseService.db.addNoteInDB(NotesModel.random());
+          //     }
+          //     setNotesFromDB();
+          //   },
+          // ),
           IconButton(
             tooltip: 'Import',
             icon: Icon(Icons.folder_open),
             onPressed: () {
-              importNoteCard().then((value) {
-                if (value) {
+              importNoteCard(this).then((value) {
+                if (value = !null && value) {
                   setNotesFromDB();
                 }
               });
@@ -751,10 +751,10 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           ),
           Container(height: 24.0),
           ...getAllItemsInDrawer(context),
+          Container(height: 15.0),
           ListTile(
             title: Container(
                 margin: EdgeInsets.fromLTRB(10, 3, 10, 3),
-                height: 80,
                 decoration: BoxDecoration(
                   border: Border.all(color: Theme.of(context).primaryColor, width: 2),
                   borderRadius: BorderRadius.circular(16),
@@ -763,7 +763,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   borderRadius: BorderRadius.circular(16),
                   clipBehavior: Clip.antiAlias,
                   child: Container(
-                    padding: EdgeInsets.all(16),
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
@@ -776,7 +776,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 color: Theme.of(context).primaryColor,
                               ),
                               Padding(
-                                  padding: const EdgeInsets.all(1.0),
+                                  padding: const EdgeInsets.all(0.0),
                                   child: Text(
                                     'Add new collection',
                                     style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),

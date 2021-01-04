@@ -33,7 +33,9 @@ class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
   List<DropdownMenuItem> dropdownMenuItems = [];
   List<NotesModel> importedNotes = [];
   String _selectedCollectionName = 'Choose a collection';
-  int _selectedValue = 0;
+  int selectedCollectionNameIndex = 0;
+  bool _popContextOnError = false;
+  String _popContextOnErrorMessageForSnackBar = '';
 
   @override
   void initState() {
@@ -73,14 +75,28 @@ class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
 
   void handleImportFrekCard() async {
     print("handleImportFrekCard");
-    this.importedNotes = [fromStringToNotesModel(this.widget.homePageState.importedFileContent)];
-    await handleImportColelctionOrCart();
+    try {
+      this.importedNotes = [fromStringToNotesModel(this.widget.homePageState.importedFileContent)];
+      await handleImportColelctionOrCart();
+    } catch (e) {
+      _popContextOnErrorMessageForSnackBar = 'Error importing card,\ncorrupted file.';
+      setState(() {
+        _popContextOnError = true;
+      });
+    }
   }
 
   void handleImportFrekCollection() async {
     print("handleImportFrekCollection");
-    this.importedNotes = fromStringToListOfNotesModel(this.widget.homePageState.importedFileContent);
-    await handleImportColelctionOrCart();
+    try {
+      this.importedNotes = fromStringToListOfNotesModel(this.widget.homePageState.importedFileContent);
+      await handleImportColelctionOrCart();
+    } catch (e) {
+      _popContextOnErrorMessageForSnackBar = 'Error importing collection,\ncorrupted file.';
+      setState(() {
+        _popContextOnError = true;
+      });
+    }
   }
 
   Future<void> handleImportColelctionOrCart() async {
@@ -102,6 +118,38 @@ class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
 
   Widget buildImportFrekDB(BuildContext context) {
     print("buildImportFrekDB");
+    return Scaffold(
+        body: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 25,
+        ),
+        backButton(context),
+        Spacer(),
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    'This is a backup file. You can restore it from settings.',
+                    style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 25),
+                  )),
+              Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    "If you do, all your data will be replaced. To avoid unintentionally deleting all your data, you need to go to settings to restore the backup. By forcing the user to first go settings and then select the backup file, we make sure that the user knows what it is doing (replacing all its data with the backup's content).",
+                    style: TextStyle(fontFamily: 'ZillaSlab', color: Colors.grey[400], fontSize: 16),
+                  )),
+            ],
+          ),
+        ),
+        Spacer(),
+      ],
+    ));
   }
 
   Widget buildImportFrekCard(BuildContext context) {
@@ -155,12 +203,12 @@ class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.cyan[800], border: Border.all()),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton(
-                        value: _selectedValue,
+                        value: selectedCollectionNameIndex,
                         items: dropdownMenuItems,
                         onChanged: (value) {
                           setState(() {
                             _selectedCollectionName = fetchedListOfCollectionNames[value];
-                            _selectedValue = value;
+                            selectedCollectionNameIndex = value;
                           });
                         }),
                   ),
@@ -240,6 +288,50 @@ class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    print("_popContextOnError: $_popContextOnError");
+
+    if (_popContextOnError) {
+      print("_popContextOnErrorMessageForSnackBar: $_popContextOnErrorMessageForSnackBar");
+
+      // Future.delayed(Duration(milliseconds: 4000), () {
+      //   Navigator.pop(context, _popContextOnErrorMessageForSnackBar);
+      // });
+
+      return Scaffold(
+          body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 25,
+          ),
+          backButton(context),
+          Spacer(),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  _popContextOnErrorMessageForSnackBar,
+                  style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 25),
+                ),
+                IconButton(
+                  icon: Icon(Icons.error_outline),
+                  onPressed: () {},
+                  color: Colors.yellow[800],
+                  iconSize: 25,
+                )
+              ],
+            ),
+          ),
+          Spacer(),
+        ],
+      ));
+    }
+
+    if (dropdownMenuItems.length == 0 && (this.widget.importedType == 'FrekCard' || this.widget.importedType == 'FrekCollection')) {
+      return Scaffold();
+    }
     Widget res;
     switch (this.widget.importedType) {
       case "FrekDB":

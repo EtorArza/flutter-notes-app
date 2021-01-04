@@ -1,3 +1,4 @@
+import 'package:Frek/screens/home.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../data/models.dart';
@@ -393,7 +394,7 @@ String fromTableNameToCollectionName(String tableName) {
   return res;
 }
 
-Future<bool> importNoteCard() async {
+Future<bool> importNoteCard(MyHomePageState homeState) async {
   FilePickerResult result =
       await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: [".FrekCard", ".FrekCollection"], type: FileType.custom);
 
@@ -403,17 +404,17 @@ Future<bool> importNoteCard() async {
         (result.files.first.path.split('.').length >= 2 &&
             result.files.first.path.split('.').last == 'bin' &&
             result.files.first.path.split('.').reversed.toList()[1] == 'FrekCard')) {
-      NotesModel readNote = fromStringToNotesModel(await File(filePath).readAsString());
-      NotesDatabaseService.db.addNoteInDB(readNote);
+      homeState.importedFileContent = await File(filePath).readAsString();
+      homeState.importedFileExtension = "FrekCard";
+      homeState.gotoImport();
       return true;
     } else if ((result.files.first.path.split('.').last == 'FrekCollection' ||
         (result.files.first.path.split('.').length >= 2 &&
             result.files.first.path.split('.').last == 'bin' &&
             result.files.first.path.split('.').reversed.toList()[1] == 'FrekCollection'))) {
-      List<NotesModel> listReadNotes = fromStringToListOfNotesModel(await File(filePath).readAsString());
-      for (var readNote in listReadNotes) {
-        NotesDatabaseService.db.addNoteInDB(readNote);
-      }
+      homeState.importedFileContent = await File(filePath).readAsString();
+      homeState.importedFileExtension = "FrekCollection";
+      homeState.gotoImport();
       return true;
     } else {
       print("ERROR: only " + extensionForNoteCard + " or " + extensionForCollection + " files supported.");
