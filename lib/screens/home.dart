@@ -32,7 +32,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool isFlagOn = false;
   bool isMultiselectOn = false;
   bool isSettingsOpen = false;
-
+  bool isImportOpen = false;
   Set<NotesModel> selectedNotes = Set();
   int visibilityIndex = 2;
   DateTime timeLastUpdate = DateTime.now();
@@ -75,6 +75,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       //print((DateTime.now().difference(timeLastUpdate).inSeconds).toString() + ' periodic function call ' + DateTime.now().toIso8601String());
     });
     WidgetsBinding.instance.addObserver(this);
+    print('InitState home.dart');
     handleImportedString();
   }
 
@@ -83,7 +84,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.resumed:
         if (!isMultiselectOn && !isSettingsOpen) {
-          setNotesFromDB();
+          await setNotesFromDB();
         }
         // print("Sharedtext before: ${this.widget.myappstate.sharedText}");
         await this.widget.myappstate.getSharedText();
@@ -111,7 +112,14 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   void handleImportedString() {
-    if (this.widget.myappstate.sharedText != "" && this.widget.myappstate.sharedText != null && this.widget.myappstate.sharedText != "null") {
+    print('handleImportedString()');
+    if (!this.isMultiselectOn &&
+        !this.isSettingsOpen &&
+        !this.isImportOpen &&
+        this.widget.myappstate.sharedText != "" &&
+        this.widget.myappstate.sharedText != null &&
+        this.widget.myappstate.sharedText != "null") {
+      this.isImportOpen = true;
       importedFileExtension = this.widget.myappstate.sharedText.substring(0, this.widget.myappstate.sharedText.indexOf('.')).trim();
       importedFileContent = this.widget.myappstate.sharedText.substring(this.widget.myappstate.sharedText.indexOf('.') + 1);
       print("file_ext: $importedFileExtension");
@@ -121,7 +129,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     }
   }
 
-  setNotesFromDB() async {
+  Future<void> setNotesFromDB() async {
     this._notesAreLoading = true;
     //print("Entered setNotes");
     var fetchedNotes = await NotesDatabaseService.db.getNotesFromCollection();
@@ -176,6 +184,9 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     //print("build_home: " + DateTime.now().toIso8601String());
+    Future.microtask(() {
+      handleImportedString();
+    });
     return WillPopScope(
       onWillPop: () async {
         if (isMultiselectOn) {
@@ -640,7 +651,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   homePageState: this,
                   importedType: this.importedFileExtension,
                   settings: this.widget.settings,
-                )));
+                ))).then((value) => this.isImportOpen = false);
   }
 
   void refetchNotesFromDB() async {
