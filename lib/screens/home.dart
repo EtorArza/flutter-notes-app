@@ -42,6 +42,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   List<bool> listOfCollectionsAreTheyDue = [];
   String nameOfOpenCollection;
   TextEditingController searchController = TextEditingController();
+  bool _notesAreLoading = false;
 
   String importedFileExtension = null;
   String importedFileContent = null;
@@ -121,6 +122,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   setNotesFromDB() async {
+    this._notesAreLoading = true;
     //print("Entered setNotes");
     var fetchedNotes = await NotesDatabaseService.db.getNotesFromCollection();
     var fetchedListOfCollectionNames = await NotesDatabaseService.db.listOfCollectionNames();
@@ -132,6 +134,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       listOfCollectionNames = fetchedListOfCollectionNames;
       nameOfOpenCollection = fetchedOpenName;
       listOfCollectionsAreTheyDue = fetchedListOfCollectionsAreTheyDue;
+      this._notesAreLoading = false;
     });
   }
 
@@ -216,7 +219,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     !isMultiselectOn ? Container(height: 12) : Container(),
                     !isMultiselectOn ? buildNameWidget(context) : Container(),
                     !isMultiselectOn ? Container(height: 12) : Container(),
-                    ...buildNoteComponentsList(),
+                    ...(_notesAreLoading ? [Container()] : buildNoteComponentsList()),
                     notesList.length == 0 ? GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()) : Container(),
                     Container(height: 65)
                   ],
@@ -255,16 +258,16 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           }),
           Spacer(),
           // only for debug
-          // IconButton(
-          //   tooltip: 'Create random',
-          //   icon: Icon(Icons.confirmation_number),
-          //   onPressed: () {
-          //     for (var i = 0; i < 1000; i++) {
-          //       NotesDatabaseService.db.addNoteInDB(NotesModel.random());
-          //     }
-          //     setNotesFromDB();
-          //   },
-          // ),
+          IconButton(
+            tooltip: 'Create random',
+            icon: Icon(Icons.confirmation_number),
+            onPressed: () {
+              for (var i = 0; i < 1000; i++) {
+                NotesDatabaseService.db.addNoteInDB(NotesModel.random());
+              }
+              setNotesFromDB();
+            },
+          ),
           IconButton(
             tooltip: 'Import',
             icon: Icon(Icons.folder_open),
@@ -534,7 +537,8 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       padding: EdgeInsets.only(left: 20),
       child: Text(
         nameOfOpenCollection == null ? ' ' : nameOfOpenCollection,
-        style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 30),
+        style:
+            TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: (nameOfOpenCollection ?? ' ').length < 20 ? 30 : 20),
       ),
     );
   }
@@ -706,9 +710,12 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           title: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                this.listOfCollectionNames[i],
-                style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+              Flexible(
+                child: Text(
+                  this.listOfCollectionNames[i],
+                  style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+                  overflow: TextOverflow.fade,
+                ),
               ),
               Container(
                 width: 8,
@@ -876,14 +883,14 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   void showCollectionOptionsAlertDialog(BuildContext context, String currentCollectionName, Function reloadDB, int nCollections) {
     Widget cancelButton = FlatButton(
-      child: Text('Cancel'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+      child: Text('Cancel'.toUpperCase(), style: TextStyle(fontSize: 10, color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
       onPressed: () {
         Navigator.pop(context);
       },
     );
 
     Widget deleteButton = FlatButton(
-      child: Text('DELETE', style: TextStyle(color: Colors.red.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+      child: Text('DELETE', style: TextStyle(fontSize: 10, color: Colors.red.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
       onPressed: () {
         showConfirmationDialog(
           context,
@@ -907,7 +914,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     );
 
     Widget renameButton = FlatButton(
-      child: Text('Rename'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+      child: Text('Rename'.toUpperCase(), style: TextStyle(fontSize: 10, color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
       onPressed: () {
         Navigator.pop(context);
         showTextInputAlertDialog(context, currentCollectionName, (buttonNameAndInputTextTouple) async {
@@ -922,13 +929,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     );
 
     Widget openButton = FlatButton(
-      child: Text('Open'.toUpperCase(), style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+      child: Text('Open'.toUpperCase(), style: TextStyle(fontSize: 10, color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
       onPressed: () async {
         // Update the state of the app.
         // ...
+        Navigator.pop(context);
         await NotesDatabaseService.db.markCollectionAsOpen(currentCollectionName);
         await reloadDB();
-        Navigator.pop(context);
       },
     );
 

@@ -9,7 +9,16 @@ import 'package:outline_material_icons/outline_material_icons.dart';
 import '../services/database.dart';
 import '../screens/settings.dart';
 
-List<Color> colorList = [Colors.blue, Colors.green, Colors.indigo, Colors.red, Colors.cyan, Colors.teal, Colors.amber.shade900, Colors.deepOrange];
+List<Color> colorList = [
+  Colors.blue,
+  Colors.green,
+  Colors.indigo,
+  Colors.red,
+  Colors.cyan,
+  Colors.teal,
+  Colors.amber.shade900,
+  Colors.deepOrange
+];
 
 double dueCircleSize = 10.0;
 Widget getDueCircle(BuildContext context) {
@@ -47,7 +56,8 @@ class NoteCardComponent extends StatefulWidget {
   _NoteCardComponentState createState() => _NoteCardComponentState();
 }
 
-class _NoteCardComponentState extends State<NoteCardComponent> with SingleTickerProviderStateMixin {
+class _NoteCardComponentState extends State<NoteCardComponent>
+    with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
@@ -63,7 +73,11 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
         duration: Duration(milliseconds: 230),
         alignment: Alignment.topCenter,
         vsync: this,
-        child: Container(child: Container(child: this.widget.noteData.isExpanded ? expandedCard : nonExpandedCard)));
+        child: Container(
+            child: Container(
+                child: this.widget.noteData.isExpanded
+                    ? expandedCard
+                    : nonExpandedCard)));
   }
 
   void refetchNotesFromDB() async {
@@ -83,11 +97,15 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
     });
   }
 
-  Widget getNonExpandedCard(int nRows, BuildContext context, bool showLowerButtons) {
-    bool isDue = this.widget.noteData.dueDate.difference(DateTime.now()).inSeconds <= 0;
-    int nDaysSinceLastUpdate = -this.widget.noteData.date.difference(DateTime.now()).inDays;
+  Widget getNonExpandedCard(
+      int nRows, BuildContext context, bool showLowerButtons) {
+    bool isDue =
+        this.widget.noteData.dueDate.difference(DateTime.now()).inSeconds <= 0;
+    int nDaysSinceLastUpdate =
+        -this.widget.noteData.date.difference(DateTime.now()).inDays;
 
-    Color color = colorList.elementAt(this.widget.noteData.meaningContent.length % colorList.length);
+    Color color = colorList.elementAt(
+        this.widget.noteData.meaningContent.length % colorList.length);
 
     Widget buttonRow = Padding(
         padding: EdgeInsets.only(top: 20),
@@ -96,16 +114,21 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
           children: <Widget>[
             InkWell(
               onTap: () async {
-                int nextDueMiliseconds = await NotesDatabaseService.db.getNumberOfSecondsDueOfSecondNote();
+                int nextDueMiliseconds = await NotesDatabaseService.db
+                    .getNumberOfSecondsDueOfSecondNote();
 
                 // next card is due a long time ago
                 if (nextDueMiliseconds < -30) {
-                  nextDueMiliseconds = 0 - (1 + Random().nextInt(15)); // set due this after all long time due
+                  nextDueMiliseconds = 0 -
+                      (1 +
+                          Random().nextInt(
+                              15)); // set due this after all long time due
                 }
                 // next card is due short time ago
                 else if (nextDueMiliseconds <= 0) {
                   if (nextDueMiliseconds != 0) {
-                    nextDueMiliseconds = -(Random().nextInt(nextDueMiliseconds.abs())); //
+                    nextDueMiliseconds =
+                        -(Random().nextInt(nextDueMiliseconds.abs())); //
                   }
                 }
                 // next card is NOT due (nextDueSeconds > -4)
@@ -119,27 +142,39 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
             ),
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(hours: 12, days: this.widget.settings.nDaysRepeat[0] - 1));
+                updateDueDateCard(Duration(
+                    hours: 12, days: this.widget.settings.nDaysRepeat[0] - 1));
               },
-              child: ButtonBelowCard(icon: fromNDaysToButtonText(this.widget.settings.nDaysRepeat[0])),
+              child: ButtonBelowCard(
+                  icon: fromNDaysToButtonText(
+                      this.widget.settings.nDaysRepeat[0])),
             ),
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(days: this.widget.settings.nDaysRepeat[1]));
+                updateDueDateCard(
+                    Duration(days: this.widget.settings.nDaysRepeat[1]));
               },
-              child: ButtonBelowCard(icon: fromNDaysToButtonText(this.widget.settings.nDaysRepeat[1])),
+              child: ButtonBelowCard(
+                  icon: fromNDaysToButtonText(
+                      this.widget.settings.nDaysRepeat[1])),
             ),
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(days: this.widget.settings.nDaysRepeat[2]));
+                updateDueDateCard(
+                    Duration(days: this.widget.settings.nDaysRepeat[2]));
               },
-              child: ButtonBelowCard(icon: fromNDaysToButtonText(this.widget.settings.nDaysRepeat[2])),
+              child: ButtonBelowCard(
+                  icon: fromNDaysToButtonText(
+                      this.widget.settings.nDaysRepeat[2])),
             ),
             InkWell(
               onTap: () {
-                updateDueDateCard(Duration(days: this.widget.settings.nDaysRepeat[3]));
+                updateDueDateCard(
+                    Duration(days: this.widget.settings.nDaysRepeat[3]));
               },
-              child: ButtonBelowCard(icon: fromNDaysToButtonText(this.widget.settings.nDaysRepeat[3])),
+              child: ButtonBelowCard(
+                  icon: fromNDaysToButtonText(
+                      this.widget.settings.nDaysRepeat[3])),
             ),
           ],
         ));
@@ -150,12 +185,18 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           boxShadow: [buildBoxShadow(color, context)],
-          border: Border.all(width: 2, color: this.widget.noteData.isSelected ? Colors.white : Colors.transparent),
+          border: Border.all(
+              width: 2,
+              color: this.widget.noteData.isSelected
+                  ? Colors.white
+                  : Colors.transparent),
         ),
         child: Material(
           borderRadius: BorderRadius.circular(16),
           clipBehavior: Clip.antiAlias,
-          color: this.widget.noteData.isLearned ? Colors.grey[300].withAlpha(70) : Theme.of(context).dialogBackgroundColor,
+          color: this.widget.noteData.isLearned
+              ? Colors.grey[300].withAlpha(70)
+              : Theme.of(context).dialogBackgroundColor,
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: () {
@@ -182,7 +223,12 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
                           children: [
                             Text(
                               nDaysSinceLastUpdate.toString() + 'd ',
-                              style: TextStyle(color: Color.fromARGB(min(30 + nDaysSinceLastUpdate * 8, 255), 255, 255, 255)),
+                              style: TextStyle(
+                                  color: Color.fromARGB(
+                                      min(30 + nDaysSinceLastUpdate * 8, 255),
+                                      255,
+                                      255,
+                                      255)),
                             ),
                             isDue
                                 ? getDueCircle(context)
@@ -193,18 +239,30 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
                         ),
                   Container(
                     margin: EdgeInsets.only(),
-                    child: this.widget.isVisible == 0 || this.widget.isVisible == 1 || this.widget.noteData.isExpanded
-                        ? FormattedText(nLines: 1, completeString: this.widget.noteData.originalContent)
+                    child: this.widget.isVisible == 0 ||
+                            this.widget.isVisible == 1 ||
+                            this.widget.noteData.isExpanded
+                        ? FormattedText(
+                            nLines: 1,
+                            completeString:
+                                this.widget.noteData.originalContent)
                         : Text(" "),
                   ),
 
                   Divider(height: 24.0),
                   Container(
                       margin: EdgeInsets.only(),
-                      child: this.widget.isVisible == 0 || this.widget.isVisible == 2 || this.widget.noteData.isExpanded
-                          ? FormattedText(nLines: 1, completeString: this.widget.noteData.meaningContent)
+                      child: this.widget.isVisible == 0 ||
+                              this.widget.isVisible == 2 ||
+                              this.widget.noteData.isExpanded
+                          ? FormattedText(
+                              nLines: 1,
+                              completeString:
+                                  this.widget.noteData.meaningContent)
                           : Container()),
-                  !showLowerButtons || this.widget.noteData.isLearned ? Container() : buttonRow,
+                  !showLowerButtons || this.widget.noteData.isLearned
+                      ? Container()
+                      : buttonRow,
                   // Container(
                   //   margin: EdgeInsets.only(top: 14),
                   //   alignment: Alignment.centerRight,
@@ -235,7 +293,8 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
   }
 
   BoxShadow buildBoxShadow(Color color, BuildContext context) {
-    return BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 8, offset: Offset(0, 8));
+    return BoxShadow(
+        color: Colors.black.withAlpha(10), blurRadius: 8, offset: Offset(0, 8));
   }
 } // class NoteComponentCard
 
@@ -250,10 +309,13 @@ class ButtonBelowCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MediaQueryData queryData;
+    queryData = MediaQuery.of(context);
+
     Color accentColor = appThemeDark.accentColor;
     Widget res = Container(
       height: 50,
-      width: 65,
+      width: MediaQuery.of(context).size.width * 0.15,
       child: icon is IconData
           ? Icon(
               icon,
@@ -264,10 +326,15 @@ class ButtonBelowCard extends StatelessWidget {
               child: Text(
                 icon,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 22, color: Colors.grey.shade300, fontFamily: 'ZillaSlab'),
+                style: TextStyle(
+                    fontSize: 22,
+                    color: Colors.grey.shade300,
+                    fontFamily: 'ZillaSlab'),
               )),
       decoration: BoxDecoration(
-          color: Colors.transparent, border: Border.all(width: 1.0, color: Colors.grey.shade300), borderRadius: BorderRadius.all(Radius.circular(6))),
+          color: Colors.transparent,
+          border: Border.all(width: 1.0, color: Colors.grey.shade300),
+          borderRadius: BorderRadius.all(Radius.circular(6))),
     );
 
     return res;
@@ -308,7 +375,10 @@ class AddNoteCardComponent extends StatelessWidget {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             'Add card',
-                            style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+                            style: TextStyle(
+                                fontFamily: 'ZillaSlab',
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 20),
                           ))
                     ],
                   ),
@@ -356,7 +426,14 @@ class FormattedText extends StatelessWidget {
       "orange",
       "purple"
     ];
-    const List<String> fontModeNames = ["regular", "default", "standard", "normal", "italic", "bold"];
+    const List<String> fontModeNames = [
+      "regular",
+      "default",
+      "standard",
+      "normal",
+      "italic",
+      "bold"
+    ];
 
     const List<Color> highlightColors = [
       Color.fromARGB(255, 255, 255, 255), // regular (white)
@@ -373,7 +450,8 @@ class FormattedText extends StatelessWidget {
     ];
     List<TextSpan> res = [];
 
-    Color currentColor = highlightColors[highlightColorNames.indexWhere((element) {
+    Color currentColor =
+        highlightColors[highlightColorNames.indexWhere((element) {
       return element == "white";
     })];
 
@@ -385,16 +463,23 @@ class FormattedText extends StatelessWidget {
 
     for (var i = 0; i < splittedText.length; ++i) {
       final textPiece = splittedText[i];
-      if ((highlightColorNames.contains(textPiece) || fontModeNames.contains(textPiece)) && i != 0 && i != splittedText.length - 1) {
+      if ((highlightColorNames.contains(textPiece) ||
+              fontModeNames.contains(textPiece)) &&
+          i != 0 &&
+          i != splittedText.length - 1) {
         styleChanged = true;
         if (highlightColorNames.contains(textPiece)) {
-          currentColor = highlightColors[highlightColorNames.indexWhere((element) {
+          currentColor =
+              highlightColors[highlightColorNames.indexWhere((element) {
             return element == textPiece;
           })];
         }
 
         if (fontModeNames.contains(textPiece)) {
-          if (textPiece == 'normal' || textPiece == 'standard' || textPiece == 'regular' || textPiece == 'default') {
+          if (textPiece == 'normal' ||
+              textPiece == 'standard' ||
+              textPiece == 'regular' ||
+              textPiece == 'default') {
             currentFontWeight = FontWeight.normal;
             currentFontStyle = FontStyle.normal;
           } else if (textPiece == 'bold') {

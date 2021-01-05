@@ -104,7 +104,7 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
           ),
           Row(children: [
             Container(
-              width: MediaQuery.of(context).size.width * 0.8,
+              width: MediaQuery.of(context).size.width * 0.7,
               child: this.widget.homePageState.buildNameWidget(context),
             ),
             //Expanded(child: Container()),
@@ -123,7 +123,8 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
               // mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[noteCard],
             ),
-          )
+          ),
+          Container(height: 20),
         ],
       ),
     );
@@ -146,7 +147,7 @@ class _ReviewScreen extends State<ReviewScreen> with TickerProviderStateMixin {
         child: Row(
           children: <Widget>[
             Container(
-              width: 8.0,
+              width: 4.0,
             ),
             GestureDetector(
               onTap: () {

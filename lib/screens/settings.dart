@@ -236,7 +236,7 @@ class SettingsPageState extends State<SettingsPage> {
                             buildCardWidget(Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text('Backup all collections',
+                                Text('Backup all\ncollections',
                                     style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
                                 Spacer(),
                                 iconButtonWithFrame(Icons.save, NotesDatabaseService.db.backupEntireDB),
@@ -295,7 +295,7 @@ class SettingsPageState extends State<SettingsPage> {
                             buildCardWidget(Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text('Restore default settings',
+                                Text('Restore default\n settings',
                                     style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
                                 Spacer(),
                                 iconButtonWithFrame(Icons.list_alt, () {
