@@ -59,7 +59,7 @@
                 (even if it is non-null but zero length).
             -->
             <intent-filter
-                android:icon="@drawable/logo"
+                android:icon="@mipmap/ic_launcher"
                 android:label="@string/app_name"
                 android:priority="50" >
                 <action android:name="android.intent.action.VIEW" />
@@ -130,7 +130,7 @@
                 wildcard.
             -->
             <intent-filter
-                android:icon="@drawable/logo"
+                android:icon="@mipmap/ic_launcher"
                 android:label="@string/app_name"
                 android:priority="50" >
                 <action android:name="android.intent.action.VIEW" />

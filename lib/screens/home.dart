@@ -64,16 +64,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     setNotesFromDB();
     visibilityIndex = 2;
 
-    int updateEveryThisManySeconds = 200;
-
-    new Timer.periodic(Duration(seconds: updateEveryThisManySeconds), (Timer t) {
-      //if (!isMultiselectOn && DateTime.now().difference(timeLastUpdate).inSeconds > updateAfterThisManySeconds) {}
-      // timeLastUpdate = DateTime.now();
-      if (!isMultiselectOn) {
-        setNotesFromDB();
-      }
-      //print((DateTime.now().difference(timeLastUpdate).inSeconds).toString() + ' periodic function call ' + DateTime.now().toIso8601String());
-    });
     WidgetsBinding.instance.addObserver(this);
     print('InitState home.dart');
     handleImportedString();
@@ -84,7 +74,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.resumed:
         if (!isMultiselectOn && !isSettingsOpen) {
-          await setNotesFromDB();
+          setNotesFromDB();
         }
         // print("Sharedtext before: ${this.widget.myappstate.sharedText}");
         await this.widget.myappstate.getSharedText();
@@ -130,18 +120,21 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Future<void> setNotesFromDB() async {
-    this._notesAreLoading = true;
+    setState(() {
+      this._notesAreLoading = true;
+    });
     //print("Entered setNotes");
     var fetchedNotes = await NotesDatabaseService.db.getNotesFromCollection();
     var fetchedListOfCollectionNames = await NotesDatabaseService.db.listOfCollectionNames();
     var fetchedListOfCollectionsAreTheyDue = await NotesDatabaseService.db.listOfCollectionsAreTheyDue(fetchedListOfCollectionNames);
     var fetchedOpenName = await NotesDatabaseService.db.whichCollectionIsOpen();
 
+    notesList = fetchedNotes;
+    listOfCollectionNames = fetchedListOfCollectionNames;
+    nameOfOpenCollection = fetchedOpenName;
+    listOfCollectionsAreTheyDue = fetchedListOfCollectionsAreTheyDue;
+
     setState(() {
-      notesList = fetchedNotes;
-      listOfCollectionNames = fetchedListOfCollectionNames;
-      nameOfOpenCollection = fetchedOpenName;
-      listOfCollectionsAreTheyDue = fetchedListOfCollectionsAreTheyDue;
       this._notesAreLoading = false;
     });
   }
@@ -635,11 +628,11 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   void gotoEditNote() {
-    Navigator.push(context, CupertinoPageRoute(builder: (context) => EditNotePage(triggerRefetch: refetchNotesFromDB)));
+    Navigator.push(context, CupertinoPageRoute(builder: (context) => EditNotePage(triggerRefetch: setNotesFromDB)));
   }
 
   void gotoReview() async {
-    Navigator.push(context, CupertinoPageRoute(builder: (context) => ReviewScreen(triggerRefetch: refetchNotesFromDB, homePageState: this)));
+    Navigator.push(context, CupertinoPageRoute(builder: (context) => ReviewScreen(triggerRefetch: setNotesFromDB, homePageState: this)));
   }
 
   void gotoImport() {
@@ -647,15 +640,11 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         context,
         CupertinoPageRoute(
             builder: (context) => ImportScreen(
-                  triggerRefetch: refetchNotesFromDB,
+                  triggerRefetch: setNotesFromDB,
                   homePageState: this,
                   importedType: this.importedFileExtension,
                   settings: this.widget.settings,
                 ))).then((value) => this.isImportOpen = false);
-  }
-
-  void refetchNotesFromDB() async {
-    await setNotesFromDB();
   }
 
   openNoteToRead(NotesModel noteData) async {
@@ -663,7 +652,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       headerShouldHide = true;
     });
     await Future.delayed(Duration(milliseconds: 230), () {});
-    Navigator.push(context, FadeRoute(page: ViewNotePage(triggerRefetch: refetchNotesFromDB, currentNote: noteData)));
+    Navigator.push(context, FadeRoute(page: ViewNotePage(triggerRefetch: setNotesFromDB, currentNote: noteData)));
     await Future.delayed(Duration(milliseconds: 300), () {});
 
     setState(() {
@@ -738,12 +727,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             // Update the state of the app.
             // ...
             await NotesDatabaseService.db.markCollectionAsOpen(this.listOfCollectionNames[i]);
-
-            refetchNotesFromDB();
-            Navigator.pop(context);
+            Future.delayed(Duration(milliseconds: 200), () {
+              Navigator.pop(context);
+            });
+            setNotesFromDB();
           },
           onLongPress: () {
-            showCollectionOptionsAlertDialog(context, this.listOfCollectionNames[i], refetchNotesFromDB, listOfCollectionNames.length);
+            showCollectionOptionsAlertDialog(context, this.listOfCollectionNames[i], setNotesFromDB, listOfCollectionNames.length);
           },
         ),
       );
@@ -814,7 +804,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 if (buttonName == 'Cancel' || buttonName == 'Back') {
                 } else if (buttonName == 'OK') {
                   await NotesDatabaseService.db.createNewCollection(inputText == '' ? 'New Collection' : inputText);
-                  await refetchNotesFromDB();
+                  setNotesFromDB();
                 } else {
                   print('Error, unrecognized button.');
                 }
