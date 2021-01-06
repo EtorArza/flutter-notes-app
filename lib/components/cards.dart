@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -48,6 +49,8 @@ class NoteCardComponent extends StatefulWidget {
 }
 
 class _NoteCardComponentState extends State<NoteCardComponent> with SingleTickerProviderStateMixin {
+  double opacity = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -59,11 +62,24 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
 
     Widget expandedCard = getNonExpandedCard(1, context, true);
 
+    if (this.opacity < 0.5) {
+      scheduleMicrotask(() {
+        setState(() {
+          this.opacity = 1.0;
+        });
+      });
+    }
+
     return AnimatedSize(
         duration: Duration(milliseconds: 230),
         alignment: Alignment.topCenter,
         vsync: this,
-        child: Container(child: Container(child: this.widget.noteData.isExpanded ? expandedCard : nonExpandedCard)));
+        child: AnimatedOpacity(
+          opacity: opacity,
+          curve: Curves.easeInSine,
+          duration: Duration(milliseconds: 250),
+          child: Container(child: this.widget.noteData.isExpanded ? expandedCard : nonExpandedCard),
+        ));
   }
 
   void updateDueDateCard(Duration timeFromNow) async {
@@ -272,50 +288,43 @@ class ButtonBelowCard extends StatelessWidget {
   }
 }
 
-class AddNoteCardComponent extends StatelessWidget {
-  const AddNoteCardComponent({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        margin: EdgeInsets.fromLTRB(10, 8, 10, 8),
-        height: 110,
-        decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).primaryColor, width: 2),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Material(
-          borderRadius: BorderRadius.circular(16),
-          clipBehavior: Clip.antiAlias,
-          child: Container(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        Icons.add,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Add card',
-                            style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
-                          ))
-                    ],
-                  ),
-                )
-              ],
-            ),
+Widget getAddNoteCardComponent(BuildContext context) {
+  return Container(
+      margin: EdgeInsets.fromLTRB(10, 8, 10, 8),
+      height: 110,
+      decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).primaryColor, width: 2),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Material(
+        borderRadius: BorderRadius.circular(16),
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.add,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Add card',
+                          style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20),
+                        ))
+                  ],
+                ),
+              )
+            ],
           ),
-        ));
-  }
+        ),
+      ));
 }
 
 class FormattedText extends StatelessWidget {

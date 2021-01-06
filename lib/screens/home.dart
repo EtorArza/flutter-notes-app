@@ -33,6 +33,10 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool isMultiselectOn = false;
   bool isSettingsOpen = false;
   bool isImportOpen = false;
+  bool _notesAreLoading = false;
+  bool _showAddNewCard = false;
+  double _showNewCardOpacity = 0.0;
+
   Set<NotesModel> selectedNotes = Set();
   int visibilityIndex = 2;
   DateTime timeLastUpdate = DateTime.now();
@@ -42,7 +46,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   List<bool> listOfCollectionsAreTheyDue = [];
   String nameOfOpenCollection;
   TextEditingController searchController = TextEditingController();
-  bool _notesAreLoading = false;
 
   String importedFileExtension = null;
   String importedFileContent = null;
@@ -122,6 +125,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   Future<void> setNotesFromDB() async {
     setState(() {
       this._notesAreLoading = true;
+      this._showAddNewCard = false;
     });
     //print("Entered setNotes");
     var fetchedNotes = await NotesDatabaseService.db.getNotesFromCollection();
@@ -136,6 +140,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     setState(() {
       this._notesAreLoading = false;
+      this._showAddNewCard = notesList.length == 0;
     });
   }
 
@@ -180,6 +185,16 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     Future.microtask(() {
       handleImportedString();
     });
+
+    if (_showAddNewCard && _showNewCardOpacity < 0.5) {
+      scheduleMicrotask(() {
+        setState(() {
+          this._showNewCardOpacity = 1.0;
+        });
+      });
+    }
+
+    print("Opacity bool: ${isMultiselectOn || !_showAddNewCard}");
     return WillPopScope(
       onWillPop: () async {
         if (isMultiselectOn) {
@@ -224,8 +239,15 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     !isMultiselectOn ? buildNameWidget(context) : Container(),
                     !isMultiselectOn ? Container(height: 12) : Container(),
                     ...(_notesAreLoading ? [Container()] : buildNoteComponentsList()),
-                    notesList.length == 0 ? GestureDetector(onTap: gotoEditNote, child: AddNoteCardComponent()) : Container(),
-                    Container(height: 65)
+                    !isMultiselectOn && _showAddNewCard
+                        ? AnimatedOpacity(
+                            duration: Duration(seconds: 2),
+                            opacity: _showNewCardOpacity,
+                            curve: Curves.easeInSine,
+                            child: Container(child: GestureDetector(onTap: gotoEditNote, child: getAddNoteCardComponent(context))),
+                          )
+                        : Container(),
+                    Container(height: 65),
                   ],
                 ),
               )
@@ -696,6 +718,14 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   static const String tempCollectionName = 'temp_collection_namerjw9843h34fdwflk04';
 
+  void resetHome() {
+    setState(() {
+      this.notesList = [];
+      this._showNewCardOpacity = 0.0;
+      this._showAddNewCard = false;
+    });
+  }
+
   List<Widget> getAllItemsInDrawer(BuildContext context) {
     List<Widget> res = [];
     for (var i = 0; i < listOfCollectionNames.length; i++) {
@@ -726,11 +756,17 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           onTap: () async {
             // Update the state of the app.
             // ...
-            await NotesDatabaseService.db.markCollectionAsOpen(this.listOfCollectionNames[i]);
-            Future.delayed(Duration(milliseconds: 200), () {
-              Navigator.pop(context);
+
+            Navigator.pop(context);
+            setState(() {
+              this.nameOfOpenCollection = this.listOfCollectionNames[i];
             });
-            setNotesFromDB();
+            resetHome();
+
+            Future.delayed(Duration(milliseconds: 350), () async {
+              await NotesDatabaseService.db.markCollectionAsOpen(this.listOfCollectionNames[i]);
+              await setNotesFromDB();
+            });
           },
           onLongPress: () {
             showCollectionOptionsAlertDialog(context, this.listOfCollectionNames[i], setNotesFromDB, listOfCollectionNames.length);
@@ -751,9 +787,21 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: LayoutBuilder(builder: (context, constraints) {
-              return getLibraryHeader(context, constraints.maxWidth * 0.85);
-            }),
+            child: FutureBuilder(
+              initialData: 'waiting',
+              builder: (context, snapshot) {
+                return AnimatedOpacity(
+                  child: snapshot.connectionState != ConnectionState.done
+                      ? Container()
+                      : LayoutBuilder(builder: (context, constraints) {
+                          return getLibraryHeader(context, constraints.maxWidth * 0.85);
+                        }),
+                  opacity: snapshot.connectionState != ConnectionState.done ? 0.0 : 1.0,
+                  duration: Duration(milliseconds: 500),
+                );
+              },
+              future: Future.delayed(Duration(milliseconds: 500)),
+            ),
             padding: EdgeInsets.zero,
             margin: EdgeInsets.zero,
           ),
@@ -935,8 +983,16 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         // Update the state of the app.
         // ...
         Navigator.pop(context);
-        await NotesDatabaseService.db.markCollectionAsOpen(currentCollectionName);
-        await reloadDB();
+        setState(() {
+          this.nameOfOpenCollection = currentCollectionName;
+        });
+
+        resetHome();
+
+        Future.delayed(Duration(milliseconds: 350), () async {
+          await NotesDatabaseService.db.markCollectionAsOpen(currentCollectionName);
+          await setNotesFromDB();
+        });
       },
     );
 
