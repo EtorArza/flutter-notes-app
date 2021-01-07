@@ -34,9 +34,8 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool isSettingsOpen = false;
   bool isImportOpen = false;
   bool _notesAreLoading = false;
-  bool _showAddNewCard = false;
-  double _showNewCardOpacity = 0.0;
-
+  double _opacityNotecards = 0.0;
+  static const Duration _durationAnimatedOpacity = Duration(milliseconds: 250);
   Set<NotesModel> selectedNotes = Set();
   int visibilityIndex = 2;
   DateTime timeLastUpdate = DateTime.now();
@@ -76,15 +75,24 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
       case AppLifecycleState.resumed:
-        if (!isMultiselectOn && !isSettingsOpen) {
-          setNotesFromDB();
+        if (!isMultiselectOn) {
+          setState(() {
+            isMultiselectOn = false;
+          });
         }
-        // print("Sharedtext before: ${this.widget.myappstate.sharedText}");
-        await this.widget.myappstate.getSharedText();
-        // print("Sharedtext after: ${this.widget.myappstate.sharedText}");
-        // setState(() {});
-        handleImportedString();
-        print('resumed.');
+
+        if (!isSettingsOpen) {
+          // print("Sharedtext before: ${this.widget.myappstate.sharedText}");
+          changeOpenCollection(this.nameOfOpenCollection);
+
+          await this.widget.myappstate.getSharedText();
+          // print("Sharedtext after: ${this.widget.myappstate.sharedText}");
+          // setState(() {});
+          handleImportedString();
+
+          print('resumed.');
+        }
+
         break;
       case AppLifecycleState.inactive:
         //
@@ -122,10 +130,24 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     }
   }
 
+  Future<void> changeOpenCollection(String nameOfCollectionToOpen) async {
+    Duration initialWait = Duration(milliseconds: 200);
+    await Future.delayed(initialWait, () {
+      setState(() {
+        this._notesAreLoading = true;
+        this._opacityNotecards = 0.0;
+      });
+    });
+
+    await Future.delayed(_durationAnimatedOpacity + initialWait, () async {
+      await NotesDatabaseService.db.markCollectionAsOpen(nameOfCollectionToOpen);
+      await setNotesFromDB();
+    });
+  }
+
   Future<void> setNotesFromDB() async {
     setState(() {
       this._notesAreLoading = true;
-      this._showAddNewCard = false;
     });
     //print("Entered setNotes");
     var fetchedNotes = await NotesDatabaseService.db.getNotesFromCollection();
@@ -140,7 +162,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     setState(() {
       this._notesAreLoading = false;
-      this._showAddNewCard = notesList.length == 0;
     });
   }
 
@@ -149,6 +170,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   void showInSnackBar(String value) {
+    _scaffoldKey.currentState.removeCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(
       SnackBar(
         duration: Duration(milliseconds: 1800),
@@ -186,15 +208,16 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       handleImportedString();
     });
 
-    if (_showAddNewCard && _showNewCardOpacity < 0.5) {
+    if ((!_notesAreLoading && _opacityNotecards < 0.5)) {
       scheduleMicrotask(() {
         setState(() {
-          this._showNewCardOpacity = 1.0;
+          this._opacityNotecards = 1.0;
         });
       });
     }
 
-    print("Opacity bool: ${isMultiselectOn || !_showAddNewCard}");
+    print("Opacity bool: ${this._opacityNotecards}");
+    print("Notes are loading : ${this._notesAreLoading}");
     return WillPopScope(
       onWillPop: () async {
         if (isMultiselectOn) {
@@ -228,27 +251,28 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               //   this.widget.myappstate.sharedText ?? 'null',
               //   style: TextStyle(fontSize: 25),
               // ),
+              !isMultiselectOn ? buildButtonRow(context, this.notesList.length) : Container(),
+              !isMultiselectOn ? buildLearnedIndicatorText() : Container(),
+
               Expanded(
-                child: ListView(
-                  padding: EdgeInsets.only(top: 7),
-                  physics: BouncingScrollPhysics(),
-                  children: <Widget>[
-                    !isMultiselectOn ? buildButtonRow(context, this.notesList.length) : Container(),
-                    !isMultiselectOn ? buildLearnedIndicatorText() : Container(),
-                    !isMultiselectOn ? Container(height: 12) : Container(),
-                    !isMultiselectOn ? buildNameWidget(context) : Container(),
-                    !isMultiselectOn ? Container(height: 12) : Container(),
-                    ...(_notesAreLoading ? [Container()] : buildNoteComponentsList()),
-                    !isMultiselectOn && _showAddNewCard
-                        ? AnimatedOpacity(
-                            duration: Duration(seconds: 2),
-                            opacity: _showNewCardOpacity,
-                            curve: Curves.easeInSine,
-                            child: Container(child: GestureDetector(onTap: gotoEditNote, child: getAddNoteCardComponent(context))),
-                          )
-                        : Container(),
-                    Container(height: 65),
-                  ],
+                child: AnimatedOpacity(
+                  duration: _durationAnimatedOpacity,
+                  opacity: _opacityNotecards,
+                  curve: Curves.easeInSine,
+                  child: ListView(
+                    padding: EdgeInsets.only(top: 7),
+                    physics: BouncingScrollPhysics(),
+                    children: <Widget>[
+                      !isMultiselectOn ? Container(height: 12) : Container(),
+                      !isMultiselectOn ? buildNameWidget(context) : Container(),
+                      !isMultiselectOn ? Container(height: 12) : Container(),
+                      ...(_notesAreLoading ? [Container()] : buildNoteComponentsList()),
+                      !_notesAreLoading && notesList.length == 0
+                          ? Container(child: GestureDetector(onTap: gotoEditNote, child: getAddNoteCardComponent(context)))
+                          : Container(),
+                      Container(height: 65),
+                    ],
+                  ),
                 ),
               )
             ],
@@ -718,14 +742,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   static const String tempCollectionName = 'temp_collection_namerjw9843h34fdwflk04';
 
-  void resetHome() {
-    setState(() {
-      this.notesList = [];
-      this._showNewCardOpacity = 0.0;
-      this._showAddNewCard = false;
-    });
-  }
-
   List<Widget> getAllItemsInDrawer(BuildContext context) {
     List<Widget> res = [];
     for (var i = 0; i < listOfCollectionNames.length; i++) {
@@ -754,19 +770,9 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             ],
           ),
           onTap: () async {
-            // Update the state of the app.
-            // ...
-
+            // open collection
             Navigator.pop(context);
-            setState(() {
-              this.nameOfOpenCollection = this.listOfCollectionNames[i];
-            });
-            resetHome();
-
-            Future.delayed(Duration(milliseconds: 350), () async {
-              await NotesDatabaseService.db.markCollectionAsOpen(this.listOfCollectionNames[i]);
-              await setNotesFromDB();
-            });
+            changeOpenCollection(this.listOfCollectionNames[i]);
           },
           onLongPress: () {
             showCollectionOptionsAlertDialog(context, this.listOfCollectionNames[i], setNotesFromDB, listOfCollectionNames.length);
@@ -980,19 +986,9 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     Widget openButton = FlatButton(
       child: Text('Open'.toUpperCase(), style: TextStyle(fontSize: 10, color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
       onPressed: () async {
-        // Update the state of the app.
-        // ...
         Navigator.pop(context);
-        setState(() {
-          this.nameOfOpenCollection = currentCollectionName;
-        });
-
-        resetHome();
-
-        Future.delayed(Duration(milliseconds: 350), () async {
-          await NotesDatabaseService.db.markCollectionAsOpen(currentCollectionName);
-          await setNotesFromDB();
-        });
+        Navigator.pop(context);
+        changeOpenCollection(currentCollectionName);
       },
     );
 

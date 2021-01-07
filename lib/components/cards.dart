@@ -49,8 +49,6 @@ class NoteCardComponent extends StatefulWidget {
 }
 
 class _NoteCardComponentState extends State<NoteCardComponent> with SingleTickerProviderStateMixin {
-  double opacity = 0.0;
-
   @override
   void initState() {
     super.initState();
@@ -62,24 +60,12 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
 
     Widget expandedCard = getNonExpandedCard(1, context, true);
 
-    if (this.opacity < 0.5) {
-      scheduleMicrotask(() {
-        setState(() {
-          this.opacity = 1.0;
-        });
-      });
-    }
-
     return AnimatedSize(
-        duration: Duration(milliseconds: 230),
-        alignment: Alignment.topCenter,
-        vsync: this,
-        child: AnimatedOpacity(
-          opacity: opacity,
-          curve: Curves.easeInSine,
-          duration: Duration(milliseconds: 250),
-          child: Container(child: this.widget.noteData.isExpanded ? expandedCard : nonExpandedCard),
-        ));
+      duration: Duration(milliseconds: 230),
+      alignment: Alignment.topCenter,
+      vsync: this,
+      child: Container(child: this.widget.noteData.isExpanded ? expandedCard : nonExpandedCard),
+    );
   }
 
   void updateDueDateCard(Duration timeFromNow) async {
