@@ -267,8 +267,18 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       !isMultiselectOn ? buildNameWidget(context) : Container(),
                       !isMultiselectOn ? Container(height: 12) : Container(),
                       ...(_notesAreLoading ? [Container()] : buildNoteComponentsList()),
-                      !_notesAreLoading && notesList.length == 0
+                      !_notesAreLoading && notesList.length == 0 && !isMultiselectOn
                           ? Container(child: GestureDetector(onTap: gotoEditNote, child: getAddNoteCardComponent(context)))
+                          : Container(),
+                      !_notesAreLoading && notesList.length == 0 && isMultiselectOn
+                          ? Container(
+                              height: 200,
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Empty collection',
+                                    style: TextStyle(fontSize: 20, color: Colors.grey[500]),
+                                  )))
                           : Container(),
                       Container(height: 65),
                     ],
@@ -481,6 +491,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   showInSnackBar('Add a card first.');
                 } else if (isFirstCardLearned) {
                   showInSnackBar('All cards learned, no cards left to review.');
+                } else if (_notesAreLoading) {
                 } else {
                   gotoReview();
                 }
@@ -490,13 +501,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 height: 50,
                 width: 50,
                 curve: Curves.slowMiddle,
-                child:
-                    Icon(Icons.local_library, color: isFirstCardLearned || nCards == 0 ? Colors.grey.shade300.withAlpha(100) : Colors.grey.shade300),
+                child: Icon(Icons.local_library,
+                    color: isFirstCardLearned || nCards == 0 || _notesAreLoading ? Colors.grey.shade300.withAlpha(100) : Colors.grey.shade300),
                 decoration: BoxDecoration(
                     color: Colors.transparent,
                     border: Border.all(
                       width: 1,
-                      color: isFirstCardLearned || nCards == 0 ? Colors.grey.shade300.withAlpha(100) : Colors.grey.shade300,
+                      color: isFirstCardLearned || nCards == 0 || _notesAreLoading ? Colors.grey.shade300.withAlpha(100) : Colors.grey.shade300,
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(16))),
               ),
