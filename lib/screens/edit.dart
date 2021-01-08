@@ -66,104 +66,136 @@ class _EditNotePageState extends State<EditNotePage> {
     return Scaffold(
         body: Stack(
       children: <Widget>[
-        ListView(
-          children: <Widget>[
-            Container(
-              height: 80,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                focusNode: originalContentFocus,
-                controller: originalContentController,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                onChanged: (value) {
-                  markContentAsDirty(value);
-                },
-                onSubmitted: (text) {
-                  titleFocus.unfocus();
-                  FocusScope.of(context).requestFocus(meaningContentFocus);
-                },
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                decoration: InputDecoration.collapsed(
-                  hintText: 'Concept to learn...',
-                  hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 18, fontWeight: FontWeight.w500),
-                  border: InputBorder.none,
-                ),
+        GestureDetector(
+          child: Container(
+            child: Expanded(
+              child: ListView(
+                children: <Widget>[
+                  GestureDetector(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).canvasColor,
+                      ),
+                      height: 96,
+                    ),
+                    onTap: () {
+                      titleFocus.unfocus();
+                      FocusScope.of(context).requestFocus(originalContentFocus);
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextField(
+                      focusNode: originalContentFocus,
+                      controller: originalContentController,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      onChanged: (value) {
+                        markContentAsDirty(value);
+                      },
+                      onSubmitted: (text) {
+                        titleFocus.unfocus();
+                        FocusScope.of(context).requestFocus(meaningContentFocus);
+                      },
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      decoration: InputDecoration.collapsed(
+                        hintText: 'Concept to learn...',
+                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 18, fontWeight: FontWeight.w500),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).canvasColor,
+                      ),
+                      height: 16,
+                    ),
+                    onTap: () {
+                      titleFocus.unfocus();
+                      FocusScope.of(context).requestFocus(originalContentFocus);
+                    },
+                  ),
+                  Divider(
+                    height: 2.0,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TextField(
+                      focusNode: meaningContentFocus,
+                      controller: meaningContentController,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      onChanged: (value) {
+                        markContentAsDirty(value);
+                      },
+                      onSubmitted: (text) {
+                        titleFocus.unfocus();
+                        FocusScope.of(context).requestFocus(meaningContentFocus);
+                      },
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      decoration: InputDecoration.collapsed(
+                        hintText: 'Meaning...',
+                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 18, fontWeight: FontWeight.w500),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Divider(
-              height: 16.0,
+            decoration: BoxDecoration(
+              color: Theme.of(context).canvasColor,
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                focusNode: meaningContentFocus,
-                controller: meaningContentController,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                onChanged: (value) {
-                  markContentAsDirty(value);
-                },
-                onSubmitted: (text) {
-                  titleFocus.unfocus();
-                  FocusScope.of(context).requestFocus(meaningContentFocus);
-                },
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                decoration: InputDecoration.collapsed(
-                  hintText: 'Meaning...',
-                  hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 18, fontWeight: FontWeight.w500),
-                  border: InputBorder.none,
-                ),
-              ),
-            )
-          ],
+          ),
+          onTap: () {
+            titleFocus.unfocus();
+            FocusScope.of(context).requestFocus(meaningContentFocus);
+          },
         ),
         ClipRect(
-          child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: Container(
-                height: 80,
-                color: Theme.of(context).canvasColor.withOpacity(0.3),
-                child: SafeArea(
-                  child: Row(
-                    children: <Widget>[
-                      IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: () => handleBack(context),
-                      ),
-                      Spacer(),
-                      IconButton(
-                        tooltip: 'Mark note as learned',
-                        icon: Icon(Icons.done),
-                        color: currentNote.isLearned ? Colors.greenAccent[400] : Colors.grey,
-                        onPressed: markLearnedAsDirty,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete_outline),
-                        onPressed: () {
-                          handleDelete();
-                        },
-                      ),
-                      GestureDetector(
-                          onTap: handleSave,
-                          child: AnimatedContainer(
-                            margin: EdgeInsets.only(left: 10),
-                            duration: Duration(milliseconds: 200),
-                            width: isDirty ? 100 : 0,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).accentColor,
-                              borderRadius: BorderRadius.only(topLeft: Radius.circular(100), bottomLeft: Radius.circular(100)),
-                            ),
-                            child: Icon(Icons.save_alt_outlined),
-                          ))
-                    ],
+          child: Container(
+            height: 80,
+            color: Colors.grey[600],
+            child: SafeArea(
+              child: Row(
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () => handleBack(context),
                   ),
-                ),
-              )),
-        )
+                  Spacer(),
+                  IconButton(
+                    tooltip: 'Mark note as learned',
+                    icon: Icon(Icons.done),
+                    color: currentNote.isLearned ? Colors.greenAccent[400] : Colors.grey,
+                    onPressed: markLearnedAsDirty,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete_outline),
+                    onPressed: () {
+                      handleDelete();
+                    },
+                  ),
+                  GestureDetector(
+                      onTap: handleSave,
+                      child: AnimatedContainer(
+                        margin: EdgeInsets.only(left: 10),
+                        duration: Duration(milliseconds: 200),
+                        width: isDirty ? 100 : 0,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).accentColor,
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(100), bottomLeft: Radius.circular(100)),
+                        ),
+                        child: Icon(Icons.save_alt_outlined),
+                      ))
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     ));
   }
