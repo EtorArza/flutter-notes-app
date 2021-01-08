@@ -201,7 +201,7 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
                       child: this.widget.isVisible == 0 || this.widget.isVisible == 2 || this.widget.noteData.isExpanded
                           ? FormattedText(nLines: 1, completeString: this.widget.noteData.meaningContent)
                           : Container()),
-                  !showLowerButtons || this.widget.noteData.isLearned ? Container() : buttonRow,
+                  !showLowerButtons || this.widget.noteData.isLearned || this.widget.hideDueInfo ? Container() : buttonRow,
                   // Container(
                   //   margin: EdgeInsets.only(top: 14),
                   //   alignment: Alignment.centerRight,

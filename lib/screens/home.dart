@@ -685,7 +685,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   void gotoEditNote() {
-    Navigator.push(context, CupertinoPageRoute(builder: (context) => EditNotePage(triggerRefetch: setNotesFromDB)));
+    Navigator.push(context, CupertinoPageRoute(builder: (context) => EditNotePage(triggerRefetch: setNotesFromDB, homePageState: this)));
   }
 
   void gotoReview() async {
@@ -709,7 +709,14 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       headerShouldHide = true;
     });
     await Future.delayed(Duration(milliseconds: 230), () {});
-    Navigator.push(context, FadeRoute(page: ViewNotePage(triggerRefetch: setNotesFromDB, currentNote: noteData)));
+    Navigator.push(
+        context,
+        FadeRoute(
+            page: ViewNotePage(
+          triggerRefetch: setNotesFromDB,
+          currentNote: noteData,
+          homePageState: this,
+        )));
     await Future.delayed(Duration(milliseconds: 300), () {});
 
     setState(() {

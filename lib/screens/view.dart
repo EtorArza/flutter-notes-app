@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:Frek/data/models.dart';
 import 'package:Frek/screens/edit.dart';
+import 'package:Frek/screens/home.dart';
 import 'package:Frek/services/database.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:share/share.dart';
@@ -15,9 +16,11 @@ import 'package:share/share.dart';
 class ViewNotePage extends StatefulWidget {
   Function() triggerRefetch;
   NotesModel currentNote;
-  ViewNotePage({Key key, Function() triggerRefetch, NotesModel currentNote}) : super(key: key) {
+  MyHomePageState homePageState;
+  ViewNotePage({Key key, Function() triggerRefetch, NotesModel currentNote, MyHomePageState homePageState}) : super(key: key) {
     this.triggerRefetch = triggerRefetch;
     this.currentNote = currentNote;
+    this.homePageState = homePageState;
   }
   @override
   _ViewNotePageState createState() => _ViewNotePageState();
@@ -145,6 +148,7 @@ class _ViewNotePageState extends State<ViewNotePage> {
             builder: (context) => EditNotePage(
                   existingNote: widget.currentNote,
                   triggerRefetch: widget.triggerRefetch,
+                  homePageState: this.widget.homePageState,
                 )));
   }
 

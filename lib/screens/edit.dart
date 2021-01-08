@@ -11,13 +11,22 @@ import 'package:Frek/data/models.dart';
 import 'package:Frek/screens/home.dart';
 import 'package:Frek/services/database.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
+import '../components/cards.dart';
+import '../screens/home.dart';
 
 class EditNotePage extends StatefulWidget {
   Function() triggerRefetch;
   NotesModel existingNote;
-  EditNotePage({Key key, Function() triggerRefetch, NotesModel existingNote}) : super(key: key) {
+  MyHomePageState homePageState;
+  EditNotePage({
+    Key key,
+    Function() triggerRefetch,
+    NotesModel existingNote,
+    MyHomePageState homePageState,
+  }) : super(key: key) {
     this.triggerRefetch = triggerRefetch;
     this.existingNote = existingNote;
+    this.homePageState = homePageState;
   }
   @override
   _EditNotePageState createState() => _EditNotePageState();
@@ -63,87 +72,110 @@ class _EditNotePageState extends State<EditNotePage> {
 
   @override
   Widget build(BuildContext context) {
+    Widget noteCard = NoteCardComponent(
+      noteData: NotesModel(
+        id: -1,
+        originalContent: originalContentController.text,
+        meaningContent: meaningContentController.text,
+        date: DateTime.now(),
+        dueDate: DateTime.now(),
+        isExpanded: true,
+        isLearned: this.currentNote.isLearned,
+      ),
+      hideDueInfo: true,
+      onTapAction: (note) {},
+      onHoldAction: (note) {},
+      refreshView: () {},
+      settings: this.widget.homePageState.widget.settings,
+    );
     return Scaffold(
         body: Stack(
       children: <Widget>[
         GestureDetector(
           child: Container(
-            child: Expanded(
-              child: ListView(
-                children: <Widget>[
-                  GestureDetector(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).canvasColor,
-                      ),
-                      height: 96,
+            child: ListView(
+              children: <Widget>[
+                GestureDetector(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).canvasColor,
                     ),
-                    onTap: () {
-                      titleFocus.unfocus();
-                      FocusScope.of(context).requestFocus(originalContentFocus);
+                    height: 80,
+                  ),
+                  onTap: () {
+                    titleFocus.unfocus();
+                    FocusScope.of(context).requestFocus(originalContentFocus);
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    focusNode: originalContentFocus,
+                    controller: originalContentController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    onChanged: (value) {
+                      markContentAsDirty(value);
                     },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TextField(
-                      focusNode: originalContentFocus,
-                      controller: originalContentController,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      onChanged: (value) {
-                        markContentAsDirty(value);
-                      },
-                      onSubmitted: (text) {
-                        titleFocus.unfocus();
-                        FocusScope.of(context).requestFocus(meaningContentFocus);
-                      },
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                      decoration: InputDecoration.collapsed(
-                        hintText: 'Concept to learn...',
-                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 18, fontWeight: FontWeight.w500),
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).canvasColor,
-                      ),
-                      height: 16,
-                    ),
-                    onTap: () {
+                    onSubmitted: (text) {
                       titleFocus.unfocus();
-                      FocusScope.of(context).requestFocus(originalContentFocus);
+                      FocusScope.of(context).requestFocus(meaningContentFocus);
                     },
-                  ),
-                  Divider(
-                    height: 2.0,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TextField(
-                      focusNode: meaningContentFocus,
-                      controller: meaningContentController,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      onChanged: (value) {
-                        markContentAsDirty(value);
-                      },
-                      onSubmitted: (text) {
-                        titleFocus.unfocus();
-                        FocusScope.of(context).requestFocus(meaningContentFocus);
-                      },
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                      decoration: InputDecoration.collapsed(
-                        hintText: 'Meaning...',
-                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 18, fontWeight: FontWeight.w500),
-                        border: InputBorder.none,
-                      ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    decoration: InputDecoration.collapsed(
+                      hintText: 'Concept to learn...',
+                      hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 18, fontWeight: FontWeight.w500),
+                      border: InputBorder.none,
                     ),
                   ),
-                ],
-              ),
+                ),
+                GestureDetector(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).canvasColor,
+                    ),
+                    height: 16,
+                  ),
+                  onTap: () {
+                    titleFocus.unfocus();
+                    FocusScope.of(context).requestFocus(originalContentFocus);
+                  },
+                ),
+                Divider(
+                  height: 2.0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextField(
+                    focusNode: meaningContentFocus,
+                    controller: meaningContentController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    onChanged: (value) {
+                      markContentAsDirty(value);
+                    },
+                    onSubmitted: (text) {
+                      titleFocus.unfocus();
+                      FocusScope.of(context).requestFocus(meaningContentFocus);
+                    },
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    decoration: InputDecoration.collapsed(
+                      hintText: 'Meaning...',
+                      hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 18, fontWeight: FontWeight.w500),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+                Divider(
+                  height: 4,
+                ),
+                Text(
+                  '  Preview:',
+                  style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 40),
+                  overflow: TextOverflow.fade,
+                ),
+                Container(child: noteCard),
+              ],
             ),
             decoration: BoxDecoration(
               color: Theme.of(context).canvasColor,
