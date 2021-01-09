@@ -1,4 +1,4 @@
-# Memorize with cards and spaced repetitions
+# Frek - Memorize with cards and spaced repetitions
 
 A Flutter app to memorize with spaced repetitions.
 
