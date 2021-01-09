@@ -2,13 +2,11 @@ import 'package:Frek/screens/home.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../data/models.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:share/share.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:flutter/material.dart';
-import '../screens/settings.dart';
+import '../screens/import.dart';
 
 const String collectionListName = 'ehahdugvbypgtuttjrvexksuehgpqmn';
 
@@ -292,81 +290,70 @@ class NotesDatabaseService {
     await deleteCacheDir();
   }
 
-  Future<void> restoreBackup(SettingsPageState settingsStatePage, BuildContext context) async {
-    FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: ["FrekDB"], type: FileType.custom);
-
+  Future<void> restoreBackup(ImportScreenState settingsStatePage, BuildContext context, MyHomePageState homeState) async {
     // reset the database
     String filePath = await getDatabasesPath();
     String pathOfDB = join(filePath, 'notes.db');
     String copyOfPrevDBPath = join(filePath, 'prevNotes.db');
 
-    // TODO: properly handle delete previous DB and check for file integrity before backup
-    // await deleteDatabase(path);
-    // _database = null;
     var db = await database;
 
-    if (result != null) {
+    if (homeState.importedFileContent != null && homeState.importedFileContent != "") {
       List<String> listOfCurrentCollections = await listOfCollectionNames();
 
-      String filePath = result.files.first.path;
+      settingsStatePage.showProgressBar();
 
-      if (result.files.first.path.split('.').last == 'FrekDB' ||
-          (result.files.first.path.split('.').length >= 2 &&
-              result.files.first.path.split('.').last == 'bin' &&
-              result.files.first.path.split('.').reversed.toList()[1] == 'FrekDB')) {
-        settingsStatePage.showProgressBar();
+      await db.close();
+      _database = null;
+      File copyOfDBFIle = await File(pathOfDB).copy(copyOfPrevDBPath); // copy current DB in case restore fails
+      db = await database;
 
-        await db.close();
-        _database = null;
-        File copyOfDBFIle = await File(pathOfDB).copy(copyOfPrevDBPath); // copy current DB in case restore fails
-        db = await database;
+      for (var collectionName in listOfCurrentCollections) {
+        await deleteCollection(collectionName);
+      }
 
-        for (var collectionName in listOfCurrentCollections) {
-          await deleteCollection(collectionName);
-        }
+      String readString = homeState.importedFileContent;
 
-        String readString = await File(filePath).readAsString();
+      try {
+        List<String> listOfCollectionStringsAndNames = readString.split(fieldDelimiter3);
 
-        try {
-          List<String> listOfCollectionStringsAndNames = readString.split(fieldDelimiter3);
+        for (var i = 0; i < listOfCollectionStringsAndNames.length - 1; i += 2) {
+          settingsStatePage.setBackupProgress(i.toDouble() / listOfCollectionStringsAndNames.length.toDouble());
 
-          for (var i = 0; i < listOfCollectionStringsAndNames.length - 1; i += 2) {
-            settingsStatePage.setBackupProgress(i.toDouble() / listOfCollectionStringsAndNames.length.toDouble());
+          String collectionName = listOfCollectionStringsAndNames[i];
+          String collectionStringListCards = listOfCollectionStringsAndNames[i + 1];
+          List<NotesModel> listReadNotes = fromStringToListOfNotesModel(collectionStringListCards);
+          await createNewCollection(collectionName);
+          await markCollectionAsOpen(collectionName);
 
-            String collectionName = listOfCollectionStringsAndNames[i];
-            String collectionStringListCards = listOfCollectionStringsAndNames[i + 1];
-            List<NotesModel> listReadNotes = fromStringToListOfNotesModel(collectionStringListCards);
-            await createNewCollection(collectionName);
-            await markCollectionAsOpen(collectionName);
-
-            double currentProgress = i.toDouble() / listOfCollectionStringsAndNames.length.toDouble();
-            int noteIndex = 1;
-            int nNotes = listReadNotes.length;
-            for (var readNote in listReadNotes) {
-              noteIndex++;
-              await NotesDatabaseService.db.addNoteInDB(readNote);
-              if (noteIndex % 50 == 0) {
-                currentProgress += 1.toDouble() / listOfCollectionStringsAndNames.length.toDouble() / nNotes.toDouble() * 50.toDouble();
-                settingsStatePage.setBackupProgress(currentProgress);
-              }
+          double currentProgress = i.toDouble() / listOfCollectionStringsAndNames.length.toDouble();
+          int noteIndex = 1;
+          int nNotes = listReadNotes.length;
+          for (var readNote in listReadNotes) {
+            noteIndex++;
+            await NotesDatabaseService.db.addNoteInDB(readNote);
+            if (noteIndex % 50 == 0) {
+              currentProgress += 1.toDouble() / listOfCollectionStringsAndNames.length.toDouble() / nNotes.toDouble() * 50.toDouble();
+              settingsStatePage.setBackupProgress(currentProgress);
             }
           }
-          settingsStatePage.setBackupProgress(1.0);
-          settingsStatePage.closeProgressBar();
-        } catch (e) {
-          settingsStatePage.showInSnackBarSettings("Couldn't restore backup, file corrupted.");
-          await db.close();
-          _database = null;
-          await File(copyOfPrevDBPath).copy(pathOfDB);
-          db = await database;
-          settingsStatePage.closeProgressBarOnCorruptedFile();
         }
-        copyOfDBFIle.delete();
-      } else {
-        settingsStatePage.showInSnackBarSettings("Wrong file format, only '.FrekDB' files supported.");
+        settingsStatePage.setBackupProgress(1.0);
+        settingsStatePage.closeProgressBar();
+      } catch (e) {
+        await db.close();
+        _database = null;
+        await File(copyOfPrevDBPath).copy(pathOfDB);
+        db = await database;
+        settingsStatePage.closeProgressBarOnCorruptedFile();
       }
-      markCollectionAsOpen((await NotesDatabaseService.db.listOfCollectionNames()).first);
+      copyOfDBFIle.delete();
+    } else {
+      print("Wrong file format, only '.FrekDB' files supported.");
     }
+    String collectionName = (await NotesDatabaseService.db.listOfCollectionNames()).first;
+    await markCollectionAsOpen(collectionName);
+    homeState.changeOpenCollection(collectionName);
   }
 }
 
@@ -392,36 +379,6 @@ String fromTableNameToCollectionName(String tableName) {
   res = res.replaceAll(stringToReplaceLeftBracket, '[');
   res = res.replaceAll(stringToReplaceRightBracket, ']');
   return res;
-}
-
-Future<bool> importNoteCard(MyHomePageState homeState) async {
-  FilePickerResult result =
-      await FilePicker.platform.pickFiles(allowMultiple: false, allowedExtensions: [".FrekCard", ".FrekCollection"], type: FileType.custom);
-
-  if (result != null) {
-    String filePath = result.files.first.path;
-    if (result.files.first.path.split('.').last == 'FrekCard' ||
-        (result.files.first.path.split('.').length >= 2 &&
-            result.files.first.path.split('.').last == 'bin' &&
-            result.files.first.path.split('.').reversed.toList()[1] == 'FrekCard')) {
-      homeState.importedFileContent = await File(filePath).readAsString();
-      homeState.importedFileExtension = "FrekCard";
-      homeState.gotoImport();
-      return true;
-    } else if ((result.files.first.path.split('.').last == 'FrekCollection' ||
-        (result.files.first.path.split('.').length >= 2 &&
-            result.files.first.path.split('.').last == 'bin' &&
-            result.files.first.path.split('.').reversed.toList()[1] == 'FrekCollection'))) {
-      homeState.importedFileContent = await File(filePath).readAsString();
-      homeState.importedFileExtension = "FrekCollection";
-      homeState.gotoImport();
-      return true;
-    } else {
-      print("ERROR: only " + extensionForNoteCard + " or " + extensionForCollection + " files supported.");
-    }
-  } else {
-    return false;
-  }
 }
 
 void shareNoteCard(NotesModel noteCard) async {

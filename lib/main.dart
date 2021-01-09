@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:Frek/screens/settings.dart';
-import 'package:Frek/services/sharedPref.dart';
 import 'screens/home.dart';
 import 'data/theme.dart';
 import 'screens/settings.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'dart:async';
 
 void main() => runApp(MyApp());

@@ -22,10 +22,10 @@ class ImportScreen extends StatefulWidget {
   }) : super(key: key) {}
 
   @override
-  _ImportScreen createState() => _ImportScreen();
+  ImportScreenState createState() => ImportScreenState();
 }
 
-class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
+class ImportScreenState extends State<ImportScreen> with TickerProviderStateMixin {
   NotesModel currentNote;
   TextEditingController searchController = TextEditingController();
   NoteCardComponent currentDisplayedCard;
@@ -36,6 +36,13 @@ class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
   int selectedCollectionNameIndex = 0;
   bool _popContextOnError = false;
   String _popContextOnErrorMessageForSnackBar = '';
+
+  // backup restore
+  bool allowExitSettings = true;
+  bool _showBackupProgress = false;
+  bool _backupJustDone = false;
+  bool _corruptedFileErrorDuringBackup = false;
+  double _backupProgress = 0.0;
 
   @override
   void initState() {
@@ -69,8 +76,8 @@ class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
     );
   }
 
-  void handleImportFrekDB() {
-    print("handleImportFrekDB");
+  void handleImportFrekDB() async {
+    restoreBackup();
   }
 
   void handleImportFrekCard() async {
@@ -116,7 +123,26 @@ class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
     });
   }
 
+  void restoreBackup() async {
+    allowExitSettings = false;
+    await NotesDatabaseService.db.restoreBackup(this, context, this.widget.homePageState);
+    allowExitSettings = true;
+  }
+
   Widget buildImportFrekDB(BuildContext context) {
+    print("handleImportFrekDB");
+
+    return WillPopScope(
+        onWillPop: () async {
+          return allowExitSettings;
+        },
+        child: Scaffold(
+          body: ListView(
+            physics: BouncingScrollPhysics(),
+            children: <Widget>[Container(child: this._getProgressBar())],
+          ),
+        ));
+
     print("buildImportFrekDB");
     return Scaffold(
         body: Column(
@@ -361,6 +387,118 @@ class _ImportScreen extends State<ImportScreen> with TickerProviderStateMixin {
       margin: EdgeInsets.all(24),
       padding: EdgeInsets.all(16),
       child: child,
+    );
+  }
+
+  void setBackupProgress(double progress) {
+    print("progress: " + progress.toString());
+    setState(() {
+      _backupProgress = progress * 0.8;
+    });
+  }
+
+  void showProgressBar() {
+    setState(() {
+      _showBackupProgress = true;
+    });
+  }
+
+  void closeProgressBar() {
+    const int nSteps = 20;
+    const int nMilSecondsLastPartProgress = 1000;
+    const int nMiliSecondsDoneInScreen = 750;
+    for (int i = 0; i <= nSteps; i++) {
+      Future.delayed(Duration(milliseconds: nMilSecondsLastPartProgress * i ~/ nSteps), () {
+        setState(() {
+          _backupProgress = 0.8 + 0.2 * i.toDouble() / nSteps.toDouble();
+        });
+      });
+    }
+    Future.delayed(Duration(milliseconds: nMilSecondsLastPartProgress), () {
+      setState(() {
+        _backupJustDone = true;
+      });
+    });
+
+    Future.delayed(Duration(milliseconds: nMiliSecondsDoneInScreen + nMilSecondsLastPartProgress), () {
+      Navigator.pop(context);
+    });
+
+    Future.delayed(Duration(milliseconds: nMiliSecondsDoneInScreen + nMilSecondsLastPartProgress + 500), () {
+      // setState(() {
+      //   _showBackupProgress = false;
+      //   _backupJustDone = false;
+      // });
+    });
+  }
+
+  void closeProgressBarOnCorruptedFile() {
+    const int nSteps = 60;
+    const int nMilSecondsLastPartProgress = 250;
+    const int nMiliSecondsDoneInScreen = 4750;
+    double currentProgress = _backupProgress;
+
+    for (int i = 0; i <= nSteps; i++) {
+      Future.delayed(Duration(milliseconds: nMilSecondsLastPartProgress * i ~/ nSteps), () {
+        setState(() {
+          _backupProgress = currentProgress * (1.0 - i.toDouble() / nSteps.toDouble());
+        });
+      });
+    }
+    Future.delayed(Duration(milliseconds: nMilSecondsLastPartProgress), () {
+      setState(() {
+        _corruptedFileErrorDuringBackup = true;
+      });
+    });
+
+    Future.delayed(Duration(milliseconds: nMiliSecondsDoneInScreen + nMilSecondsLastPartProgress), () {
+      Navigator.pop(context);
+    });
+  }
+
+  Widget _getProgressBar() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 36),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.9,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('Restoring backup...', style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
+            Container(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.done),
+                  onPressed: () {},
+                  color: Color.fromARGB(0, 0, 0, 0),
+                ),
+                Container(
+                  color: Color.fromARGB(255, 0, 0, 0),
+                  width: MediaQuery.of(context).size.width * 0.9 - 100,
+                  child: LinearProgressIndicator(
+                    value: _backupProgress,
+                  ),
+                ),
+                _backupJustDone || _corruptedFileErrorDuringBackup
+                    ? IconButton(
+                        icon: Icon(_corruptedFileErrorDuringBackup ? Icons.error_outline : Icons.done),
+                        onPressed: () {},
+                        color: _corruptedFileErrorDuringBackup ? Colors.yellow[800] : Colors.green[400],
+                      )
+                    : IconButton(
+                        icon: Icon(Icons.done),
+                        onPressed: () {},
+                        color: Color.fromARGB(0, 0, 0, 0),
+                      ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

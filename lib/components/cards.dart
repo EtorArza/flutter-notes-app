@@ -347,7 +347,8 @@ class FormattedText extends StatelessWidget {
       "pink",
       "yellow",
       "orange",
-      "purple"
+      "purple",
+      "grey"
     ];
     const List<String> fontModeNames = ["regular", "default", "standard", "normal", "italic", "bold"];
 
@@ -363,6 +364,7 @@ class FormattedText extends StatelessWidget {
       Color.fromARGB(255, 255, 255, 128), // yellow
       Color.fromARGB(255, 255, 180, 94), // orange
       Color.fromARGB(255, 160, 82, 255), // purple
+      Color.fromARGB(255, 150, 150, 150), // grey
     ];
     List<TextSpan> res = [];
 

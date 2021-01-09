@@ -329,17 +329,6 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           //   },
           // ),
           IconButton(
-            tooltip: 'Import',
-            icon: Icon(Icons.folder_open),
-            onPressed: () {
-              importNoteCard(this).then((value) {
-                if (value = !null && value) {
-                  setNotesFromDB();
-                }
-              });
-            },
-          ),
-          IconButton(
               tooltip: 'Select',
               icon: Icon(Icons.check_box_outline_blank),
               onPressed: () {
@@ -349,7 +338,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             behavior: HitTestBehavior.opaque,
             onTap: () async {
               this.isSettingsOpen = true;
-              await Navigator.push(context, CupertinoPageRoute(builder: (context) => SettingsPage(settings: this.widget.settings)));
+              await Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) => SettingsPage(
+                            settings: this.widget.settings,
+                            homeState: this,
+                          )));
               this.isSettingsOpen = false;
               setNotesFromDB();
             },

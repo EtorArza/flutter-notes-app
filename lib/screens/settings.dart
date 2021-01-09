@@ -5,6 +5,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:Frek/services/database.dart';
 import 'package:Frek/services/sharedPref.dart';
+import '../screens/home.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../components/cards.dart';
@@ -13,8 +14,15 @@ import 'dart:math';
 
 class SettingsPage extends StatefulWidget {
   final Settings settings;
+  final MyHomePageState homeState;
+  final bool restoreBackup;
 
-  SettingsPage({Key key, this.settings}) : super(key: key) {}
+  SettingsPage({
+    Key key,
+    this.settings,
+    this.homeState,
+    this.restoreBackup = false,
+  }) : super(key: key) {}
   @override
   SettingsPageState createState() => SettingsPageState();
 }
@@ -41,52 +49,6 @@ class SettingsPageState extends State<SettingsPage> {
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKeySettings = new GlobalKey<ScaffoldState>();
-
-  Widget _getProgressBar() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 36),
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.9,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text('Restoring backup...', style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
-            Container(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.done),
-                  onPressed: () {},
-                  color: Color.fromARGB(0, 0, 0, 0),
-                ),
-                Container(
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  width: MediaQuery.of(context).size.width * 0.9 - 100,
-                  child: LinearProgressIndicator(
-                    value: _backupProgress,
-                  ),
-                ),
-                _backupJustDone || _corruptedFileErrorDuringBackup
-                    ? IconButton(
-                        icon: Icon(_corruptedFileErrorDuringBackup ? Icons.error_outline : Icons.done),
-                        onPressed: () {},
-                        color: _corruptedFileErrorDuringBackup ? Colors.yellow[800] : Colors.green[400],
-                      )
-                    : IconButton(
-                        icon: Icon(Icons.done),
-                        onPressed: () {},
-                        color: Color.fromARGB(0, 0, 0, 0),
-                      ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   void closeProgressBar() {
     const int nSteps = 20;
@@ -184,221 +146,204 @@ class SettingsPageState extends State<SettingsPage> {
             physics: BouncingScrollPhysics(),
             children: <Widget>[
               Container(
-                  child: _showBackupProgress
-                      ? this._getProgressBar()
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: _showBackupProgress
-                                  ? Container()
-                                  : Container(padding: const EdgeInsets.only(top: 24, left: 24, right: 24), child: Icon(OMIcons.arrowBack)),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
-                              child: buildHeaderWidget(context),
-                            ),
-                            settingTwoChoice(
-                              'Card position in review',
-                              'top',
-                              'bottom',
-                              'Top',
-                              'Bottom',
-                              (res) {
-                                setState(() {
-                                  this.widget.settings.cardPositionInReview = res;
-                                });
-                                this.widget.settings.saveSettings();
-                              },
-                              this.widget.settings.settingsLoaded ? this.widget.settings.cardPositionInReview : null,
-                            ),
-                            buildCardWidget(Column(
-                              children: [
-                                Text('Repetition intervals', style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24)),
-                                Container(
-                                  height: 20,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: [
-                                    changeNDaysRepeatWidget(0),
-                                    changeNDaysRepeatWidget(1),
-                                    changeNDaysRepeatWidget(2),
-                                    changeNDaysRepeatWidget(3)
-                                  ],
-                                )
-                              ],
-                            )),
-                            buildCardWidget(Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text('Backup all\ncollections',
-                                    style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
-                                Spacer(),
-                                iconButtonWithFrame(Icons.save, NotesDatabaseService.db.backupEntireDB),
-                              ],
-                            )),
-                            buildCardWidget(Column(children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text('Restore backup',
-                                      style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
-                                  Spacer(),
-                                  iconButtonWithFrame(
-                                    Icons.settings_backup_restore,
-                                    () async {
-                                      showDialog(
-                                        barrierDismissible: true,
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text(
-                                                'Are you sure you want to restore a backup? All current data will be replaced and forever lost.',
-                                                style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
-                                            content: Container(height: 0),
-                                            actions: <Widget>[
-                                              FlatButton(
-                                                child: Text('restore backup'.toUpperCase(),
-                                                    style: TextStyle(color: Colors.red[300], fontWeight: FontWeight.w500, letterSpacing: 1)),
-                                                onPressed: () async {
-                                                  allowExitSettings = false;
-                                                  Navigator.of(context).pop();
-                                                  await NotesDatabaseService.db.restoreBackup(this, context);
-                                                  allowExitSettings = true;
-                                                },
-                                              ),
-                                              FlatButton(
-                                                child: Text('cancel'.toUpperCase(),
-                                                    style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
-                                                onPressed: () {
-                                                  if (!allowExitSettings) {
-                                                    return;
-                                                  } else {
-                                                    Navigator.of(context).pop();
-                                                  }
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ])),
-                            buildCardWidget(Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text('Restore default\n settings',
-                                    style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
-                                Spacer(),
-                                iconButtonWithFrame(Icons.list_alt, () {
-                                  showConfirmationDialog(
-                                    context,
-                                    "Restore default settings? This will irreversibly replace your current settings.",
-                                    "restore",
-                                    Colors.amber,
-                                    "cancel",
-                                    () async {
-                                      await deleteAllPrefs();
-                                      await this.widget.settings.loadSettings();
-                                      setState(() {});
-                                    },
-                                  );
-                                }),
-                              ],
-                            )),
-                            buildCardWidget(Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                Text('About app', style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
-                                Container(
-                                  height: 40,
-                                ),
-                                Center(
-                                  child: Text('Developed by'.toUpperCase(),
-                                      style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500, letterSpacing: 1)),
-                                ),
-                                Center(
-                                    child: Padding(
-                                  padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-                                  child: Text(
-                                    'Etor Arza',
-                                    style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24),
-                                  ),
-                                )),
-                                Container(
-                                  alignment: Alignment.center,
-                                  child: OutlineButton.icon(
-                                    icon: Icon(OMIcons.link),
-                                    label:
-                                        Text('GITHUB', style: TextStyle(fontWeight: FontWeight.w500, letterSpacing: 1, color: Colors.grey.shade500)),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                    onPressed: openGitHubEtor,
-                                  ),
-                                ),
-                                Container(
-                                  height: 30,
-                                ),
-                                Center(
-                                  child: Text('Forked from \'flutter-notes-app\' by'.toUpperCase(),
-                                      style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500, letterSpacing: 1)),
-                                ),
-                                Center(
-                                    child: Padding(
-                                  padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-                                  child: Text(
-                                    'Roshan',
-                                    style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24),
-                                  ),
-                                )),
-                                Container(
-                                  alignment: Alignment.center,
-                                  child: OutlineButton.icon(
-                                    icon: Icon(OMIcons.link),
-                                    label:
-                                        Text('GITHUB', style: TextStyle(fontWeight: FontWeight.w500, letterSpacing: 1, color: Colors.grey.shade500)),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                    onPressed: openGitHubRoshan,
-                                  ),
-                                ),
-                                Container(
-                                  height: 30,
-                                ),
-                                Center(
-                                  child: Text('Made With'.toUpperCase(),
-                                      style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500, letterSpacing: 1)),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Center(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        FlutterLogo(
-                                          size: 40,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'Flutter',
-                                            style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24),
-                                          ),
-                                        )
-                                      ],
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: _showBackupProgress
+                        ? Container()
+                        : Container(padding: const EdgeInsets.only(top: 24, left: 24, right: 24), child: Icon(OMIcons.arrowBack)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, top: 36, right: 24),
+                    child: buildHeaderWidget(context),
+                  ),
+                  settingTwoChoice(
+                    'Card position in review',
+                    'top',
+                    'bottom',
+                    'Top',
+                    'Bottom',
+                    (res) {
+                      setState(() {
+                        this.widget.settings.cardPositionInReview = res;
+                      });
+                      this.widget.settings.saveSettings();
+                    },
+                    this.widget.settings.settingsLoaded ? this.widget.settings.cardPositionInReview : null,
+                  ),
+                  buildCardWidget(Column(
+                    children: [
+                      Text('Repetition intervals', style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24)),
+                      Container(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [changeNDaysRepeatWidget(0), changeNDaysRepeatWidget(1), changeNDaysRepeatWidget(2), changeNDaysRepeatWidget(3)],
+                      )
+                    ],
+                  )),
+                  buildCardWidget(Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('Backup all\ncollections', style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
+                      Spacer(),
+                      iconButtonWithFrame(Icons.save, NotesDatabaseService.db.backupEntireDB),
+                    ],
+                  )),
+                  buildCardWidget(Column(children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('Restore backup', style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
+                        Spacer(),
+                        iconButtonWithFrame(
+                          Icons.settings_backup_restore,
+                          () async {
+                            showDialog(
+                              barrierDismissible: true,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Are you sure you want to restore a backup? All current data will be replaced and forever lost.',
+                                      style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
+                                  content: Container(height: 0),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text('restore backup'.toUpperCase(),
+                                          style: TextStyle(color: Colors.red[300], fontWeight: FontWeight.w500, letterSpacing: 1)),
+                                      onPressed: () async {},
                                     ),
-                                  ),
+                                    FlatButton(
+                                      child: Text('cancel'.toUpperCase(),
+                                          style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
+                                      onPressed: () {
+                                        if (!allowExitSettings) {
+                                          return;
+                                        } else {
+                                          Navigator.of(context).pop();
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ])),
+                  buildCardWidget(Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('Restore default\n settings',
+                          style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
+                      Spacer(),
+                      iconButtonWithFrame(Icons.list_alt, () {
+                        showConfirmationDialog(
+                          context,
+                          "Restore default settings? This will irreversibly replace your current settings.",
+                          "restore",
+                          Colors.amber,
+                          "cancel",
+                          () async {
+                            await deleteAllPrefs();
+                            await this.widget.settings.loadSettings();
+                            setState(() {});
+                          },
+                        );
+                      }),
+                    ],
+                  )),
+                  buildCardWidget(Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Text('About app', style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24, color: Theme.of(context).primaryColor)),
+                      Container(
+                        height: 40,
+                      ),
+                      Center(
+                        child: Text('Developed by'.toUpperCase(),
+                            style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500, letterSpacing: 1)),
+                      ),
+                      Center(
+                          child: Padding(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                        child: Text(
+                          'Etor Arza',
+                          style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24),
+                        ),
+                      )),
+                      Container(
+                        alignment: Alignment.center,
+                        child: OutlineButton.icon(
+                          icon: Icon(OMIcons.link),
+                          label: Text('GITHUB', style: TextStyle(fontWeight: FontWeight.w500, letterSpacing: 1, color: Colors.grey.shade500)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          onPressed: openGitHubEtor,
+                        ),
+                      ),
+                      Container(
+                        height: 30,
+                      ),
+                      Center(
+                        child: Text('Forked from \'flutter-notes-app\' by'.toUpperCase(),
+                            style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500, letterSpacing: 1)),
+                      ),
+                      Center(
+                          child: Padding(
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                        child: Text(
+                          'Roshan',
+                          style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24),
+                        ),
+                      )),
+                      Container(
+                        alignment: Alignment.center,
+                        child: OutlineButton.icon(
+                          icon: Icon(OMIcons.link),
+                          label: Text('GITHUB', style: TextStyle(fontWeight: FontWeight.w500, letterSpacing: 1, color: Colors.grey.shade500)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          onPressed: openGitHubRoshan,
+                        ),
+                      ),
+                      Container(
+                        height: 30,
+                      ),
+                      Center(
+                        child: Text('Made With'.toUpperCase(),
+                            style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500, letterSpacing: 1)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              FlutterLogo(
+                                size: 40,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Flutter',
+                                  style: TextStyle(fontFamily: 'ZillaSlab', fontSize: 24),
                                 ),
-                              ],
-                            ))
-                          ],
-                        ))
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ))
+                ],
+              ))
             ],
           ),
         ));
