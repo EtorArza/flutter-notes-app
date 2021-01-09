@@ -253,6 +253,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               // ),
               !isMultiselectOn ? buildButtonRow(context, this.notesList.length) : Container(),
               !isMultiselectOn ? buildLearnedIndicatorText() : Container(),
+              !isMultiselectOn ? Container(height: 10) : Container(),
 
               Expanded(
                 child: AnimatedOpacity(
