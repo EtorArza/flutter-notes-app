@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
-  bool isFlagOn = false;
+  bool onlyShowLearnedFlag = false;
   bool isMultiselectOn = false;
   bool isSettingsOpen = false;
   bool isImportOpen = false;
@@ -514,7 +514,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             GestureDetector(
               onTap: () {
                 setState(() {
-                  isFlagOn = !isFlagOn;
+                  onlyShowLearnedFlag = !onlyShowLearnedFlag;
                 });
               },
               child: AnimatedContainer(
@@ -524,13 +524,13 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 curve: Curves.slowMiddle,
                 child: Icon(
                   Icons.done,
-                  color: isFlagOn ? Colors.greenAccent[400] : Colors.grey.shade300,
+                  color: onlyShowLearnedFlag ? Colors.greenAccent[400] : Colors.grey.shade300,
                 ),
                 decoration: BoxDecoration(
-                    color: isFlagOn ? Colors.grey.shade700 : Colors.transparent,
+                    color: onlyShowLearnedFlag ? Colors.grey.shade700 : Colors.transparent,
                     border: Border.all(
-                      width: isFlagOn ? 2 : 1,
-                      color: isFlagOn ? Colors.grey.shade700 : Colors.grey.shade300,
+                      width: onlyShowLearnedFlag ? 2 : 1,
+                      color: onlyShowLearnedFlag ? Colors.grey.shade700 : Colors.grey.shade300,
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(16))),
               ),
@@ -613,7 +613,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       secondChild: Container(
         height: 2,
       ),
-      crossFadeState: isFlagOn ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      crossFadeState: onlyShowLearnedFlag ? CrossFadeState.showFirst : CrossFadeState.showSecond,
     );
   }
 
@@ -648,7 +648,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   ),
                   '')
               .contains(searchController.text.toLowerCase());
-      if ((!isFlagOn || note.isLearned) && (!discardedBySearch)) {
+      if ((!onlyShowLearnedFlag || note.isLearned) && (!discardedBySearch)) {
         noteComponentsList.add(Container(
             child: NoteCardComponent(
           noteData: note,
@@ -747,7 +747,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   void toggleIsMultiselectOn() {
     setState(() {
-      isFlagOn = false;
+      onlyShowLearnedFlag = false;
       isMultiselectOn = !isMultiselectOn;
     });
     while (selectedNotes.length > 0) {
