@@ -13,18 +13,18 @@
    id="Capa_1"
    x="0px"
    y="0px"
-   viewBox="0 0 333.70001 333.89"
+   viewBox="0 0 1024 499.99995"
    xml:space="preserve"
-   sodipodi:docname="logo.svg"
+   sodipodi:docname="featureGraph.svg"
    inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
-   width="333.70004"
-   height="333.89001"
-   inkscape:export-filename="/home/paran/Dropbox/Apps/MemoCards/images/logo.png"
+   width="1024"
+   height="500"
+   inkscape:export-filename="/home/paran/Dropbox/Apps/MemoCards/images/featureGraph.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"><metadata
    id="metadata29"><rdf:RDF><cc:Work
        rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
    id="defs27" /><sodipodi:namedview
    pagecolor="#ffffff"
    bordercolor="#666666"
@@ -38,14 +38,15 @@
    inkscape:window-height="836"
    id="namedview25"
    showgrid="false"
-   inkscape:zoom="1.5857387"
-   inkscape:cx="136.82072"
-   inkscape:cy="91.08417"
+   inkscape:zoom="0.79286935"
+   inkscape:cx="544.17104"
+   inkscape:cy="145.38568"
    inkscape:window-x="0"
    inkscape:window-y="27"
    inkscape:window-maximized="1"
    inkscape:current-layer="Capa_1"
-   showguides="false" />
+   showguides="false"
+   units="px" />
 <style
    type="text/css"
    id="style2">
@@ -65,31 +66,31 @@
 
 <path
    class="st5"
-   d="m 323.71867,281.41885 c 0,23.48 -19.04,42.52 -42.52,42.52 h -10.9 c -18.25,0 -36.5,0 -54.75,0 H 52.538668 c -23.48,0 -42.520003,-19.04 -42.520003,-42.52 V 52.768459 c 0,-23.480119 19.040003,-42.520199 42.520003,-42.520199 H 281.19867 c 23.48,0 42.52,19.04008 42.52,42.520199 z"
+   d="m 343.15978,363.96349 c 0,23.48 -19.04,42.52 -42.52,42.52 h -10.9 c -18.25,0 -36.5,0 -54.75,0 H 71.979776 c -23.48,0 -42.52,-19.04 -42.52,-42.52 v -228.6504 c 0,-23.4801 19.04,-42.520196 42.52,-42.520196 H 300.63978 c 23.48,0 42.52,19.040096 42.52,42.520196 z"
    id="path14-3"
    inkscape:connector-curvature="0"
    style="fill:#d4e1d5;fill-opacity:1;stroke:none;stroke-width:20;stroke-miterlimit:10"
    inkscape:export-xdpi="147.29399"
    inkscape:export-ydpi="147.29399" /><path
    class="st5"
-   d="m 323.71867,281.41885 c 0,23.48 -19.04,42.52 -42.52,42.52 h -10.9 c -18.25,0 -36.5,0 -54.75,0 h -163.01 c -23.48,0 -42.520003,-19.04 -42.520003,-42.52 V 52.76846 c 0,-23.480115 19.040003,-42.5202 42.520003,-42.5202 h 228.66 c 23.48,0 42.52,19.040085 42.52,42.5202 z"
+   d="m 343.15978,363.96349 c 0,23.48 -19.04,42.52 -42.52,42.52 h -10.9 c -18.25,0 -36.5,0 -54.75,0 H 71.979776 c -23.48,0 -42.52,-19.04 -42.52,-42.52 v -228.6504 c 0,-23.4801 19.04,-42.520196 42.52,-42.520196 H 300.63978 c 23.48,0 42.52,19.040096 42.52,42.520196 z"
    id="path14"
    inkscape:connector-curvature="0"
-   style="fill:none;stroke:#000000;stroke-width:20;stroke-miterlimit:10;fill-opacity:1"
+   style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:20;stroke-miterlimit:10"
    inkscape:export-xdpi="147.29399"
    inkscape:export-ydpi="147.29399" />
 <polyline
    class="st5"
    points="241.98,448.74 341.7,605.59 251.27,605.59 343.1,762.43 "
    id="polyline16"
-   transform="translate(-125.55134,-438.4917)"
+   transform="translate(-106.11023,-355.94701)"
    style="fill:none;stroke:#000000;stroke-width:20;stroke-miterlimit:10"
    inkscape:export-xdpi="147.29399"
    inkscape:export-ydpi="147.29399" />
 <circle
    class="st6"
-   cx="85.30867"
-   cy="82.158455"
+   cx="104.74976"
+   cy="164.70314"
    r="23.969999"
    id="circle18"
    style="fill:#ffffff;stroke:#000000;stroke-width:16;stroke-miterlimit:10"
@@ -97,8 +98,8 @@
    inkscape:export-ydpi="147.29399" />
 <circle
    class="st6"
-   cx="258.17871"
-   cy="252.02887"
+   cx="277.61981"
+   cy="334.57364"
    r="23.969999"
    id="circle20"
    style="fill:#ffffff;stroke:#000000;stroke-width:16;stroke-miterlimit:10"
@@ -109,7 +110,7 @@
 
 <path
    style="opacity:0.93999999;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.12532449;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-   d="M 10.089934,243.0806 H 169.63704 l 47.92718,80.40417 -194.861868,-9.95101 z"
+   d="M 29.531046,325.62529 H 189.07815 l 47.92718,80.4041 -194.861864,-9.951 z"
    id="rect825"
    inkscape:connector-curvature="0"
    sodipodi:nodetypes="ccccc"
@@ -117,16 +118,16 @@
    inkscape:export-ydpi="147.29399" />
 <text
    xml:space="preserve"
-   style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:'Century Schoolbook L';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;-inkscape-font-specification:'Century Schoolbook L';font-stretch:normal;font-variant:normal;"
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:1.25;font-family:'Century Schoolbook L';-inkscape-font-specification:'Century Schoolbook L';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none"
    x="31.846357"
-   y="285.33221"
+   y="451.44226"
    id="text4533"
    inkscape:export-xdpi="147.29399"
    inkscape:export-ydpi="147.29399"><tspan
      sodipodi:role="line"
      id="tspan4531"
      x="31.846357"
-     y="320.72284" /></text>
+     y="487.07788" /></text>
 
 
 
@@ -136,7 +137,7 @@
    aria-label="FREK"
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:93.0639267px;line-height:1.25;font-family:'TeX Gyre DejaVu Math';-inkscape-font-specification:'TeX Gyre DejaVu Math';letter-spacing:1.1826874px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.9694159"
    id="text4537"
-   transform="translate(-2,3.7836653)"
+   transform="translate(17.441106,86.328294)"
    inkscape:export-xdpi="147.29399"
    inkscape:export-ydpi="147.29399"><path
      d="M 61.22884,258.87818 H 42.143465 q -1.772214,0 -2.590158,1.13604 -0.817945,1.13603 -0.817945,2.77192 v 14.04139 h 20.630382 v 6.99797 H 38.735362 v 26.0379 h -8.224888 v -48.57682 q 0,-4.13517 3.544427,-6.90709 3.362661,-2.68104 7.543267,-2.68104 H 61.22884 Z"
@@ -156,4 +157,51 @@
      id="path827"
      inkscape:connector-curvature="0"
      sodipodi:nodetypes="ccccccccccccscsccccccscc" /></g>
+<text
+   xml:space="preserve"
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:1.25;font-family:Suruma;-inkscape-font-specification:Suruma;letter-spacing:0px;word-spacing:0px;fill:#000001;fill-opacity:1;stroke:none;"
+   x="408.64236"
+   y="87.573914"
+   id="text5087"><tspan
+     sodipodi:role="line"
+     id="tspan5085"
+     x="408.64236"
+     y="87.573914"
+     style="font-weight:bold;font-size:96px;fill:#000001;fill-opacity:1;">Learn by heart</tspan></text>
+<text
+   xml:space="preserve"
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:34.22204971px;line-height:1.25;font-family:Suruma;-inkscape-font-specification:Suruma;letter-spacing:0px;word-spacing:0px;fill:#000001;fill-opacity:1;stroke:none;stroke-width:0.85555124"
+   x="372.84024"
+   y="163.31743"
+   id="text5087-6"><tspan
+     sodipodi:role="line"
+     id="tspan5085-2"
+     x="372.84024"
+     y="163.31743"
+     style="font-weight:bold;font-size:45.62939835px;fill:#000001;fill-opacity:1;stroke-width:0.85555124">Features:</tspan><tspan
+     sodipodi:role="line"
+     x="372.84024"
+     y="220.35417"
+     style="font-weight:bold;font-size:45.62939835px;fill:#000001;fill-opacity:1;stroke-width:0.85555124"
+     id="tspan5119">1) Review with spaced repetitions</tspan><tspan
+     sodipodi:role="line"
+     x="372.84024"
+     y="277.39093"
+     style="font-weight:bold;font-size:45.62939835px;fill:#000001;fill-opacity:1;stroke-width:0.85555124"
+     id="tspan5123">2) Organize cards in collections</tspan><tspan
+     sodipodi:role="line"
+     x="372.84024"
+     y="334.42767"
+     style="font-weight:bold;font-size:45.62939835px;fill:#000001;fill-opacity:1;stroke-width:0.85555124"
+     id="tspan5127">3) Backup</tspan><tspan
+     sodipodi:role="line"
+     x="372.84024"
+     y="391.46442"
+     style="font-weight:bold;font-size:45.62939835px;fill:#000001;fill-opacity:1;stroke-width:0.85555124"
+     id="tspan5131">4) Sharing</tspan><tspan
+     sodipodi:role="line"
+     x="372.84024"
+     y="448.50116"
+     style="font-weight:bold;font-size:45.62939835px;fill:#000001;fill-opacity:1;stroke-width:0.85555124"
+     id="tspan5135">5) Highlight text</tspan></text>
 </svg>
