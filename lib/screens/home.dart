@@ -747,6 +747,7 @@ class MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   void toggleIsMultiselectOn() {
     setState(() {
+      isFlagOn = false;
       isMultiselectOn = !isMultiselectOn;
     });
     while (selectedNotes.length > 0) {
