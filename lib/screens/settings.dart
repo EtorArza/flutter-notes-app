@@ -210,24 +210,15 @@ class SettingsPageState extends State<SettingsPage> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text('Are you sure you want to restore a backup? All current data will be replaced and forever lost.',
+                                  title: Text('To restore a backup, open a .FrekDB file from a file manager.',
                                       style: TextStyle(fontFamily: 'ZillaSlab', color: Theme.of(context).primaryColor, fontSize: 20)),
                                   content: Container(height: 0),
                                   actions: <Widget>[
                                     FlatButton(
-                                      child: Text('restore backup'.toUpperCase(),
-                                          style: TextStyle(color: Colors.red[300], fontWeight: FontWeight.w500, letterSpacing: 1)),
-                                      onPressed: () async {},
-                                    ),
-                                    FlatButton(
-                                      child: Text('cancel'.toUpperCase(),
+                                      child: Text('OK'.toUpperCase(),
                                           style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500, letterSpacing: 1)),
                                       onPressed: () {
-                                        if (!allowExitSettings) {
-                                          return;
-                                        } else {
-                                          Navigator.of(context).pop();
-                                        }
+                                        Navigator.of(context).pop();
                                       },
                                     ),
                                   ],
