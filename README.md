@@ -3,7 +3,7 @@
 A Flutter app to memorize with spaced repetitions.
 
 ## Features
-1. *Review with spaced repetitions*: Periodically revisit learned concepts with the spaced learning technique [1] to maximize recall while minimizing time studied. Cards that are due are signaled with a blue circle. Once a card is recalled, the next review date needs to be chosen. Cards can be marked as learned, when we consider that we have permanently commited them to memory.
+1. *Review with spaced repetitions*: Periodically revisit learned concepts with the spaced learning technique [1] to maximize recall while minimizing time studied. Cards that are due are signaled with a blue circle. Once a card is recalled, the next review date needs to be chosen. Cards can be marked as learned, when we consider that we have permanently committed them to memory.
 <img src="github_assets/1review.gif" height="600">
 
 
