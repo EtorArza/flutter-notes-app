@@ -266,7 +266,7 @@ class NotesDatabaseService {
 
   Future<void> backupEntireDB() async {
     List<String> allCollectionNames = await listOfCollectionNames();
-    String stringToBeSaved = '';
+    String stringToBeSaved = 'FrekDB.';
     final db = await database;
     for (var collectionName in allCollectionNames) {
       List<NotesModel> notesList = [];
@@ -384,7 +384,7 @@ String fromTableNameToCollectionName(String tableName) {
 void shareNoteCard(NotesModel noteCard) async {
   String filename = 'shared_card_' + DateTime.now().toIso8601String() + extensionForNoteCard;
 
-  String stringNoteCard = fromNoteCardToString(noteCard);
+  String stringNoteCard = "FrekCard." + fromNoteCardToString(noteCard);
   final file = await getLocalFile(filename);
 
   await file.writeAsString(stringNoteCard);
@@ -400,7 +400,7 @@ void shareListOfNoteCards(List<NotesModel> listOfNoteCards) async {
 
   String filename = 'shared_collection_' + DateTime.now().toIso8601String() + extensionForCollection;
   final file = await getLocalFile(filename);
-  String res = await fromListOfNotesModelToString(listOfNoteCards);
+  String res = "FrekCollection." + await fromListOfNotesModelToString(listOfNoteCards);
   //String stringNoteCard = fromNoteCardToString(noteCard);
 
   await file.writeAsString(res);

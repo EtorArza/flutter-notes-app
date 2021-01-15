@@ -67,8 +67,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:scheme="content" />
-                <data android:scheme="file" />
                 <data android:host="*" />
 
                 <!--
@@ -138,8 +136,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:scheme="content" />
-                <data android:scheme="file" />
+
                 <data android:host="*" />
                 <data android:mimeType="*/*" />
 
@@ -192,6 +189,76 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
             </intent-filter>
 
+            <!--
+                Capture file open requests (pathPattern is honoured) where a
+                (possibly blank) MIME type is provided in the Intent.  This
+                filter may only be necessary for supporting ES File Explorer,
+                which has the probably buggy behaviour of using an Intent
+                with a MIME type that is set but zero-length.  It's
+                impossible to match such a type except by using a global
+                wildcard.
+            -->
+            <intent-filter
+                android:icon="@mipmap/ic_launcher"
+                android:label="@string/app_name"
+                android:priority="50" >
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+
+                <data android:host="*" />
+                <data android:mimeType="application/octet-stream" />
+
+                <!--
+                    Work around Android's ugly primitive PatternMatcher
+                    implementation that can't cope with finding a . early in
+                    the path unless it's explicitly matched.
+                -->
+                <data android:pathPattern=".*\\.FrekDB" />
+                <data android:pathPattern=".*\\..*\\.FrekDB" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekDB" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekDB" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekDB" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekDB" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekDB" />
+                <data android:pathPattern=".*\\.FrekDB\\.bin" />
+                <data android:pathPattern=".*\\..*\\.FrekDB\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekDB\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekDB\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekDB\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekDB\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekDB\\.bin" />
+                <data android:pathPattern=".*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCard" />
+                <data android:pathPattern=".*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCard\\.bin" />
+                <data android:pathPattern=".*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection" />
+                <data android:pathPattern=".*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.FrekCollection\\.bin" />
+            </intent-filter>
 
         </activity>
         <meta-data

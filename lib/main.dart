@@ -47,6 +47,7 @@ class MyAppState extends State<MyApp> {
 
   Future<void> getSharedText() async {
     var sharedData = await platform.invokeMethod("getSharedText");
+    print("sharedData = $sharedData");
     if (sharedData != null) {
       setState(() {
         sharedText = sharedData;
