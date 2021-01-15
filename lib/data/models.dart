@@ -31,6 +31,15 @@ class NotesModel {
     this.isSelected = false;
   }
 
+  toggleIsLearned() {
+    this.isLearned = !this.isLearned;
+    if (this.isLearned) {
+      dueDate = this.date.add(Duration(days: 300 * 365));
+    } else {
+      dueDate = DateTime.now();
+    }
+  }
+
   Map<String, dynamic> toMap() {
     var dueDate = this.dueDate;
 

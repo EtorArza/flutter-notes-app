@@ -138,7 +138,7 @@
 
 
                 <data android:host="*" />
-                <data android:mimeType="*/*" />
+                <!-- <data android:mimeType="*/*" /> -->
 
                 <!--
                     Work around Android's ugly primitive PatternMatcher

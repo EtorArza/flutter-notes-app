@@ -323,6 +323,11 @@ class NotesDatabaseService {
           String collectionName = listOfCollectionStringsAndNames[i];
           String collectionStringListCards = listOfCollectionStringsAndNames[i + 1];
           List<NotesModel> listReadNotes = fromStringToListOfNotesModel(collectionStringListCards);
+          for (var i = 0; i < listReadNotes.length; i++) {
+            if (listReadNotes[i].dueDate.isAfter(DateTime.now().add(Duration(days: 100 * 365)))) {
+              listReadNotes[i].isLearned = true;
+            }
+          }
           await createNewCollection(collectionName);
           await markCollectionAsOpen(collectionName);
 

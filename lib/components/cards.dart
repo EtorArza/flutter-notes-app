@@ -170,7 +170,7 @@ class _NoteCardComponentState extends State<NoteCardComponent> with SingleTicker
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  this.widget.hideDueInfo
+                  this.widget.hideDueInfo || this.widget.noteData.isLearned
                       ? Container(
                           height: 10,
                         )

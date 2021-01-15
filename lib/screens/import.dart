@@ -65,6 +65,8 @@ class ImportScreenState extends State<ImportScreen> with TickerProviderStateMixi
         break;
 
       default:
+        this._popContextOnError = true;
+        this._popContextOnErrorMessageForSnackBar = 'Corrupted or\nincompatible file.';
         print("Type ${this.widget.importedType} not recognized in import.dart");
     }
   }

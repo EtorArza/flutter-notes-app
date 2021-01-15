@@ -280,7 +280,7 @@ class _EditNotePageState extends State<EditNotePage> {
 
   void markLearnedAsDirty() {
     setState(() {
-      currentNote.isLearned = !currentNote.isLearned;
+      currentNote.toggleIsLearned();
     });
     handleSave();
   }

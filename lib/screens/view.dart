@@ -135,7 +135,7 @@ class _ViewNotePageState extends State<ViewNotePage> {
 
   void markLearnedAsDirty() {
     setState(() {
-      widget.currentNote.isLearned = !widget.currentNote.isLearned;
+      widget.currentNote.toggleIsLearned();
     });
     handleSave();
   }
