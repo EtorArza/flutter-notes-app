@@ -327,7 +327,7 @@ class FormattedText extends StatelessWidget {
   Widget build(BuildContext context) {
     return RichText(
       text: TextSpan(
-        text: ' ',
+        text: '',
         style: DefaultTextStyle.of(context).style,
         children: buildListOfTextSpan(completeString, context),
       ),
